@@ -1,200 +1,302 @@
-<!-- ================================================
-  صفحة لوحة التحكم - EAS Admin Dashboard
-  تعرض إحصائيات بالأعمدة لليوم / الأسبوع / الشهر / السنة
-  مع ترجمة فورية (عربي - إنجليزي)
-================================================ -->
-<div>
-  <!-- أزرار اختيار الفترة الزمنية -->
-  <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-    <button onclick="switchPeriod('day')" class="period-btn active" id="btnDay">اليوم</button>
-    <button onclick="switchPeriod('week')" class="period-btn" id="btnWeek">الأسبوع</button>
-    <button onclick="switchPeriod('month')" class="period-btn" id="btnMonth">الشهر</button>
-    <button onclick="switchPeriod('year')" class="period-btn" id="btnYear">السنة</button>
-  </div>
-
-  <!-- الرسم البياني بالأعمدة -->
-  <div style="background: var(--surface); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px;">
-    <h3 id="chartTitle" style="margin-bottom: 15px;">إحصائيات الزوار - اليوم</h3>
-    <canvas id="visitorsChart" height="80"></canvas>
-  </div>
-
-  <!-- بطاقات إحصائية سريعة -->
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px;">
-    <div class="stat-card">
-      <span id="totalVisitorsLabel">إجمالي الزوار</span>
-      <strong id="totalVisitors">0</strong>
-    </div>
-    <div class="stat-card">
-      <span id="totalDownloadsLabel">التحميلات</span>
-      <strong id="totalDownloads">0</strong>
-    </div>
-    <div class="stat-card">
-      <span id="activeUsersLabel">مستخدمين نشطين</span>
-      <strong id="activeUsers">0</strong>
-    </div>
-  </div>
-</div>
-
-<!-- مكتبة Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
-<!-- أنماط مخصصة للوحة التحكم -->
-<style>
-  .period-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-family: inherit;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .period-btn.active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-  }
-  .stat-card {
-    background: var(--surface);
-    padding: 16px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .stat-card span {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-  }
-  .stat-card strong {
-    font-size: 1.8rem;
-    font-weight: 700;
-  }
-</style>
-
-<script>
-  // ==================== بيانات المخططات (وهمية - تُستبدل بـ Firebase) ====================
-  const dataSets = {
-    day: {
-      labels: ['8 ص', '10 ص', '12 م', '2 م', '4 م', '6 م', '8 م'],
-      values: [45, 70, 90, 85, 110, 95, 60],
-      titleAr: 'إحصائيات الزوار - اليوم',
-      titleEn: 'Visitor Statistics - Day'
-    },
-    week: {
-      labels: ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
-      values: [320, 450, 510, 480, 530, 600, 380],
-      titleAr: 'إحصائيات الزوار - الأسبوع',
-      titleEn: 'Visitor Statistics - Week'
-    },
-    month: {
-      labels: ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4'],
-      values: [2100, 2450, 2900, 2700],
-      titleAr: 'إحصائيات الزوار - الشهر',
-      titleEn: 'Visitor Statistics - Month'
-    },
-    year: {
-      labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 
-               'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
-      values: [8000, 9500, 11000, 10500, 12000, 13000, 12500, 14000, 13500, 15000, 16000, 17000],
-      titleAr: 'إحصائيات الزوار - السنة',
-      titleEn: 'Visitor Statistics - Year'
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EAS | لوحة التحكم</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --secondary: #e8f0fe;
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --border: #dadce0;
+      --text: #202124;
+      --text-secondary: #5f6368;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08);
+      --radius: 12px;
+      --sidebar-width: 260px;
     }
-  };
+    .dark {
+      --bg: #1e1e2f;
+      --surface: #2a2a3d;
+      --border: #3a3a4d;
+      --text: #e0e0e0;
+      --text-secondary: #a0a0b0;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+    .logo { height: 36px; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      margin: 2px 8px;
+      border-radius: 8px;
+      color: var(--text);
+      font-weight: 500;
+    }
+    .nav-item.active { background: var(--primary); color: white; }
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .page-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .period-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .period-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .stat-card {
+      background: var(--surface);
+      padding: 16px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-card span { color: var(--text-secondary); font-size: 0.9rem; }
+    .stat-card strong { font-size: 1.8rem; }
+  </style>
+</head>
+<body>
+  <!-- شريط جانبي بسيط -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <img src="https://via.placeholder.com/120x36?text=EAS+LOGO" class="logo">
+    </div>
+    <div class="nav-item active"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
+    <!-- يمكن إضافة عناصر أخرى للشكل فقط -->
+  </div>
 
-  let currentPeriod = 'day';
-  let chart;
+  <!-- المحتوى الرئيسي -->
+  <div class="main-content">
+    <!-- هيدر -->
+    <div class="header">
+      <div>
+        <img src="https://via.placeholder.com/100x28?text=EAS" height="30">
+        <span style="font-weight:600; margin-right:10px;">مدير النظام</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span id="liveTime" style="font-weight:600;"></span>
+        <button id="langSwitch" class="period-btn">English</button>
+        <button id="darkModeToggle" class="period-btn"><i class="fas fa-moon"></i></button>
+      </div>
+    </div>
 
-  // ==================== دالة بناء / تحديث الرسم البياني ====================
-  function renderChart(period) {
-    const data = dataSets[period];
-    const ctx = document.getElementById('visitorsChart').getContext('2d');
-    const isArabic = (document.documentElement.lang || 'ar') === 'ar';
+    <!-- محتوى لوحة التحكم -->
+    <div class="page-content">
+      <!-- أزرار الفترة -->
+      <div style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button onclick="switchPeriod('day')" class="period-btn active" id="btnDay">اليوم</button>
+        <button onclick="switchPeriod('week')" class="period-btn" id="btnWeek">الأسبوع</button>
+        <button onclick="switchPeriod('month')" class="period-btn" id="btnMonth">الشهر</button>
+        <button onclick="switchPeriod('year')" class="period-btn" id="btnYear">السنة</button>
+      </div>
 
-    // تحديث عنوان الرسم البياني
-    document.getElementById('chartTitle').textContent = isArabic ? data.titleAr : data.titleEn;
+      <!-- الرسم البياني -->
+      <div style="background:var(--surface); padding:20px; border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:20px;">
+        <h3 id="chartTitle" style="margin-bottom:15px;">إحصائيات الزوار - اليوم</h3>
+        <canvas id="visitorsChart" height="80"></canvas>
+      </div>
 
-    // تدمير الرسم القديم إن وُجد
-    if (chart) chart.destroy();
+      <!-- بطاقات إحصائية -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:16px;">
+        <div class="stat-card">
+          <span id="totalVisitorsLabel">إجمالي الزوار</span>
+          <strong id="totalVisitors">0</strong>
+        </div>
+        <div class="stat-card">
+          <span id="totalDownloadsLabel">التحميلات</span>
+          <strong id="totalDownloads">0</strong>
+        </div>
+        <div class="stat-card">
+          <span id="activeUsersLabel">مستخدمين نشطين</span>
+          <strong id="activeUsers">0</strong>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    // إنشاء رسم جديد (Bar Chart)
-    chart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: data.labels,
-        datasets: [{
-          label: isArabic ? 'عدد الزوار' : 'Visitors',
-          data: data.values,
-          backgroundColor: '#1a73e8',
-          borderRadius: 6
-        }]
+  <script>
+    // ========== الإعدادات العامة ==========
+    let currentLang = 'ar';
+    let darkMode = false;
+
+    // ========== البيانات الوهمية (تُستبدل بـ Firebase) ==========
+    const dataSets = {
+      day: {
+        labels: ['8 ص', '10 ص', '12 م', '2 م', '4 م', '6 م', '8 م'],
+        values: [45, 70, 90, 85, 110, 95, 60],
+        titleAr: 'إحصائيات الزوار - اليوم',
+        titleEn: 'Visitor Statistics - Day'
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-          legend: { display: true, position: 'top' }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: { 
-              stepSize: period === 'year' ? 2000 : 20 
-            }
-          }
-        }
+      week: {
+        labels: ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
+        values: [320, 450, 510, 480, 530, 600, 380],
+        titleAr: 'إحصائيات الزوار - الأسبوع',
+        titleEn: 'Visitor Statistics - Week'
+      },
+      month: {
+        labels: ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4'],
+        values: [2100, 2450, 2900, 2700],
+        titleAr: 'إحصائيات الزوار - الشهر',
+        titleEn: 'Visitor Statistics - Month'
+      },
+      year: {
+        labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 
+                 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
+        values: [8000, 9500, 11000, 10500, 12000, 13000, 12500, 14000, 13500, 15000, 16000, 17000],
+        titleAr: 'إحصائيات الزوار - السنة',
+        titleEn: 'Visitor Statistics - Year'
       }
+    };
+
+    let currentPeriod = 'day';
+    let chart;
+
+    // ========== دالة الرسم البياني ==========
+    function renderChart(period) {
+      const data = dataSets[period];
+      const ctx = document.getElementById('visitorsChart').getContext('2d');
+      const isArabic = currentLang === 'ar';
+
+      document.getElementById('chartTitle').textContent = isArabic ? data.titleAr : data.titleEn;
+
+      if (chart) chart.destroy();
+
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: data.labels,
+          datasets: [{
+            label: isArabic ? 'عدد الزوار' : 'Visitors',
+            data: data.values,
+            backgroundColor: '#1a73e8',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: { legend: { display: true, position: 'top' } },
+          scales: { y: { beginAtZero: true, ticks: { stepSize: period === 'year' ? 2000 : 20 } } }
+        }
+      });
+
+      // تحديث البطاقات
+      const total = data.values.reduce((a, b) => a + b, 0);
+      document.getElementById('totalVisitors').textContent = total.toLocaleString();
+      document.getElementById('totalDownloads').textContent = Math.round(total * 0.3).toLocaleString();
+      document.getElementById('activeUsers').textContent = Math.round(data.values[data.values.length - 1] * 0.15).toLocaleString();
+    }
+
+    // ========== تبديل الفترة ==========
+    window.switchPeriod = function(period) {
+      currentPeriod = period;
+      document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('btn' + period.charAt(0).toUpperCase() + period.slice(1)).classList.add('active');
+      renderChart(period);
+    };
+
+    // ========== تحديث اللغة ==========
+    function updateLanguageUI() {
+      const isArabic = currentLang === 'ar';
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+      document.getElementById('langSwitch').textContent = isArabic ? 'English' : 'العربية';
+
+      // عناوين الأزرار
+      document.getElementById('btnDay').textContent = isArabic ? 'اليوم' : 'Day';
+      document.getElementById('btnWeek').textContent = isArabic ? 'الأسبوع' : 'Week';
+      document.getElementById('btnMonth').textContent = isArabic ? 'الشهر' : 'Month';
+      document.getElementById('btnYear').textContent = isArabic ? 'السنة' : 'Year';
+
+      // تسميات البطاقات
+      document.getElementById('totalVisitorsLabel').textContent = isArabic ? 'إجمالي الزوار' : 'Total Visitors';
+      document.getElementById('totalDownloadsLabel').textContent = isArabic ? 'التحميلات' : 'Downloads';
+      document.getElementById('activeUsersLabel').textContent = isArabic ? 'مستخدمين نشطين' : 'Active Users';
+
+      // تحديث الرسم البياني
+      renderChart(currentPeriod);
+    }
+
+    document.getElementById('langSwitch').addEventListener('click', () => {
+      currentLang = currentLang === 'ar' ? 'en' : 'ar';
+      updateLanguageUI();
     });
 
-    // تحديث البطاقات الإحصائية (حساب مجموع / تحميلات وهمية)
-    const totalVisitors = data.values.reduce((a, b) => a + b, 0);
-    document.getElementById('totalVisitors').textContent = totalVisitors.toLocaleString();
-    document.getElementById('totalDownloads').textContent = Math.round(totalVisitors * 0.3).toLocaleString();
-    document.getElementById('activeUsers').textContent = Math.round(data.values[data.values.length - 1] * 0.15).toLocaleString();
-  }
+    // ========== الوضع الليلي ==========
+    document.getElementById('darkModeToggle').addEventListener('click', () => {
+      darkMode = !darkMode;
+      document.body.classList.toggle('dark', darkMode);
+      const icon = darkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+      document.getElementById('darkModeToggle').innerHTML = icon;
+    });
 
-  // ==================== تبديل الفترة (يُستدعى من الأزرار) ====================
-  window.switchPeriod = function(period) {
-    currentPeriod = period;
-    // إزالة الكلاس النشط من جميع الأزرار
-    document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
-    // إضافة الكلاس النشط للزر المحدد
-    const btnMap = { day: 'btnDay', week: 'btnWeek', month: 'btnMonth', year: 'btnYear' };
-    document.getElementById(btnMap[period]).classList.add('active');
-    renderChart(period);
-  };
-
-  // ==================== تحديث اللغة (تُستدعى من الصفحة الرئيسية عند التبديل) ====================
-  window.updateDashboardLanguage = function() {
-    const isArabic = document.documentElement.lang === 'ar';
-    const data = dataSets[currentPeriod];
-
-    // تحديث عنوان المخطط
-    document.getElementById('chartTitle').textContent = isArabic ? data.titleAr : data.titleEn;
-
-    // تحديث عنوان مجموعة البيانات في الرسم
-    if (chart) {
-      chart.data.datasets[0].label = isArabic ? 'عدد الزوار' : 'Visitors';
-      chart.update();
+    // ========== الساعة ==========
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('liveTime').textContent = now.toLocaleTimeString(
+        currentLang === 'ar' ? 'ar-EG' : 'en-US', { hour12: false }
+      );
     }
+    setInterval(updateClock, 1000);
+    updateClock();
 
-    // تحديث نصوص أزرار الفترة
-    document.getElementById('btnDay').textContent = isArabic ? 'اليوم' : 'Day';
-    document.getElementById('btnWeek').textContent = isArabic ? 'الأسبوع' : 'Week';
-    document.getElementById('btnMonth').textContent = isArabic ? 'الشهر' : 'Month';
-    document.getElementById('btnYear').textContent = isArabic ? 'السنة' : 'Year';
-
-    // تحديث تسميات البطاقات الإحصائية
-    document.getElementById('totalVisitorsLabel').textContent = isArabic ? 'إجمالي الزوار' : 'Total Visitors';
-    document.getElementById('totalDownloadsLabel').textContent = isArabic ? 'التحميلات' : 'Downloads';
-    document.getElementById('activeUsersLabel').textContent = isArabic ? 'مستخدمين نشطين' : 'Active Users';
-  };
-
-  // ==================== تحميل الرسم عند فتح الصفحة ====================
-  document.addEventListener('DOMContentLoaded', () => {
+    // ========== بدء التشغيل ==========
     renderChart('day');
-  });
-</script>
+  </script>
+</body>
+</html>
