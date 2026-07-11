@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EAS | لوحة التحكم</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* المتغيرات العامة */
+    :root {
+      --primary: #1a73e8;
+      --secondary: #e8f0fe;
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --border: #dadce0;
+      --text: #202124;
+      --text-secondary: #5f6368;
+      --sidebar-width: 260px;
+      --sidebar-collapsed: 70px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08);
+      --radius: 12px;
+    }
+    .dark {
+      --bg: #1e1e2f;
+      --surface: #2a2a3d;
+      --border: #3a3a4d;
+      --text: #e0e0e0;
+      --text-secondary: #a0a0b0;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+    /* الشريط الجانبي */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s;
+      flex-shrink: 0;
+    }
+    .sidebar.collapsed { width: var(--sidebar-collapsed); }
+    .sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo { height: 36px; }
+    .toggle-btn {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      margin: 2px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text);
+      font-weight: 500;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .nav-item i { width: 20px; text-align: center; }
+    .nav-item:hover { background: var(--secondary); }
+    .nav-item.active { background: var(--primary); color: white; }
+    /* المحتوى الرئيسي */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    #page-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    /* أزرار وأيقونات */
+    .icon-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 0 4px;
+    }
+    .lang-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    @media (max-width: 768px) {
+      .sidebar { position: fixed; right:0; top:0; bottom:0; z-index:100; transform: translateX(100%); }
+      .sidebar.open { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- الشريط الجانبي -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="https://via.placeholder.com/120x36?text=EAS+LOGO" class="logo" id="sidebarLogo">
+      <button class="toggle-btn" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav">
+      <!-- سيتم ملؤها ديناميكيًا -->
+    </nav>
+  </aside>
+
+  <!-- المحتوى الرئيسي -->
+  <div class="main-content">
+    <header class="header">
+      <div>
+        <img src="https://via.placeholder.com/100x28?text=EAS" height="30" id="headerLogo">
+        <span id="userName" style="font-weight:600; margin-right:10px;">مدير النظام</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span id="liveTime" style="font-weight:600;"></span>
+        <button class="lang-btn" id="langSwitch">English</button>
+        <button class="icon-btn" id="darkModeToggle"><i class="fas fa-moon"></i></button>
+      </div>
+    </header>
+
+    <!-- حاوية الصفحات الفرعية -->
+    <div id="page-content"></div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script>
+    // إعدادات Firebase (استبدل المفاتيح الفعلية)
+    const firebaseConfig = {
+      apiKey: "AIzaSy...",
+      authDomain: "eas-eg.firebaseapp.com",
+      projectId: "eas-eg",
+      storageBucket: "eas-eg.firebasestorage.app",
+      messagingSenderId: "254601190180",
+      appId: "1:254601190180:web:c18fa5fa28dcade5b1f1b1"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // ============== إعدادات اللغة والوضع الليلي ==============
+    let currentLang = 'ar'; // العربية افتراضياً
+    let darkMode = false;
+
+    const body = document.body;
+    const pageContainer = document.getElementById('page-content');
+    const langSwitchBtn = document.getElementById('langSwitch');
+    const darkModeToggle = document.getElementById('darkModeToggle');
+
+    // تبديل اللغة
+    langSwitchBtn.addEventListener('click', () => {
+      currentLang = currentLang === 'ar' ? 'en' : 'ar';
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+      langSwitchBtn.textContent = currentLang === 'ar' ? 'English' : 'العربية';
+      // إعادة تحميل الصفحة النشطة لعرض المحتوى المترجم
+      const activePage = document.querySelector('.nav-item.active')?.dataset.page;
+      if (activePage) loadPage(activePage);
+    });
+
+    // تبديل الوضع الليلي
+    darkModeToggle.addEventListener('click', () => {
+      darkMode = !darkMode;
+      body.classList.toggle('dark', darkMode);
+      darkModeToggle.innerHTML = darkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    });
+
+    // ============== تحميل الصفحات الفرعية ==============
+    async function loadPage(pageName) {
+      try {
+        const response = await fetch(`pages/${pageName}.html`);
+        if (!response.ok) throw new Error('صفحة غير موجودة');
+        const html = await response.text();
+        pageContainer.innerHTML = html;
+
+        // تنفيذ السكربتات داخل الصفحة المحملة
+        const scripts = pageContainer.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      } catch (error) {
+        pageContainer.innerHTML = `<h2>${currentLang === 'ar' ? 'صفحة غير موجودة' : 'Page not found'}</h2>`;
+      }
+    }
+
+    // ============== بناء القائمة الجانبية ==============
+    const menuItems = [
+      { id: 'dashboard', icon: 'fa-tachometer-alt', textAr: 'لوحة التحكم', textEn: 'Dashboard' },
+      { id: 'airlines', icon: 'fa-plane', textAr: 'شركات الطيران', textEn: 'Airlines' },
+      { id: 'documents', icon: 'fa-file-alt', textAr: 'المستندات', textEn: 'Documents' },
+      { id: 'employees', icon: 'fa-users', textAr: 'الموظفين', textEn: 'Employees' },
+      { id: 'departments', icon: 'fa-building', textAr: 'الأقسام', textEn: 'Departments' },
+      { id: 'courses', icon: 'fa-graduation-cap', textAr: 'الدورات', textEn: 'Courses' },
+      { id: 'lessons', icon: 'fa-book', textAr: 'الدروس', textEn: 'Lessons' },
+      { id: 'exams', icon: 'fa-pencil-alt', textAr: 'الامتحانات', textEn: 'Exams' },
+      { id: 'questions', icon: 'fa-question-circle', textAr: 'الأسئلة', textEn: 'Questions' },
+      { id: 'results', icon: 'fa-chart-bar', textAr: 'النتائج', textEn: 'Results' },
+      { id: 'passengers', icon: 'fa-user', textAr: 'الركاب', textEn: 'Passengers' },
+      { id: 'notifications', icon: 'fa-bell', textAr: 'الإشعارات', textEn: 'Notifications' },
+      { id: 'announcements', icon: 'fa-bullhorn', textAr: 'الإعلانات', textEn: 'Announcements' },
+      { id: 'statistics', icon: 'fa-chart-line', textAr: 'الإحصائيات', textEn: 'Statistics' },
+      { id: 'reports', icon: 'fa-file-pdf', textAr: 'التقارير', textEn: 'Reports' },
+      { id: 'activity-logs', icon: 'fa-history', textAr: 'سجلات النشاط', textEn: 'Activity Logs' },
+      { id: 'settings', icon: 'fa-cogs', textAr: 'الإعدادات', textEn: 'Settings' },
+    ];
+
+    const sidebarNav = document.getElementById('sidebarNav');
+    function renderMenu() {
+      sidebarNav.innerHTML = menuItems.map(item => `
+        <div class="nav-item" data-page="${item.id}">
+          <i class="fas ${item.icon}"></i>
+          <span>${currentLang === 'ar' ? item.textAr : item.textEn}</span>
+        </div>
+      `).join('');
+
+      // ربط الأحداث
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.addEventListener('click', function() {
+          document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+          this.classList.add('active');
+          const page = this.dataset.page;
+          loadPage(page);
+        });
+      });
+    }
+
+    // ============== تهيئة التطبيق ==============
+    function initApp() {
+      renderMenu();
+      // تحميل لوحة التحكم افتراضياً
+      document.querySelector('.nav-item[data-page="dashboard"]').classList.add('active');
+      loadPage('dashboard');
+
+      // الساعة
+      setInterval(() => {
+        document.getElementById('liveTime').textContent = new Date().toLocaleTimeString(
+          currentLang === 'ar' ? 'ar-EG' : 'en-US', { hour12: false }
+        );
+      }, 1000);
+
+      // زر طي الشريط الجانبي
+      document.getElementById('toggleSidebar').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+      });
+    }
+
+    // تحديث نصوص القائمة عند تغيير اللغة
+    window.updateMenuTexts = function() {
+      document.querySelectorAll('.nav-item').forEach(el => {
+        const page = el.dataset.page;
+        const item = menuItems.find(i => i.id === page);
+        if (item) {
+          el.querySelector('span').textContent = currentLang === 'ar' ? item.textAr : item.textEn;
+        }
+      });
+    };
+
+    // تشغيل
+    initApp();
+  </script>
+</body>
+</html>
