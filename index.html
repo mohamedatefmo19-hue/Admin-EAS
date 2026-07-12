@@ -1,12 +1,36 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EAS Passenger Airlines Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAS - Passenger Information Screen</title>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js">
+    </script>
+
     <style>
-        /* ---------- الأساسيات ---------- */
+        :root {
+            --card-bg: #ffffff;
+            --card-border-radius: 12px;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --card-glass: none;
+            --card-spacing: 16px;
+            --card-width: 200px;
+            --card-height: 100px;
+            --anim-speed: 0.3s;
+            --header-bg: rgba(0, 51, 102, 0.95);
+            --header-text: #ffffff;
+            --columns: 4;
+            --rows: 3;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,752 +38,1608 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: #0b0e14;
-            color: #f0f4fc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
             min-height: 100vh;
+            background: #1a1a2e;
+        }
+
+        /* ============ PASSENGER SCREEN ============ */
+        #passenger-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            padding: 2rem 1.5rem 1rem;
-            background-image:
-                radial-gradient(ellipse at 20% 50%, rgba(30, 60, 120, 0.15) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 20%, rgba(60, 30, 120, 0.12) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 100%, rgba(0, 40, 80, 0.2) 0%, transparent 40%);
-            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #0a0a1a;
+            transition: filter 0.3s;
+        }
+        #passenger-screen.blurred {
+            filter: blur(4px);
         }
 
-        /* ---------- الحاوية الرئيسية ---------- */
-        .portal-wrapper {
-            max-width: 1360px;
-            width: 100%;
-            flex: 1;
+        #passenger-screen .bg-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Header */
+        #ps-header {
+            position: relative;
+            z-index: 2;
             display: flex;
-            flex-direction: column;
-        }
-
-        /* ---------- الرأس ---------- */
-        .header {
-            display: flex;
             align-items: center;
-            gap: 1.2rem;
-            padding: 0.8rem 1.5rem 0.8rem 1.2rem;
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 28px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            margin-bottom: 2.5rem;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-            transition: all 0.2s;
-        }
-
-        .header-logo {
+            justify-content: space-between;
+            padding: 12px 28px;
+            background: var(--header-bg);
+            color: var(--header-text);
+            gap: 18px;
             flex-shrink: 0;
-            width: 58px;
-            height: 58px;
-            background: #ffffff;
-            border-radius: 16px;
+            backdrop-filter: blur(8px);
+            min-height: 70px;
+        }
+        #ps-header .logo-area {
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 6px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            gap: 14px;
+            flex-shrink: 0;
         }
-
-        .header-logo img {
-            width: 100%;
-            height: auto;
-            display: block;
+        #ps-header .logo-area img {
+            height: 48px;
+            width: auto;
             object-fit: contain;
+            border-radius: 6px;
         }
-
-        .header-title {
+        #ps-header .company-name {
+            font-size: 1.2rem;
             font-weight: 700;
-            font-size: 1.5rem;
-            letter-spacing: -0.3px;
-            background: linear-gradient(135deg, #ffffff 40%, #88bbff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1.2;
-        }
-
-        .header-sub {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.5);
-            font-weight: 400;
-            margin-left: auto;
-            background: rgba(255, 255, 255, 0.06);
-            padding: 0.4rem 1rem;
-            border-radius: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            letter-spacing: 0.5px;
             white-space: nowrap;
         }
-
-        /* ---------- شبكة شركات الطيران ---------- */
-        .airlines-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 1.2rem;
-            margin-bottom: 2.5rem;
+        #ps-header .titles {
+            text-align: center;
+            flex: 1;
+        }
+        #ps-header .titles .arabic-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            font-family: 'Segoe UI', 'Arabic Typesetting', 'Traditional Arabic', serif;
+            direction: rtl;
+        }
+        #ps-header .titles .english-title {
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.9;
         }
 
-        /* بطاقة شركة الطيران */
-        .airline-card {
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            padding: 1.2rem 0.5rem 0.9rem;
+        /* Airlines Grid */
+        #ps-grid-container {
+            position: relative;
+            z-index: 2;
+            flex: 1;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: all 0.25s ease;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        #ps-grid {
+            display: grid;
+            grid-template-columns: repeat(var(--columns), var(--card-width));
+            grid-auto-rows: var(--card-height);
+            gap: var(--card-spacing);
+            justify-content: center;
+            align-content: center;
+            max-height: calc(var(--rows) * (var(--card-height) + var(--card-spacing)));
+            overflow-y: auto;
+            padding: 8px;
+        }
+        .airline-card {
+            background: var(--card-glass) var(--card-bg);
+            border-radius: var(--card-border-radius);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            transition: transform var(--anim-speed) ease, box-shadow var(--anim-speed) ease;
             position: relative;
-            min-height: 160px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
         }
-
         .airline-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.15);
-            transform: translateY(-6px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+        .airline-card img {
+            max-width: 85%;
+            max-height: 75%;
+            object-fit: contain;
+            pointer-events: none;
+            user-select: none;
+        }
+        .airline-card.hidden-card {
+            display: none;
         }
 
-        .airline-card:active {
-            transform: scale(0.97);
+        /* Footer */
+        #ps-footer {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 8px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #ccc;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            letter-spacing: 0.5px;
         }
 
-        /* حاوية الشعار مع خلفية بيضاء مستديرة */
-        .logo-wrap {
-            width: 80px;
-            height: 80px;
-            background: #ffffff;
+        /* ============ POPUP OVERLAY ============ */
+        #popup-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(3px);
+        }
+        #popup-overlay.active {
+            display: flex;
+        }
+        #popup-box {
+            background: #fff;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 750px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            animation: popIn 0.3s ease;
+        }
+        @keyframes popIn {
+            from {
+                transform: scale(0.85);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        #popup-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #555;
+            z-index: 5;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-            flex-shrink: 0;
             transition: all 0.2s;
-            margin-bottom: 0.6rem;
         }
-
-        .logo-wrap img {
-            max-width: 90%;
-            max-height: 90%;
-            width: auto;
-            height: auto;
-            display: block;
-            object-fit: contain;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+        #popup-close:hover {
+            background: #f0f0f0;
+            color: #000;
         }
-
-        .airline-name {
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.85);
-            line-height: 1.3;
-            letter-spacing: 0.2px;
-            word-break: break-word;
-            max-width: 100%;
-            padding: 0 0.2rem;
+        #popup-content .popup-section {
+            margin-bottom: 20px;
+            padding: 14px;
+            border-radius: 10px;
+            background: #f9fafb;
+            border-left: 4px solid #0066cc;
         }
-
-        .airline-name .sub {
-            display: block;
-            font-weight: 400;
-            font-size: 0.6rem;
-            color: rgba(255, 255, 255, 0.4);
-            margin-top: 0.1rem;
+        #popup-content .popup-section h3 {
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 1rem;
         }
-
-        /* ---------- نموذج (Modal) المستندات ---------- */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 1.5rem;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.97);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .modal-box {
-            background: rgba(20, 28, 40, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 32px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            max-width: 620px;
-            width: 100%;
-            padding: 2rem 2rem 1.8rem;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
-            position: relative;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1.2rem;
-            background: rgba(255, 255, 255, 0.06);
-            border: none;
-            color: #aab8d0;
-            font-size: 1.8rem;
-            line-height: 1;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            border-radius: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-        }
-
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: #ffffff;
-        }
-
-        .modal-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 0.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .modal-title .mini-logo {
-            width: 44px;
-            height: 44px;
-            background: #ffffff;
-            border-radius: 40px;
-            padding: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .modal-title .mini-logo img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        .modal-sub {
-            color: rgba(255, 255, 255, 0.45);
-            font-size: 0.85rem;
-            margin-bottom: 1.8rem;
-            border-left: 3px solid rgba(255, 255, 255, 0.1);
-            padding-left: 0.8rem;
-        }
-
-        /* قائمة المستندات */
-        .doc-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-        }
-
-        .doc-item {
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 14px;
-            padding: 0.9rem 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            transition: 0.2s;
-        }
-
-        .doc-item:hover {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .doc-name {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
+        #popup-content .popup-section p,
+        #popup-content .popup-section ul {
+            color: #555;
             font-size: 0.9rem;
-            font-weight: 500;
-            color: #e8edf8;
+            line-height: 1.6;
         }
-
-        .doc-name .icon {
-            font-size: 1.2rem;
+        #popup-content .popup-section img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 6px 0;
         }
-
-        .doc-download {
-            background: rgba(255, 255, 255, 0.08);
-            border: none;
-            color: #bbd4ff;
-            padding: 0.3rem 1rem;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
+        #popup-content .popup-section video {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        #popup-content .popup-section a.download-btn {
+            display: inline-block;
+            margin: 4px 6px;
+            padding: 8px 16px;
+            background: #0066cc;
+            color: #fff;
+            border-radius: 6px;
             text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
+            font-weight: 500;
+            transition: background 0.2s;
         }
-
-        .doc-download:hover {
-            background: rgba(255, 255, 255, 0.18);
-            color: #ffffff;
+        #popup-content .popup-section a.download-btn:hover {
+            background: #004d99;
         }
-
-        .doc-empty {
-            text-align: center;
-            padding: 2rem 0;
-            color: rgba(255, 255, 255, 0.3);
+        #popup-content .popup-section .placeholder-text {
+            color: #aaa;
             font-style: italic;
         }
 
-        /* ---------- التذييل ---------- */
-        .footer {
-            margin-top: auto;
-            padding: 1.5rem 0.5rem 0.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            text-align: center;
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.25);
-            letter-spacing: 0.3px;
+        /* ============ ADMIN PANEL ============ */
+        #admin-panel {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: #f4f5f7;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
         }
-
-        .footer strong {
-            color: rgba(255, 255, 255, 0.35);
+        #admin-panel.active {
+            display: flex;
+        }
+        #admin-header-bar {
+            background: #1a1a2e;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            gap: 12px;
+        }
+        #admin-header-bar h2 {
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+        #admin-header-bar button {
+            padding: 7px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
             font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .btn-close {
+            background: #e74c3c;
+            color: #fff;
+        }
+        .btn-close:hover {
+            background: #c0392b;
+        }
+        .btn-save {
+            background: #27ae60;
+            color: #fff;
+        }
+        .btn-save:hover {
+            background: #219a52;
+        }
+        .btn-logout {
+            background: #555;
+            color: #fff;
+        }
+        .btn-logout:hover {
+            background: #333;
         }
 
-        /* ---------- استجابات (Responsive) ---------- */
-        @media (max-width: 1200px) {
-            .airlines-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
+        #admin-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        #admin-sidebar {
+            width: 220px;
+            background: #2c2c3e;
+            color: #ccc;
+            flex-shrink: 0;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+        #admin-sidebar .nav-item {
+            padding: 12px 18px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+        #admin-sidebar .nav-item:hover,
+        #admin-sidebar .nav-item.active {
+            background: #3a3a52;
+            color: #fff;
+            border-left-color: #3498db;
+        }
+        #admin-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+            background: #f9fafb;
+        }
+        #admin-content .section {
+            display: none;
+        }
+        #admin-content .section.active {
+            display: block;
+        }
+        #admin-content h3 {
+            margin-bottom: 16px;
+            color: #1a1a2e;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 8px;
+        }
+        #admin-content label {
+            display: block;
+            font-weight: 600;
+            margin: 10px 0 4px;
+            color: #333;
+            font-size: 0.85rem;
+        }
+        #admin-content input[type="text"],
+        #admin-content input[type="number"],
+        #admin-content input[type="url"],
+        #admin-content input[type="color"],
+        #admin-content textarea,
+        #admin-content select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 7px;
+            font-size: 0.9rem;
+            transition: border 0.2s;
+            background: #fff;
+        }
+        #admin-content input:focus,
+        #admin-content textarea:focus,
+        #admin-content select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        #admin-content textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        #admin-content input[type="file"] {
+            font-size: 0.85rem;
+        }
+        #admin-content button {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            margin: 4px 2px;
+        }
+        .btn-primary {
+            background: #3498db;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        .btn-danger {
+            background: #e74c3c;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.75rem;
+        }
+        .card-preview {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: 2px dashed #ccc;
+            margin: 6px 0;
+            background: #fff;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .card-preview img {
+            max-width: 85%;
+            max-height: 75%;
+            object-fit: contain;
+        }
+        .airline-list-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: #fff;
+            border-radius: 8px;
+            margin: 6px 0;
+            border: 1px solid #e8e8e8;
+            cursor: grab;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .airline-list-item:active {
+            cursor: grabbing;
+        }
+        .airline-list-item.drag-over {
+            border-color: #3498db;
+            background: #eef7ff;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        .airline-list-item .drag-handle {
+            color: #aaa;
+            font-size: 1.2rem;
+            cursor: grab;
+            padding: 4px;
+        }
+        .airline-list-item .item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .airline-list-item .item-info strong {
+            display: block;
+            font-size: 0.9rem;
+            color: #333;
+        }
+        .airline-list-item .item-info span {
+            font-size: 0.75rem;
+            color: #888;
+        }
+        .airline-list-item .item-actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: #ccc;
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: #fff;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .toggle-switch input:checked+.toggle-slider {
+            background: #27ae60;
+        }
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(20px);
+        }
+        .color-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .color-row label {
+            margin: 0;
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+        .color-row input[type="color"] {
+            width: 44px;
+            height: 34px;
+            padding: 2px;
+            cursor: pointer;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .badge-visible {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-hidden {
+            background: #f8d7da;
+            color: #721c24;
         }
 
-        @media (max-width: 820px) {
-            .airlines-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            .header-title {
-                font-size: 1.2rem;
-            }
-            .header-sub {
-                display: none;
-            }
+        /* Login */
+        #admin-login {
+            position: fixed;
+            inset: 0;
+            z-index: 250;
+            background: #1a1a2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #admin-login.hidden {
+            display: none;
+        }
+        #login-box {
+            background: #fff;
+            border-radius: 14px;
+            padding: 30px;
+            width: 380px;
+            max-width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        #login-box h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1a1a2e;
+        }
+        #login-box input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #d0d0d0;
+            border-radius: 7px;
+            font-size: 0.9rem;
+        }
+        #login-box button {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        #login-error {
+            color: #e74c3c;
+            font-size: 0.8rem;
+            text-align: center;
+            min-height: 20px;
         }
 
-        @media (max-width: 620px) {
-            .airlines-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-            .header {
-                padding: 0.6rem 1rem;
-                border-radius: 20px;
-            }
-            .header-logo {
-                width: 44px;
-                height: 44px;
-            }
-            .header-title {
-                font-size: 1rem;
-            }
-            .modal-box {
-                padding: 1.5rem;
-            }
-            .modal-title {
-                font-size: 1.2rem;
-            }
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 999;
+            background: #333;
+            color: #fff;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        #toast.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #toast.success {
+            background: #27ae60;
+        }
+        #toast.error {
+            background: #e74c3c;
         }
 
-        @media (max-width: 420px) {
-            .airlines-grid {
-                grid-template-columns: 1fr;
-                gap: 0.8rem;
-            }
-            .airline-card {
-                flex-direction: row;
-                gap: 1rem;
-                padding: 0.8rem 1rem;
-                min-height: 80px;
-                justify-content: flex-start;
-            }
-            .logo-wrap {
+        /* Responsive */
+        @media (max-width: 768px) {
+            #admin-sidebar {
                 width: 60px;
-                height: 60px;
-                padding: 6px;
-                margin-bottom: 0;
             }
-            .airline-name {
-                font-size: 0.85rem;
-                text-align: left;
+            #admin-sidebar .nav-item {
+                padding: 10px 8px;
+                font-size: 0.7rem;
+                text-align: center;
             }
-            .airline-name .sub {
-                font-size: 0.65rem;
+            #ps-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
             }
-            .header-title {
-                font-size: 0.9rem;
+            #ps-header {
+                flex-wrap: wrap;
+                padding: 8px 14px;
+                gap: 8px;
             }
-            .modal-box {
-                padding: 1.2rem;
+            #ps-header .titles .arabic-title {
+                font-size: 1.1rem;
             }
-        }
-
-        /* شريط التمرير للنموذج */
-        .modal-box::-webkit-scrollbar {
-            width: 4px;
-        }
-        .modal-box::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .modal-box::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
+            #ps-header .titles .english-title {
+                font-size: 0.75rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="portal-wrapper">
 
-        <!-- ======== الرأس ======== -->
-        <header class="header">
-            <div class="header-logo">
-                <img src="https://eas-eg.com/wp-content/uploads/png-Eas-Logo-Full-resolution-By-Houssam.png-scaled.webp"
-                alt="EAS Logo"
-                onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%231a2a4a%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2220%22 y=%2260%22 font-family=%22sans-serif%22 font-size=%2230%22 fill=%22%23fff%22%3EEAS%3C/text%3E%3C/svg%3E'" />
+    <!-- ========== PASSENGER SCREEN ========== -->
+    <div id="passenger-screen">
+        <div class="bg-overlay"></div>
+        <div id="ps-header">
+            <div class="logo-area">
+                <img id="ps-header-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect fill='%23fff' width='48' height='48' rx='8'/%3E%3Ctext x='24' y='32' text-anchor='middle' font-size='22' font-weight='bold' fill='%23003'%3EEAS%3C/text%3E%3C/svg%3E"
+                alt="Logo">
+                <span class="company-name" id="ps-company-name">EAS Company</span>
             </div>
-            <div class="header-title">EAS Passenger Airlines Portal</div>
-            <div class="header-sub">✦ شركاء النقل</div>
-        </header>
+            <div class="titles">
+                <div class="arabic-title" id="ps-arabic-title">شركة إياس للنقل الجوي</div>
+                <div class="english-title" id="ps-english-title">EAS Air Transport Company</div>
+            </div>
+        </div>
+        <div id="ps-grid-container">
+            <div id="ps-grid"></div>
+        </div>
+        <div id="ps-footer">© 2025 EAS. All rights reserved.</div>
+    </div>
 
-        <!-- ======== شبكة شركات الطيران ======== -->
-        <div class="airlines-grid" id="airlinesGrid"></div>
+    <!-- ========== POPUP OVERLAY ========== -->
+    <div id="popup-overlay">
+        <div id="popup-box">
+            <button id="popup-close" title="Close">&times;</button>
+            <div id="popup-content"></div>
+        </div>
+    </div>
 
-        <!-- ======== نموذج المستندات ======== -->
-        <div class="modal-overlay" id="modalOverlay">
-            <div class="modal-box">
-                <button class="modal-close" id="modalClose" aria-label="إغلاق">&times;</button>
-                <div class="modal-title" id="modalTitle">
-                    <span class="mini-logo" id="modalMiniLogo">
-                        <img src="" alt="" />
-                    </span>
-                    <span id="modalAirlineName">الشركة</span>
+    <!-- ========== ADMIN LOGIN ========== -->
+    <div id="admin-login">
+        <div id="login-box">
+            <h2>🔐 Admin Login</h2>
+            <input type="email" id="login-email" placeholder="Email" autocomplete="email">
+            <input type="password" id="login-password" placeholder="Password" autocomplete="current-password">
+            <p id="login-error"></p>
+            <button class="btn-primary" id="btn-login">Sign In</button>
+            <button style="background:#888;color:#fff;" id="btn-signup">Create Admin Account</button>
+        </div>
+    </div>
+
+    <!-- ========== ADMIN PANEL ========== -->
+    <div id="admin-panel">
+        <div id="admin-header-bar">
+            <h2>⚙️ Administrator Panel</h2>
+            <div style="display:flex;gap:8px;">
+                <button class="btn-save" id="btn-save-all" title="Save all changes">💾 Save All</button>
+                <button class="btn-logout" id="btn-admin-logout">🚪 Logout</button>
+                <button class="btn-close" id="btn-close-admin">✕ Close Panel</button>
+            </div>
+        </div>
+        <div id="admin-body">
+            <div id="admin-sidebar">
+                <div class="nav-item active" data-section="sec-header">🏷️ Header</div>
+                <div class="nav-item" data-section="sec-airlines">✈️ Airlines</div>
+                <div class="nav-item" data-section="sec-layout">📐 Layout</div>
+                <div class="nav-item" data-section="sec-popups">📋 Popup Content</div>
+            </div>
+            <div id="admin-content">
+                <!-- Header Section -->
+                <div class="section active" id="sec-header">
+                    <h3>Header Management</h3>
+                    <label>EAS Logo</label>
+                    <input type="file" id="hdr-logo-upload" accept="image/*">
+                    <img id="hdr-logo-preview" src="" style="max-height:50px;margin:6px 0;display:block;">
+                    <button class="btn-primary btn-sm" id="btn-upload-hdr-logo">Upload Logo</button>
+
+                    <label>Company Name</label>
+                    <input type="text" id="hdr-company-name" placeholder="Company Name">
+
+                    <label>Arabic Title</label>
+                    <input type="text" id="hdr-arabic-title" placeholder="Arabic Title" dir="rtl">
+
+                    <label>English Title</label>
+                    <input type="text" id="hdr-english-title" placeholder="English Title">
+
+                    <label>Airport Background Image</label>
+                    <input type="file" id="hdr-bg-upload" accept="image/*">
+                    <button class="btn-primary btn-sm" id="btn-upload-bg">Upload Background</button>
+
+                    <label>Header Colors</label>
+                    <div class="color-row">
+                        <label>Background:</label>
+                        <input type="color" id="hdr-bg-color" value="#003366">
+                        <label>Text:</label>
+                        <input type="color" id="hdr-text-color" value="#ffffff">
+                    </div>
+
+                    <label>Footer Information</label>
+                    <textarea id="hdr-footer-info" placeholder="Footer text"></textarea>
                 </div>
-                <div class="modal-sub" id="modalSub">اختر مستنداً للاطلاع أو التحميل</div>
-                <div class="doc-list" id="docList">
-                    <!-- سيتم ملؤها بواسطة JavaScript -->
+
+                <!-- Airlines Section -->
+                <div class="section" id="sec-airlines">
+                    <h3>Airline Management</h3>
+                    <button class="btn-primary" id="btn-add-airline">➕ Add New Airline</button>
+                    <p style="font-size:0.75rem;color:#888;margin:4px 0;">Drag & drop to reorder. Changes save automatically.</p>
+                    <div id="airline-list"></div>
+
+                    <!-- Inline Edit Form -->
+                    <div id="airline-edit-form" style="display:none;background:#fff;padding:16px;border-radius:10px;margin-top:12px;border:2px solid #3498db;">
+                        <h4 id="airline-edit-title">Edit Airline</h4>
+                        <input type="hidden" id="edit-airline-id">
+                        <label>Airline Name (Admin reference only - NOT shown to passengers)</label>
+                        <input type="text" id="edit-airline-name" placeholder="Internal reference name">
+                        <label>Country</label>
+                        <input type="text" id="edit-airline-country" placeholder="Country">
+                        <label>Third Language</label>
+                        <input type="text" id="edit-airline-thirdlang" placeholder="e.g., French, German">
+                        <label>Logo</label>
+                        <input type="file" id="edit-airline-logo" accept="image/*">
+                        <img id="edit-airline-logo-preview" src="" style="max-height:50px;display:block;margin:4px 0;">
+                        <button class="btn-primary btn-sm" id="btn-upload-airline-logo">Upload Logo</button>
+                        <label>Card Background Color</label>
+                        <input type="color" id="edit-airline-card-bg" value="#ffffff">
+                        <label>Logo Width (%) inside card</label>
+                        <input type="number" id="edit-airline-logo-width" value="75" min="20" max="98" step="1">
+                        <label>Card Width (px)</label>
+                        <input type="number" id="edit-airline-card-width" value="" min="80" max="500" step="1" placeholder="Inherit from layout">
+                        <label>Card Height (px)</label>
+                        <input type="number" id="edit-airline-card-height" value="" min="60" max="400" step="1" placeholder="Inherit from layout">
+                        <label>Visible on passenger screen</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="edit-airline-visible" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <div style="margin-top:10px;display:flex;gap:8px;">
+                            <button class="btn-primary" id="btn-save-airline-edit">Save Airline</button>
+                            <button class="btn-danger" id="btn-delete-airline">Delete Airline</button>
+                            <button style="background:#888;color:#fff;" id="btn-cancel-airline-edit">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layout Section -->
+                <div class="section" id="sec-layout">
+                    <h3>Layout Control</h3>
+                    <label>Number of Columns</label>
+                    <input type="number" id="layout-columns" value="4" min="1" max="10" step="1">
+                    <label>Number of Rows (visible area)</label>
+                    <input type="number" id="layout-rows" value="3" min="1" max="10" step="1">
+                    <label>Card Spacing (px)</label>
+                    <input type="number" id="layout-card-spacing" value="16" min="4" max="60" step="1">
+                    <label>Default Card Width (px)</label>
+                    <input type="number" id="layout-card-width" value="200" min="80" max="500" step="1">
+                    <label>Default Card Height (px)</label>
+                    <input type="number" id="layout-card-height" value="100" min="60" max="400" step="1">
+                    <label>Border Radius (px)</label>
+                    <input type="number" id="layout-border-radius" value="12" min="0" max="40" step="1">
+                    <label>Shadow Intensity (0=none, 10=strong)</label>
+                    <input type="number" id="layout-shadow" value="4" min="0" max="10" step="1">
+                    <label>Glass Effect</label>
+                    <select id="layout-glass">
+                        <option value="none">None</option>
+                        <option value="rgba(255,255,255,0.25)">Light</option>
+                        <option value="rgba(255,255,255,0.45)">Medium</option>
+                        <option value="rgba(255,255,255,0.65)">Heavy</option>
+                    </select>
+                    <label>Animation Speed</label>
+                    <select id="layout-anim-speed">
+                        <option value="0.15s">Fast</option>
+                        <option value="0.3s" selected>Normal</option>
+                        <option value="0.5s">Slow</option>
+                        <option value="0.8s">Very Slow</option>
+                    </select>
+                    <div style="margin-top:12px;">
+                        <button class="btn-primary" id="btn-apply-layout">Apply Layout</button>
+                    </div>
+                </div>
+
+                <!-- Popup Content Section -->
+                <div class="section" id="sec-popups">
+                    <h3>Popup Content Management</h3>
+                    <label>Select Airline</label>
+                    <select id="popup-airline-select">
+                        <option value="">-- Choose an airline --</option>
+                    </select>
+                    <div id="popup-editor" style="display:none;margin-top:12px;">
+                        <label>Company Description</label>
+                        <textarea id="popup-desc" placeholder="Enter company description..."></textarea>
+                        <label>Important Instructions</label>
+                        <textarea id="popup-instructions" placeholder="Enter important instructions..."></textarea>
+                        <label>PDF Files (Cloudinary URLs, one per line)</label>
+                        <textarea id="popup-pdfs" placeholder="https://res.cloudinary.com/.../file.pdf"></textarea>
+                        <label>Images (Cloudinary URLs, one per line)</label>
+                        <textarea id="popup-images" placeholder="https://res.cloudinary.com/.../image.jpg"></textarea>
+                        <label>Videos (YouTube/Vimeo embed URLs, one per line)</label>
+                        <textarea id="popup-videos" placeholder="https://www.youtube.com/embed/..."></textarea>
+                        <label>Download Buttons (Label | URL, one per line)</label>
+                        <textarea id="popup-downloads" placeholder="Brochure | https://example.com/brochure.pdf&#10;Form | https://example.com/form.pdf"></textarea>
+                        <label>Upload Document to Cloudinary</label>
+                        <input type="file" id="popup-doc-upload" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt">
+                        <button class="btn-primary btn-sm" id="btn-upload-popup-doc">Upload Document</button>
+                        <span id="popup-doc-url" style="font-size:0.75rem;color:#27ae60;display:block;"></span>
+                        <div style="margin-top:10px;">
+                            <button class="btn-primary" id="btn-save-popup">Save Popup Content</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- ======== التذييل ======== -->
-        <footer class="footer">
-            &copy; 2020 Egypt Aviation Services. All rights reserved.<br />
-            <strong>Excellence is our standard, not the exception.</strong>
-        </footer>
     </div>
 
+    <!-- Toast -->
+    <div id="toast"></div>
+
     <script>
-        (function() {
-            'use strict';
+        // ============ FIREBASE INIT ============
+        const firebaseConfig = {
+            apiKey: "AIzaSyAjqtxNw7ia29lxdYF_NdsC5Q2G-uVZpKI",
+            authDomain: "eas-eg.firebaseapp.com",
+            projectId: "eas-eg",
+            storageBucket: "eas-eg.firebasestorage.app",
+            messagingSenderId: "254601190180",
+            appId: "1:254601190180:web:c18fa5fa28dcade5b1f1b1",
+            measurementId: "G-TS80N7M49D"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
 
-            // ---------- بيانات شركات الطيران ----------
-            // تم استخدام عناوين شعارات تم التحقق منها (تعمل 200)
-            const airlines = [{
-                id: 'british',
-                name: 'BRITISH AIRWAYS',
-                sub: '',
-                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/British_Airways_logo.svg/200px-British_Airways_logo.svg.png',
-                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/British_Airways_logo.svg/200px-British_Airways_logo.svg.png'
-            }, {
-                id: 'airfrance',
-                name: 'AIRFRANCE',
-                sub: '',
-                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Air_France_Logo.svg/200px-Air_France_Logo.svg.png',
-                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Air_France_Logo.svg/200px-Air_France_Logo.svg.png'
-            }, {
-                id: 'qatar',
-                name: 'QATAR',
-                sub: '',
-                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Qatar_Airways_Logo.svg/200px-Qatar_Airways_Logo.svg.png',
-                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Qatar_Airways_Logo.svg/200px-Qatar_Airways_Logo.svg.png'
-            }, {
-                id: 'aeroflot',
-                name: 'AEROFLOT',
-                sub: 'Russian Airlines',
-                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Aeroflot_logo.svg/200px-Aeroflot_logo.svg.png',
-                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Aeroflot_logo.svg/200px-Aeroflot_logo.svg.png'
-            }, {
-                id: 'q2bookking',
-                name: 'Q2bookking.com',
-                sub: '',
-                logo: 'https://via.placeholder.com/200x200/1a2a4a/ffffff?text=Q2',
-                fallback: 'https://via.placeholder.com/200x200/1a2a4a/ffffff?text=Q2'
-            }, {
-                id: 'lufthansa',
-                name: 'Lufthansa',
-                sub: '',
-                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Lufthansa_Logo.svg/200px-Lufthansa_Logo.svg.png',
-                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Lufthansa_Logo.svg/200px-Lufthansa_Logo.svg.png'
-            }, {
-                id: 'swiss',
-                name: 'SWISS',
-                sub: '',
-                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Swiss_International_Air_Lines_logo.svg/200px-Swiss_International_Air_Lines_logo.svg.png',
-                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Swiss_International_Air_Lines_logo.svg/200px-Swiss_International_Air_Lines_logo.svg.png'
-            }, {
-                id: 'austrian',
-                name: 'Austrian',
-                sub: '',
-                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Austrian_Airlines_logo.svg/200px-Austrian_Airlines_logo.svg.png',
-                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Austrian_Airlines_logo.svg/200px-Austrian_Airlines_logo.svg.png'
-            }, {
-                id: 'condor',
-                name: 'condor',
-                sub: '',
-                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Condor_Logo.svg/200px-Condor_Logo.svg.png',
-                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Condor_Logo.svg/200px-Condor_Logo.svg.png'
-            }, {
-                id: 'china_eastern',
-                name: '中国东方航空',
-                sub: 'CHINA EASTERN',
-                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/China_Eastern_Airlines_logo.svg/200px-China_Eastern_Airlines_logo.svg.png',
-                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/China_Eastern_Airlines_logo.svg/200px-China_Eastern_Airlines_logo.svg.png'
-            }, {
-                id: 'air_china',
-                name: 'AIR CHINA',
-                sub: '中国国际航空公司',
-                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Air_China_logo.svg/200px-Air_China_logo.svg.png',
-                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Air_China_logo.svg/200px-Air_China_logo.svg.png'
-            }, {
-                id: 'tarco',
-                name: 'Tarco Aviation',
-                sub: '',
-                logo: 'https://tarcoaviation.com/assets/images/logo.png',
-                fallback: 'https://tarcoaviation.com/assets/images/logo.png'
-            }];
+        // ============ CLOUDINARY CONFIG ============
+        const CLOUD_NAME = 'deaevfmvm';
+        const CLOUD_API_KEY = '873157495374219';
+        const UPLOAD_PRESET = 'ml_default';
 
-            // ---------- بيانات المستندات الوهمية (لكل شركة) ----------
-            // في التطبيق الحقيقي تأتي من Firebase
-            const documentsDB = {
-                british: [
-                    { name: 'دليل المسافر (PDF)', url: '#' },
-                    { name: 'سياسة الأمتعة', url: '#' },
-                    { name: 'جدول الرحلات', url: '#' }
-                ],
-                airfrance: [
-                    { name: 'كتيب الخدمات', url: '#' },
-                    { name: 'معلومات الوجبات', url: '#' }
-                ],
-                qatar: [
-                    { name: 'برنامج المسافر الدائم', url: '#' },
-                    { name: 'دليل المطارات', url: '#' }
-                ],
-                aeroflot: [
-                    { name: 'تعليمات السفر', url: '#' },
-                    { name: 'سياسة الإلغاء', url: '#' }
-                ],
-                q2bookking: [
-                    { name: 'دليل الحجز', url: '#' },
-                    { name: 'الأسئلة الشائعة', url: '#' }
-                ],
-                lufthansa: [
-                    { name: 'تحديثات الرحلات', url: '#' },
-                    { name: 'خدمة العملاء', url: '#' }
-                ],
-                swiss: [
-                    { name: 'دليل السويس', url: '#' },
-                    { name: 'برنامج الولاء', url: '#' }
-                ],
-                austrian: [
-                    { name: 'الموسيقى والترفيه', url: '#' },
-                    { name: 'دليل المقاعد', url: '#' }
-                ],
-                condor: [
-                    { name: 'عروض السفر', url: '#' },
-                    { name: 'سياسة الحيوانات الأليفة', url: '#' }
-                ],
-                china_eastern: [
-                    { name: 'دليل الركاب (中文)', url: '#' },
-                    { name: 'الرحلات الداخلية', url: '#' }
-                ],
-                air_china: [
-                    { name: 'دليل المسافر (中文)', url: '#' },
-                    { name: 'برنامج الفضاء', url: '#' }
-                ],
-                tarco: [
-                    { name: 'دليل الشحن', url: '#' },
-                    { name: 'حجوزات المجموعات', url: '#' }
-                ]
-            };
+        async function uploadToCloudinary(file, folder = 'eas-assets', resourceType = 'image') {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', UPLOAD_PRESET);
+            formData.append('api_key', CLOUD_API_KEY);
+            formData.append('folder', folder);
+            const endpoint =
+                `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType === 'raw' ? 'raw' : 'image'}/upload`;
+            const response = await fetch(endpoint, { method: 'POST', body: formData });
+            if (!response.ok) throw new Error('Upload failed: ' + response.statusText);
+            const data = await response.json();
+            return data.secure_url;
+        }
 
-            // ---------- مراجع DOM ----------
-            const grid = document.getElementById('airlinesGrid');
-            const overlay = document.getElementById('modalOverlay');
-            const closeBtn = document.getElementById('modalClose');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalAirlineName = document.getElementById('modalAirlineName');
-            const modalMiniLogo = document.getElementById('modalMiniLogo').querySelector('img');
-            const modalSub = document.getElementById('modalSub');
-            const docList = document.getElementById('docList');
+        // ============ GLOBAL STATE ============
+        let allAirlines = [];
+        let settings = {};
+        let currentUser = null;
+        let selectedAirlineId = null;
+        let unsubscribeSettings = null;
+        let unsubscribeAirlines = null;
 
-            // ---------- بناء الشبكة ----------
-            function buildGrid() {
-                grid.innerHTML = '';
-                airlines.forEach((airline, index) => {
-                    const card = document.createElement('div');
-                    card.className = 'airline-card';
-                    card.dataset.index = index;
-                    card.dataset.id = airline.id;
+        // ============ DOM REFS ============
+        const $passengerScreen = document.getElementById('passenger-screen');
+        const $psGrid = document.getElementById('ps-grid');
+        const $psHeaderLogo = document.getElementById('ps-header-logo');
+        const $psCompanyName = document.getElementById('ps-company-name');
+        const $psArabicTitle = document.getElementById('ps-arabic-title');
+        const $psEnglishTitle = document.getElementById('ps-english-title');
+        const $psFooter = document.getElementById('ps-footer');
+        const $popupOverlay = document.getElementById('popup-overlay');
+        const $popupContent = document.getElementById('popup-content');
+        const $popupClose = document.getElementById('popup-close');
+        const $adminPanel = document.getElementById('admin-panel');
+        const $adminLogin = document.getElementById('admin-login');
+        const $toast = document.getElementById('toast');
+        const $loginError = document.getElementById('login-error');
 
-                    const wrap = document.createElement('div');
-                    wrap.className = 'logo-wrap';
-                    const img = document.createElement('img');
-                    img.src = airline.logo;
-                    img.alt = airline.name;
-                    img.loading = 'lazy';
-                    img.onerror = function() {
-                        this.src = airline.fallback || 'https://via.placeholder.com/200x200/1a2a4a/ffffff?text=Logo';
-                    };
-                    wrap.appendChild(img);
+        // ============ TOAST ============
+        let toastTimer;
 
-                    const nameDiv = document.createElement('div');
-                    nameDiv.className = 'airline-name';
-                    nameDiv.textContent = airline.name;
-                    if (airline.sub) {
-                        const subSpan = document.createElement('span');
-                        subSpan.className = 'sub';
-                        subSpan.textContent = airline.sub;
-                        nameDiv.appendChild(subSpan);
-                    }
+        function showToast(msg, type = '') {
+            clearTimeout(toastTimer);
+            $toast.textContent = msg;
+            $toast.className = 'show ' + type;
+            toastTimer = setTimeout(() => { $toast.className = ''; }, 3000);
+        }
 
-                    card.appendChild(wrap);
-                    card.appendChild(nameDiv);
-                    grid.appendChild(card);
-
-                    // فتح النموذج عند النقر
-                    card.addEventListener('click', function(e) {
-                        const id = this.dataset.id;
-                        openModal(id);
-                    });
-                });
+        // ============ AUTH ============
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+            if (user) {
+                $adminLogin.classList.add('hidden');
+                initRealtimeListeners();
+            } else {
+                $adminLogin.classList.remove('hidden');
+                $adminPanel.classList.remove('active');
+                $passengerScreen.classList.remove('blurred');
+                if (unsubscribeSettings) unsubscribeSettings();
+                if (unsubscribeAirlines) unsubscribeAirlines();
             }
+        });
 
-            // ---------- فتح النموذج ----------
-            function openModal(airlineId) {
-                // البحث عن بيانات الشركة
-                const airline = airlines.find(a => a.id === airlineId);
-                if (!airline) return;
-
-                // تحديث العنوان والشعار
-                modalAirlineName.textContent = airline.name + (airline.sub ? ' ' + airline.sub : '');
-                modalMiniLogo.src = airline.logo;
-                modalMiniLogo.onerror = function() {
-                    this.src = airline.fallback || 'https://via.placeholder.com/200x200/1a2a4a/ffffff?text=Logo';
-                };
-                // تحديث النص الفرعي
-                modalSub.textContent = 'اختر مستنداً للاطلاع أو التحميل';
-
-                // جلب المستندات (محاكاة onSnapshot)
-                const docs = documentsDB[airlineId] || [];
-                renderDocs(docs);
-
-                // إظهار النموذج
-                overlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
+        document.getElementById('btn-login').addEventListener('click', async () => {
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-password').value;
+            $loginError.textContent = '';
+            if (!email || !pass) { $loginError.textContent = 'Please fill all fields.'; return; }
+            try {
+                await auth.signInWithEmailAndPassword(email, pass);
+                showToast('Welcome back!', 'success');
+            } catch (e) {
+                $loginError.textContent = e.message;
             }
+        });
 
-            // ---------- عرض المستندات ----------
-            function renderDocs(docs) {
-                docList.innerHTML = '';
-                if (!docs || docs.length === 0) {
-                    docList.innerHTML = '<div class="doc-empty">لا توجد مستندات متاحة حالياً</div>';
+        document.getElementById('btn-signup').addEventListener('click', async () => {
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-password').value;
+            $loginError.textContent = '';
+            if (!email || !pass) { $loginError.textContent = 'Please fill all fields.'; return; }
+            if (pass.length < 6) { $loginError.textContent = 'Password must be at least 6 characters.'; return; }
+            try {
+                await auth.createUserWithEmailAndPassword(email, pass);
+                showToast('Admin account created!', 'success');
+            } catch (e) {
+                $loginError.textContent = e.message;
+            }
+        });
+
+        document.getElementById('btn-admin-logout').addEventListener('click', () => auth.signOut());
+        document.getElementById('btn-close-admin').addEventListener('click', () => {
+            $adminPanel.classList.remove('active');
+            $passengerScreen.classList.remove('blurred');
+        });
+
+        // Keyboard shortcut to toggle admin panel
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+                e.preventDefault();
+                if (!currentUser) {
+                    showToast('Please login first.', 'error');
+                    $adminLogin.classList.remove('hidden');
                     return;
                 }
-                docs.forEach(doc => {
-                    const item = document.createElement('div');
-                    item.className = 'doc-item';
+                const isActive = $adminPanel.classList.contains('active');
+                if (isActive) {
+                    $adminPanel.classList.remove('active');
+                    $passengerScreen.classList.remove('blurred');
+                } else {
+                    $adminPanel.classList.add('active');
+                    $passengerScreen.classList.add('blurred');
+                    refreshAdminPanel();
+                }
+            }
+        });
 
-                    const nameSpan = document.createElement('span');
-                    nameSpan.className = 'doc-name';
-                    nameSpan.innerHTML = `<span class="icon">📄</span> ${doc.name}`;
+        // ============ REALTIME LISTENERS ============
+        function initRealtimeListeners() {
+            if (unsubscribeSettings) unsubscribeSettings();
+            if (unsubscribeAirlines) unsubscribeAirlines();
 
-                    const downloadBtn = document.createElement('a');
-                    downloadBtn.className = 'doc-download';
-                    downloadBtn.href = doc.url || '#';
-                    downloadBtn.target = '_blank';
-                    downloadBtn.textContent = 'تحميل';
-                    if (doc.url === '#') {
-                        downloadBtn.style.opacity = '0.5';
-                        downloadBtn.style.pointerEvents = 'none';
-                        downloadBtn.textContent = 'قريباً';
-                    }
+            unsubscribeSettings = db.collection('settings').doc('global').onSnapshot(doc => {
+                if (doc.exists) {
+                    settings = doc.data();
+                } else {
+                    settings = getDefaultSettings();
+                    db.collection('settings').doc('global').set(settings, { merge: true });
+                }
+                applySettingsToPassengerScreen();
+                populateAdminFields();
+            }, err => {
+                console.error('Settings listener error:', err);
+                settings = getDefaultSettings();
+                applySettingsToPassengerScreen();
+            });
 
-                    item.appendChild(nameSpan);
-                    item.appendChild(downloadBtn);
-                    docList.appendChild(item);
+            unsubscribeAirlines = db.collection('airlines').orderBy('order', 'asc').onSnapshot(snapshot => {
+                allAirlines = [];
+                snapshot.forEach(doc => {
+                    allAirlines.push({ id: doc.id, ...doc.data() });
                 });
+                renderPassengerGrid();
+                renderAirlineList();
+                populatePopupAirlineSelect();
+            }, err => {
+                console.error('Airlines listener error:', err);
+                allAirlines = [];
+                renderPassengerGrid();
+            });
+        }
+
+        function getDefaultSettings() {
+            return {
+                headerLogo: '',
+                companyName: 'EAS Company',
+                arabicTitle: 'شركة إياس للنقل الجوي',
+                englishTitle: 'EAS Air Transport Company',
+                backgroundImage: '',
+                headerBgColor: 'rgba(0,51,102,0.95)',
+                headerTextColor: '#ffffff',
+                footerInfo: '© 2025 EAS. All rights reserved.',
+                columns: 4,
+                rows: 3,
+                cardSpacing: 16,
+                cardWidth: 200,
+                cardHeight: 100,
+                borderRadius: 12,
+                shadow: 4,
+                glassEffect: 'none',
+                animationSpeed: '0.3s',
+            };
+        }
+
+        function applySettingsToPassengerScreen() {
+            const s = settings;
+            const root = document.documentElement.style;
+            root.setProperty('--header-bg', s.headerBgColor || 'rgba(0,51,102,0.95)');
+            root.setProperty('--header-text', s.headerTextColor || '#ffffff');
+            root.setProperty('--columns', s.columns || 4);
+            root.setProperty('--rows', s.rows || 3);
+            root.setProperty('--card-spacing', (s.cardSpacing || 16) + 'px');
+            root.setProperty('--card-width', (s.cardWidth || 200) + 'px');
+            root.setProperty('--card-height', (s.cardHeight || 100) + 'px');
+            root.setProperty('--card-border-radius', (s.borderRadius || 12) + 'px');
+            const shadowVal = s.shadow || 4;
+            root.setProperty('--card-shadow',
+                `0 ${shadowVal}px ${shadowVal*5}px rgba(0,0,0,${0.05 + shadowVal*0.025})`);
+            const glass = s.glassEffect || 'none';
+            root.setProperty('--card-glass', glass === 'none' ? 'transparent' : glass);
+            root.setProperty('--anim-speed', s.animationSpeed || '0.3s');
+
+            // Header
+            if (s.headerLogo) $psHeaderLogo.src = s.headerLogo;
+            $psCompanyName.textContent = s.companyName || 'EAS Company';
+            $psArabicTitle.textContent = s.arabicTitle || '';
+            $psEnglishTitle.textContent = s.englishTitle || '';
+            $psFooter.textContent = s.footerInfo || '';
+
+            // Background
+            if (s.backgroundImage) {
+                $passengerScreen.style.backgroundImage = `url(${s.backgroundImage})`;
+            } else {
+                $passengerScreen.style.backgroundImage = '';
             }
 
-            // ---------- إغلاق النموذج ----------
-            function closeModal() {
-                overlay.classList.remove('active');
-                document.body.style.overflow = '';
+            // Update grid CSS
+            $psGrid.style.gridTemplateColumns = `repeat(${s.columns || 4}, ${s.cardWidth || 200}px)`;
+            $psGrid.style.gridAutoRows = `${s.cardHeight || 100}px`;
+            $psGrid.style.gap = `${s.cardSpacing || 16}px`;
+            $psGrid.style.maxHeight = `calc(${s.rows || 3} * (${s.cardHeight || 100}px + ${s.cardSpacing || 16}px))`;
+        }
+
+        function renderPassengerGrid() {
+            $psGrid.innerHTML = '';
+            const visibleAirlines = allAirlines.filter(a => a.visible !== false);
+            visibleAirlines.forEach(airline => {
+                const card = document.createElement('div');
+                card.className = 'airline-card';
+                card.style.backgroundColor = airline.cardBgColor || '#ffffff';
+                if (airline.cardWidth) card.style.width = airline.cardWidth + 'px';
+                if (airline.cardHeight) card.style.height = airline.cardHeight + 'px';
+                card.addEventListener('click', () => openPopup(airline));
+                const img = document.createElement('img');
+                img.src = airline.logoUrl || '';
+                img.alt = '';
+                img.style.maxWidth = (airline.logoWidth || 75) + '%';
+                img.onerror = () => { img.src =
+                        'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="60" viewBox="0 0 100 60"%3E%3Crect fill="%23eee" width="100" height="60" rx="6"/%3E%3Ctext x="50" y="35" text-anchor="middle" font-size="11" fill="%23999"%3ENo Logo%3C/text%3E%3C/svg%3E'; };
+                card.appendChild(img);
+                $psGrid.appendChild(card);
+            });
+            if (visibleAirlines.length === 0) {
+                $psGrid.innerHTML =
+                    '<div style="text-align:center;color:#aaa;padding:40px;grid-column:1/-1;">No airlines available</div>';
             }
+        }
 
-            // ---------- أحداث الإغلاق ----------
-            closeBtn.addEventListener('click', closeModal);
-            overlay.addEventListener('click', function(e) {
-                if (e.target === overlay) closeModal();
+        // ============ POPUP ============
+        function openPopup(airline) {
+            const pc = airline.popupContent || {};
+            let html = '';
+            // Description
+            html += '<div class="popup-section"><h3>📝 Company Description</h3>';
+            html += pc.description ? `<p>${escapeHTML(pc.description)}</p>` :
+                '<p class="placeholder-text">No description available yet.</p>';
+            html += '</div>';
+            // Instructions
+            html += '<div class="popup-section"><h3>⚠️ Important Instructions</h3>';
+            html += pc.instructions ? `<p>${escapeHTML(pc.instructions)}</p>` :
+                '<p class="placeholder-text">No instructions available yet.</p>';
+            html += '</div>';
+            // PDFs
+            html += '<div class="popup-section"><h3>📄 PDF Files</h3>';
+            if (pc.pdfs && pc.pdfs.length > 0) {
+                html += '<ul>';
+                pc.pdfs.forEach(url => {
+                    html +=
+                        `<li><a href="${escapeHTML(url)}" target="_blank" class="download-btn">📥 Download PDF</a></li>`;
+                });
+                html += '</ul>';
+            } else { html += '<p class="placeholder-text">No PDF files yet.</p>'; }
+            html += '</div>';
+            // Images
+            html += '<div class="popup-section"><h3>🖼️ Images</h3>';
+            if (pc.images && pc.images.length > 0) {
+                pc.images.forEach(url => {
+                    html +=
+                        `<img src="${escapeHTML(url)}" alt="Image" style="max-width:100%;border-radius:8px;margin:4px 0;">`;
+                });
+            } else { html += '<p class="placeholder-text">No images yet.</p>'; }
+            html += '</div>';
+            // Videos
+            html += '<div class="popup-section"><h3>🎬 Videos</h3>';
+            if (pc.videos && pc.videos.length > 0) {
+                pc.videos.forEach(url => {
+                    html +=
+                        `<iframe src="${escapeHTML(url)}" width="100%" height="315" style="border-radius:8px;margin:4px 0;" frameborder="0" allowfullscreen></iframe>`;
+                });
+            } else { html += '<p class="placeholder-text">No videos yet.</p>'; }
+            html += '</div>';
+            // Downloads
+            html += '<div class="popup-section"><h3>⬇️ Downloads</h3>';
+            if (pc.downloadButtons && pc.downloadButtons.length > 0) {
+                pc.downloadButtons.forEach(btn => {
+                    html +=
+                        `<a href="${escapeHTML(btn.url)}" target="_blank" class="download-btn">${escapeHTML(btn.label)}</a>`;
+                });
+            } else { html += '<p class="placeholder-text">No download links yet.</p>'; }
+            html += '</div>';
+
+            $popupContent.innerHTML = html;
+            $popupOverlay.classList.add('active');
+        }
+
+        function escapeHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        $popupClose.addEventListener('click', () => {
+            $popupOverlay.classList.remove('active');
+        });
+        $popupOverlay.addEventListener('click', (e) => {
+            if (e.target === $popupOverlay) $popupOverlay.classList.remove('active');
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && $popupOverlay.classList.contains('active')) {
+                $popupOverlay.classList.remove('active');
+            }
+        });
+
+        // ============ ADMIN PANEL - POPULATE FIELDS ============
+        function populateAdminFields() {
+            const s = settings;
+            document.getElementById('hdr-company-name').value = s.companyName || '';
+            document.getElementById('hdr-arabic-title').value = s.arabicTitle || '';
+            document.getElementById('hdr-english-title').value = s.englishTitle || '';
+            document.getElementById('hdr-bg-color').value = s.headerBgColor || 'rgba(0,51,102,0.95)';
+            document.getElementById('hdr-text-color').value = s.headerTextColor || '#ffffff';
+            document.getElementById('hdr-footer-info').value = s.footerInfo || '';
+            document.getElementById('hdr-logo-preview').src = s.headerLogo || '';
+            document.getElementById('layout-columns').value = s.columns || 4;
+            document.getElementById('layout-rows').value = s.rows || 3;
+            document.getElementById('layout-card-spacing').value = s.cardSpacing || 16;
+            document.getElementById('layout-card-width').value = s.cardWidth || 200;
+            document.getElementById('layout-card-height').value = s.cardHeight || 100;
+            document.getElementById('layout-border-radius').value = s.borderRadius || 12;
+            document.getElementById('layout-shadow').value = s.shadow || 4;
+            document.getElementById('layout-glass').value = s.glassEffect || 'none';
+            document.getElementById('layout-anim-speed').value = s.animationSpeed || '0.3s';
+        }
+
+        function refreshAdminPanel() {
+            populateAdminFields();
+            renderAirlineList();
+            populatePopupAirlineSelect();
+        }
+
+        // ============ HEADER UPLOADS ============
+        document.getElementById('btn-upload-hdr-logo').addEventListener('click', async () => {
+            const file = document.getElementById('hdr-logo-upload').files[0];
+            if (!file) { showToast('Please select an image file.', 'error'); return; }
+            try {
+                const url = await uploadToCloudinary(file, 'eas-assets/header', 'image');
+                document.getElementById('hdr-logo-preview').src = url;
+                await db.collection('settings').doc('global').update({ headerLogo: url });
+                showToast('Logo uploaded!', 'success');
+            } catch (e) {
+                showToast('Upload failed: ' + e.message, 'error');
+            }
+        });
+
+        document.getElementById('btn-upload-bg').addEventListener('click', async () => {
+            const file = document.getElementById('hdr-bg-upload').files[0];
+            if (!file) { showToast('Please select an image file.', 'error'); return; }
+            try {
+                const url = await uploadToCloudinary(file, 'eas-assets/backgrounds', 'image');
+                await db.collection('settings').doc('global').update({ backgroundImage: url });
+                showToast('Background uploaded!', 'success');
+            } catch (e) {
+                showToast('Upload failed: ' + e.message, 'error');
+            }
+        });
+
+        // ============ SAVE ALL SETTINGS ============
+        document.getElementById('btn-save-all').addEventListener('click', async () => {
+            try {
+                const updates = {
+                    companyName: document.getElementById('hdr-company-name').value,
+                    arabicTitle: document.getElementById('hdr-arabic-title').value,
+                    englishTitle: document.getElementById('hdr-english-title').value,
+                    headerBgColor: document.getElementById('hdr-bg-color').value,
+                    headerTextColor: document.getElementById('hdr-text-color').value,
+                    footerInfo: document.getElementById('hdr-footer-info').value,
+                    columns: parseInt(document.getElementById('layout-columns').value) || 4,
+                    rows: parseInt(document.getElementById('layout-rows').value) || 3,
+                    cardSpacing: parseInt(document.getElementById('layout-card-spacing').value) || 16,
+                    cardWidth: parseInt(document.getElementById('layout-card-width').value) || 200,
+                    cardHeight: parseInt(document.getElementById('layout-card-height').value) || 100,
+                    borderRadius: parseInt(document.getElementById('layout-border-radius').value) || 12,
+                    shadow: parseInt(document.getElementById('layout-shadow').value) || 4,
+                    glassEffect: document.getElementById('layout-glass').value,
+                    animationSpeed: document.getElementById('layout-anim-speed').value,
+                };
+                await db.collection('settings').doc('global').update(updates);
+                showToast('All settings saved! ✅', 'success');
+            } catch (e) {
+                showToast('Save failed: ' + e.message, 'error');
+            }
+        });
+
+        document.getElementById('btn-apply-layout').addEventListener('click', async () => {
+            try {
+                const updates = {
+                    columns: parseInt(document.getElementById('layout-columns').value) || 4,
+                    rows: parseInt(document.getElementById('layout-rows').value) || 3,
+                    cardSpacing: parseInt(document.getElementById('layout-card-spacing').value) || 16,
+                    cardWidth: parseInt(document.getElementById('layout-card-width').value) || 200,
+                    cardHeight: parseInt(document.getElementById('layout-card-height').value) || 100,
+                    borderRadius: parseInt(document.getElementById('layout-border-radius').value) || 12,
+                    shadow: parseInt(document.getElementById('layout-shadow').value) || 4,
+                    glassEffect: document.getElementById('layout-glass').value,
+                    animationSpeed: document.getElementById('layout-anim-speed').value,
+                };
+                await db.collection('settings').doc('global').update(updates);
+                showToast('Layout applied!', 'success');
+            } catch (e) {
+                showToast('Failed: ' + e.message, 'error');
+            }
+        });
+
+        // ============ AIRLINE LIST RENDERING ============
+        function renderAirlineList() {
+            const list = document.getElementById('airline-list');
+            list.innerHTML = '';
+            allAirlines.forEach((airline, index) => {
+                const item = document.createElement('div');
+                item.className = 'airline-list-item';
+                item.draggable = true;
+                item.dataset.airlineId = airline.id;
+                item.dataset.index = index;
+                item.innerHTML = `
+                    <span class="drag-handle">☰</span>
+                    <div class="item-info">
+                        <strong>${escapeHTML(airline.name || 'Unnamed Airline')}</strong>
+                        <span>${escapeHTML(airline.country || '')} | Order: ${airline.order ?? index}</span>
+                        <span class="status-badge ${airline.visible !== false ? 'badge-visible' : 'badge-hidden'}">${airline.visible !== false ? 'Visible' : 'Hidden'}</span>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-primary btn-sm btn-edit-airline" data-id="${airline.id}">✏️ Edit</button>
+                    </div>
+                `;
+                // Drag events
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragover', handleDragOver);
+                item.addEventListener('dragleave', handleDragLeave);
+                item.addEventListener('drop', handleDrop);
+                item.addEventListener('dragend', handleDragEnd);
+                list.appendChild(item);
             });
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') closeModal();
+
+            // Edit buttons
+            list.querySelectorAll('.btn-edit-airline').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.dataset.id;
+                    openAirlineEditor(id);
+                });
             });
+        }
 
-            // ---------- تهيئة الصفحة ----------
-            buildGrid();
+        // ============ DRAG & DROP ============
+        let draggedItem = null;
+        let draggedIndex = null;
 
-            // (اختياري) محاكاة اشتراك Firebase – في التطبيق الحقيقي يتم استخدام onSnapshot
-            // لكننا نكتفي بالبيانات الثابتة أعلاه.
+        function handleDragStart(e) {
+            draggedItem = this;
+            draggedIndex = parseInt(this.dataset.index);
+            this.style.opacity = '0.5';
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', this.dataset.airlineId);
+        }
 
-            console.log('EAS Portal ready — جميع الشعارات والمستندات معروضة.');
-        })();
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            this.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            if (draggedItem === this) return;
+            const targetIndex = parseInt(this.dataset.index);
+            reorderAirlines(draggedIndex, targetIndex);
+        }
+
+        function handleDragEnd(e) {
+            this.style.opacity = '1';
+            document.querySelectorAll('.airline-list-item').forEach(el => el.classList.remove('drag-over'));
+            draggedItem = null;
+            draggedIndex = null;
+        }
+
+        async function reorderAirlines(fromIndex, toIndex) {
+            const airlines = [...allAirlines];
+            const [moved] = airlines.splice(fromIndex, 1);
+            airlines.splice(toIndex, 0, moved);
+            const batch = db.batch();
+            airlines.forEach((a, i) => {
+                batch.update(db.collection('airlines').doc(a.id), { order: i });
+            });
+            try {
+                await batch.commit();
+                showToast('Order updated!', 'success');
+            } catch (e) {
+                showToast('Reorder failed: ' + e.message, 'error');
+            }
+        }
+
+        // ============ AIRLINE EDITOR ============
+        function openAirlineEditor(id) {
+            const airline = allAirlines.find(a => a.id === id);
+            if (!airline) return;
+            selectedAirlineId = id;
+            document.getElementById('airline-edit-form').style.display = 'block';
+            document.getElementById('airline-edit-title').textContent = 'Edit: ' + (airline.name || 'Airline');
+            document.getElementById('edit-airline-id').value = id;
+            document.getElementById('edit-airline-name').value = airline.name || '';
+            document.getElementById('edit-airline-country').value = airline.country || '';
+            document.getElementById('edit-airline-thirdlang').value = airline.thirdLanguage || '';
+            document.getElementById('edit-airline-card-bg').value = airline.cardBgColor || '#ffffff';
+            document.getElementById('edit-airline-logo-width').value = airline.logoWidth || 75;
+            document.getElementById('edit-airline-card-width').value = airline.cardWidth || '';
+            document.getElementById('edit-airline-card-height').value = airline.cardHeight || '';
+            document.getElementById('edit-airline-visible').checked = airline.visible !== false;
+            document.getElementById('edit-airline-logo-preview').src = airline.logoUrl || '';
+            document.getElementById('airline-edit-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.getElementById('btn-cancel-airline-edit').addEventListener('click', () => {
+            document.getElementById('airline-edit-form').style.display = 'none';
+            selectedAirlineId = null;
+        });
+
+        document.getElementById('btn-add-airline').addEventListener('click', async () => {
+            const maxOrder = allAirlines.reduce((max, a) => Math.max(max, a.order ?? 0), -1);
+            const newAirline = {
+                name: 'New Airline',
+                country: '',
+                thirdLanguage: '',
+                logoUrl: '',
+                cardBgColor: '#ffffff',
+                logoWidth: 75,
+                cardWidth: null,
+                cardHeight: null,
+                visible: true,
+                order: maxOrder + 1,
+                popupContent: {
+                    description: '',
+                    instructions: '',
+                    pdfs: [],
+                    images: [],
+                    videos: [],
+                    downloadButtons: [],
+                },
+                documents: [],
+            };
+            try {
+                const docRef = await db.collection('airlines').add(newAirline);
+                showToast('Airline added!', 'success');
+                setTimeout(() => openAirlineEditor(docRef.id), 400);
+            } catch (e) {
+                showToast('Failed to add: ' + e.message, 'error');
+            }
+        });
+
+        document.getElementById('btn-save-airline-edit').addEventListener('click', async () => {
+            if (!selectedAirlineId) return;
+            try {
+                const updates = {
+                    name: document.getElementById('edit-airline-name').value,
+                    country: document.getElementById('edit-airline-country').value,
+                    thirdLanguage: document.getElementById('edit-airline-thirdlang').value,
+                    cardBgColor: document.getElementById('edit-airline-card-bg').value,
+                    logoWidth: parseInt(document.getElementById('edit-airline-logo-width').value) || 75,
+                    cardWidth: parseInt(document.getElementById('edit-airline-card-width').value) || null,
+                    cardHeight: parseInt(document.getElementById('edit-airline-card-height').value) || null,
+                    visible: document.getElementById('edit-airline-visible').checked,
+                };
+                if (!updates.cardWidth) updates.cardWidth = null;
+                if (!updates.cardHeight) updates.cardHeight = null;
+                await db.collection('airlines').doc(selectedAirlineId).update(updates);
+                showToast('Airline saved!', 'success');
+                document.getElementById('airline-edit-form').style.display = 'none';
+                selectedAirlineId = null;
+            } catch (e) {
+                showToast('Save failed: ' + e.message, 'error');
+            }
+        });
+
+        document.getElementById('btn-delete-airline').addEventListener('click', async () => {
+            if (!selectedAirlineId) return;
+            if (!confirm('Are you sure you want to delete this airline? This cannot be undone.')) return;
+            try {
+                await db.collection('airlines').doc(selectedAirlineId).delete();
+                showToast('Airline deleted.', 'success');
+                document.getElementById('airline-edit-form').style.display = 'none';
+                selectedAirlineId = null;
+            } catch (e) {
+                showToast('Delete failed: ' + e.message, 'error');
+            }
+        });
+
+        document.getElementById('btn-upload-airline-logo').addEventListener('click', async () => {
+            const file = document.getElementById('edit-airline-logo').files[0];
+            if (!file) { showToast('Please select an image.', 'error'); return; }
+            if (!selectedAirlineId) { showToast('Save the airline first.', 'error'); return; }
+            try {
+                const url = await uploadToCloudinary(file, 'eas-assets/airline-logos', 'image');
+                document.getElementById('edit-airline-logo-preview').src = url;
+                await db.collection('airlines').doc(selectedAirlineId).update({ logoUrl: url });
+                showToast('Logo uploaded!', 'success');
+            } catch (e) {
+                showToast('Upload failed: ' + e.message, 'error');
+            }
+        });
+
+        // ============ POPUP CONTENT EDITOR ============
+        function populatePopupAirlineSelect() {
+            const select = document.getElementById('popup-airline-select');
+            const currentVal = select.value;
+            select.innerHTML = '<option value="">-- Choose an airline --</option>';
+            allAirlines.forEach(a => {
+                select.innerHTML +=
+                    `<option value="${a.id}" ${a.id === currentVal ? 'selected' : ''}>${escapeHTML(a.name || 'Unnamed')}</option>`;
+            });
+        }
+
+        document.getElementById('popup-airline-select').addEventListener('change', function() {
+            const id = this.value;
+            const editor = document.getElementById('popup-editor');
+            if (!id) { editor.style.display = 'none'; return; }
+            editor.style.display = 'block';
+            const airline = allAirlines.find(a => a.id === id);
+            if (!airline) return;
+            const pc = airline.popupContent || {};
+            document.getElementById('popup-desc').value = pc.description || '';
+            document.getElementById('popup-instructions').value = pc.instructions || '';
+            document.getElementById('popup-pdfs').value = (pc.pdfs || []).join('\n');
+            document.getElementById('popup-images').value = (pc.images || []).join('\n');
+            document.getElementById('popup-videos').value = (pc.videos || []).join('\n');
+            document.getElementById('popup-downloads').value = (pc.downloadButtons || []).map(b => b.label + ' | ' + b
+                .url).join('\n');
+            document.getElementById('popup-doc-url').textContent = '';
+        });
+
+        document.getElementById('btn-save-popup').addEventListener('click', async () => {
+            const id = document.getElementById('popup-airline-select').value;
+            if (!id) { showToast('Please select an airline.', 'error'); return; }
+            try {
+                const popupContent = {
+                    description: document.getElementById('popup-desc').value,
+                    instructions: document.getElementById('popup-instructions').value,
+                    pdfs: document.getElementById('popup-pdfs').value.split('\n').map(s => s.trim()).filter(Boolean),
+                    images: document.getElementById('popup-images').value.split('\n').map(s => s.trim()).filter(
+                        Boolean),
+                    videos: document.getElementById('popup-videos').value.split('\n').map(s => s.trim()).filter(
+                        Boolean),
+                    downloadButtons: document.getElementById('popup-downloads').value.split('\n').map(s => s.trim())
+                        .filter(Boolean).map(line => {
+                            const parts = line.split('|');
+                            return { label: (parts[0] || 'Download').trim(), url: (parts[1] || '').trim() };
+                        }).filter(b => b.url),
+                };
+                await db.collection('airlines').doc(id).update({ popupContent });
+                showToast('Popup content saved!', 'success');
+            } catch (e) {
+                showToast('Save failed: ' + e.message, 'error');
+            }
+        });
+
+        document.getElementById('btn-upload-popup-doc').addEventListener('click', async () => {
+            const file = document.getElementById('popup-doc-upload').files[0];
+            if (!file) { showToast('Please select a file.', 'error'); return; }
+            try {
+                const url = await uploadToCloudinary(file, 'eas-assets/documents', 'raw');
+                document.getElementById('popup-doc-url').textContent = 'Uploaded: ' + url;
+                showToast('Document uploaded! Copy the URL to the appropriate field above.', 'success');
+            } catch (e) {
+                showToast('Upload failed: ' + e.message, 'error');
+            }
+        });
+
+        // ============ ADMIN SIDEBAR NAVIGATION ============
+        document.querySelectorAll('#admin-sidebar .nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('#admin-sidebar .nav-item').forEach(n => n.classList
+                    .remove('active'));
+                this.classList.add('active');
+                const sectionId = this.dataset.section;
+                document.querySelectorAll('#admin-content .section').forEach(s => s.classList
+                    .remove('active'));
+                const section = document.getElementById(sectionId);
+                if (section) section.classList.add('active');
+                if (sectionId === 'sec-popups') populatePopupAirlineSelect();
+                if (sectionId === 'sec-airlines') renderAirlineList();
+            });
+        });
+
+        // ============ INITIAL SETUP ============
+        async function ensureSettingsDoc() {
+            try {
+                const doc = await db.collection('settings').doc('global').get();
+                if (!doc.exists) {
+                    await db.collection('settings').doc('global').set(getDefaultSettings());
+                    console.log('Default settings created.');
+                }
+            } catch (e) {
+                console.error('Settings init error:', e);
+            }
+        }
+        ensureSettingsDoc();
+
+        // Apply defaults immediately for passenger screen
+        settings = getDefaultSettings();
+        applySettingsToPassengerScreen();
+        renderPassengerGrid();
+
+        console.log('✅ EAS Admin Panel Ready');
+        console.log('🔑 Press Ctrl+Shift+A to toggle Admin Panel (after login)');
+        console.log('📋 Passenger screen is always visible');
+        console.log('☁️ Cloudinary:', CLOUD_NAME);
+        console.log('🔥 Firebase:', firebaseConfig.projectId);
     </script>
 </body>
 </html>
