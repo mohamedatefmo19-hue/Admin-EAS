@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAS | Egyptian Aviation Services - Passenger Information Display</title>
+    <style>
+        :root {
+            --bg-base: #0a0f1a;
+            --bg-overlay: rgba(10, 15, 26, 0.75);
+            --surface: rgba(255, 255, 255, 0.06);
+            --surface-hover: rgba(255, 255, 255, 0.12);
+            --surface-glass: rgba(255, 255, 255, 0.07);
+            --border-glass: rgba(255, 255, 255, 0.14);
+            --text-primary: #f0f0f0;
+            --text-secondary: #c0c4cc;
+            --text-muted: #8a8f99;
+            --accent-gold: #c8a44e;
+            --accent-gold-bright: #e0c06c;
+            --accent-blue: #1a5f8a;
+            --accent-navy: #0d2b45;
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow-glow: 0 0 40px rgba(200, 164, 78, 0.15);
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-sm: 10px;
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-modal: 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+            --font-en: 'Segoe UI', 'Inter', 'Helvetica Neue', sans-serif;
+            --font-ar: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+            --header-height: 72px;
+            --footer-height: 44px;
+        }
+
+        body.light-mode {
+            --bg-base: #e8ecf2;
+            --bg-overlay: rgba(220, 225, 235, 0.7);
+            --surface: rgba(255, 255, 255, 0.55);
+            --surface-hover: rgba(255, 255, 255, 0.78);
+            --surface-glass: rgba(255, 255, 255, 0.5);
+            --border-glass: rgba(180, 190, 205, 0.45);
+            --text-primary: #1a1d24;
+            --text-secondary: #3a3f48;
+            --text-muted: #5c6069;
+            --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.1);
+            --shadow-glow: 0 0 40px rgba(200, 164, 78, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: var(--font-en);
+            background: var(--bg-base);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: background var(--transition-smooth), color var(--transition-smooth);
+        }
+
+        body.rtl {
+            direction: rtl;
+            font-family: var(--font-ar);
+        }
+
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #060a14;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            opacity: 1;
+            visibility: visible;
+        }
+        #loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        #loading-screen .loader-logo {
+            width: 90px;
+            height: 90px;
+            margin-bottom: 24px;
+            animation: loaderPulse 1.6s ease-in-out infinite;
+        }
+        @keyframes loaderPulse {
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.85;
+            }
+            50% {
+                transform: scale(1.08);
+                opacity: 1;
+            }
+        }
+        #loading-screen .loader-bar-track {
+            width: 180px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        #loading-screen .loader-bar-fill {
+            height: 100%;
+            background: var(--accent-gold);
+            border-radius: 3px;
+            animation: loaderBar 1.8s ease-in-out infinite;
+        }
+        @keyframes loaderBar {
+            0% {
+                width: 0%;
+                margin-left: 0;
+            }
+            50% {
+                width: 70%;
+                margin-left: 15%;
+            }
+            100% {
+                width: 0%;
+                margin-left: 100%;
+            }
+        }
+        #loading-screen .loader-text {
+            margin-top: 18px;
+            font-size: 13px;
+            letter-spacing: 0.25em;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+        }
+
+        /* Background Layer */
+        #bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        #bg-layer .bg-gradient {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 30% 20%, rgba(30, 60, 100, 0.5) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 60%, rgba(20, 40, 70, 0.45) 0%, transparent 55%),
+                radial-gradient(ellipse at 50% 80%, rgba(15, 25, 45, 0.6) 0%, transparent 50%),
+                linear-gradient(180deg, #0a101f 0%, #0d1528 30%, #0b1322 60%, #0a0f1c 100%);
+            transition: background var(--transition-smooth);
+        }
+        body.light-mode #bg-layer .bg-gradient {
+            background: radial-gradient(ellipse at 30% 20%, rgba(180, 200, 225, 0.5) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 60%, rgba(160, 185, 210, 0.4) 0%, transparent 55%),
+                radial-gradient(ellipse at 50% 80%, rgba(200, 210, 225, 0.5) 0%, transparent 50%),
+                linear-gradient(180deg, #dce3ec 0%, #e2e8f0 30%, #d8dfe8 60%, #d5dce6 100%);
+        }
+        #bg-layer .bg-particles {
+            position: absolute;
+            inset: 0;
+        }
+        #bg-layer .bg-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(200, 164, 78, 0.18);
+            animation: floatParticle 12s ease-in-out infinite;
+            filter: blur(30px);
+        }
+        @keyframes floatParticle {
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(60px, -40px) scale(1.3);
+            }
+            50% {
+                transform: translate(-30px, -80px) scale(0.8);
+            }
+            75% {
+                transform: translate(-50px, -20px) scale(1.2);
+            }
+        }
+        #bg-layer .bg-grid-lines {
+            position: absolute;
+            inset: 0;
+            opacity: 0.04;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+        }
+
+        /* Main Container */
+        #main-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            animation: fadeInMain 0.8s ease forwards;
+            animation-delay: 1.6s;
+        }
+        @keyframes fadeInMain {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Header */
+        #header {
+            position: relative;
+            z-index: 100;
+            flex-shrink: 0;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            background: var(--bg-overlay);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glass);
+            transition: all var(--transition-smooth);
+            gap: 16px;
+        }
+        #header .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-shrink: 0;
+        }
+        #header .brand svg {
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+        }
+        #header .brand .brand-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        #header .brand .brand-ar {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            letter-spacing: 0.02em;
+            line-height: 1.2;
+        }
+        #header .brand .brand-en {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+        #header .header-center {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+        #header .header-date {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+        }
+        #header .header-clock {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 0.04em;
+            font-variant-numeric: tabular-nums;
+            font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+            min-width: 100px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        #header .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border-glass);
+            background: var(--surface);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            transition: all var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .btn-icon:hover {
+            background: var(--surface-hover);
+            border-color: var(--accent-gold);
+            box-shadow: var(--shadow-glow);
+            transform: translateY(-1px);
+        }
+        .btn-icon:active {
+            transform: scale(0.94);
+            transition: transform 0.1s ease;
+        }
+        .btn-lang {
+            width: auto;
+            padding: 0 16px;
+            border-radius: 22px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(200, 164, 78, 0.4);
+            transform: scale(0);
+            animation: rippleEffect 0.6s ease-out forwards;
+            pointer-events: none;
+        }
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Content Area */
+        #content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 32px 12px;
+            overflow: hidden;
+            position: relative;
+            min-height: 0;
+        }
+
+        /* Hero */
+        #hero {
+            text-align: center;
+            margin-bottom: 16px;
+            flex-shrink: 0;
+            animation: slideUpHero 0.7s ease forwards;
+            animation-delay: 1.8s;
+            opacity: 0;
+        }
+        @keyframes slideUpHero {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        #hero .hero-ar {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--accent-gold);
+            letter-spacing: 0.04em;
+            line-height: 1.2;
+            text-shadow: 0 2px 20px rgba(200, 164, 78, 0.3);
+        }
+        #hero .hero-en {
+            font-size: 22px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+        body.rtl #hero .hero-ar {
+            font-size: 44px;
+        }
+        body.rtl #hero .hero-en {
+            font-size: 20px;
+        }
+
+        /* Search */
+        #search-wrap {
+            flex-shrink: 0;
+            margin-bottom: 14px;
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            animation: slideUpHero 0.7s ease forwards;
+            animation-delay: 1.9s;
+            opacity: 0;
+        }
+        #search-input {
+            width: 100%;
+            padding: 13px 20px 13px 48px;
+            border-radius: 30px;
+            border: 1.5px solid var(--border-glass);
+            background: var(--surface-glass);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
+            letter-spacing: 0.03em;
+            outline: none;
+            transition: all var(--transition-fast);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        #search-input::placeholder {
+            color: var(--text-muted);
+        }
+        #search-input:focus {
+            border-color: var(--accent-gold);
+            box-shadow: var(--shadow-glow), 0 0 0 4px rgba(200, 164, 78, 0.08);
+            background: var(--surface-hover);
+        }
+        #search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+            font-size: 17px;
+            transition: color var(--transition-fast);
+        }
+        #search-input:focus~#search-icon {
+            color: var(--accent-gold);
+        }
+        body.rtl #search-input {
+            padding: 13px 48px 13px 20px;
+            text-align: right;
+        }
+        body.rtl #search-icon {
+            left: auto;
+            right: 18px;
+        }
+
+        /* Airline Grid */
+        #airline-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 14px;
+            width: 100%;
+            max-width: 1100px;
+            flex: 1;
+            min-height: 0;
+            align-content: center;
+            animation: slideUpHero 0.7s ease forwards;
+            animation-delay: 2s;
+            opacity: 0;
+        }
+        .airline-card {
+            background: var(--surface-glass);
+            border: 1.5px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: var(--shadow-card);
+            min-height: 90px;
+            aspect-ratio: auto;
+            padding: 16px;
+        }
+        .airline-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 50%, rgba(255, 255, 255, 0.03) 100%);
+            pointer-events: none;
+            border-radius: inherit;
+            transition: opacity var(--transition-smooth);
+            opacity: 0.5;
+        }
+        .airline-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), var(--shadow-glow);
+            border-color: rgba(200, 164, 78, 0.5);
+            background: var(--surface-hover);
+            z-index: 5;
+        }
+        .airline-card:hover::before {
+            opacity: 1;
+        }
+        .airline-card:active {
+            transform: scale(0.95);
+            transition: transform 0.12s ease;
+        }
+        .airline-card .card-logo {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+        .airline-card .card-logo svg {
+            max-width: 85%;
+            max-height: 65%;
+            width: auto;
+            height: auto;
+            transition: transform var(--transition-smooth);
+        }
+        .airline-card:hover .card-logo svg {
+            transform: scale(1.06);
+        }
+        .airline-card.hidden-by-search {
+            opacity: 0.15;
+            transform: scale(0.9);
+            pointer-events: none;
+            filter: grayscale(0.5);
+            transition: all 0.4s ease;
+        }
+        .airline-card.match-highlight {
+            border-color: var(--accent-gold);
+            box-shadow: var(--shadow-glow), 0 0 30px rgba(200, 164, 78, 0.25);
+        }
+
+        /* Footer */
+        #footer {
+            flex-shrink: 0;
+            height: var(--footer-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 20px;
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+            border-top: 1px solid var(--border-glass);
+            background: var(--bg-overlay);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all var(--transition-smooth);
+        }
+        #footer svg {
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+        }
+
+        /* Modal */
+        #modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-modal);
+            padding: 30px;
+        }
+        #modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        #modal-panel {
+            background: var(--surface-glass);
+            border: 1.5px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 36px 32px 28px;
+            max-width: 580px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            transform: translateY(30px) scale(0.94);
+            transition: all var(--transition-modal);
+            text-align: center;
+        }
+        #modal-overlay.active #modal-panel {
+            transform: translateY(0) scale(1);
+        }
+        #modal-panel .modal-logo {
+            width: 120px;
+            height: 70px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #modal-panel .modal-logo svg {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        #modal-panel .modal-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            letter-spacing: 0.03em;
+        }
+        #modal-panel .modal-country {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+        }
+        #modal-panel .modal-alliance {
+            font-size: 13px;
+            color: var(--accent-gold);
+            font-weight: 500;
+            margin-bottom: 16px;
+            letter-spacing: 0.04em;
+        }
+        #modal-panel .modal-third-lang {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 18px;
+            background: rgba(200, 164, 78, 0.15);
+            color: var(--accent-gold);
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            cursor: pointer;
+            border: 1px solid rgba(200, 164, 78, 0.3);
+            transition: all var(--transition-fast);
+            letter-spacing: 0.03em;
+        }
+        #modal-panel .modal-third-lang:hover {
+            background: rgba(200, 164, 78, 0.25);
+            box-shadow: var(--shadow-glow);
+        }
+        #modal-panel .modal-files {
+            text-align: left;
+            margin-top: 8px;
+            border-top: 1px solid var(--border-glass);
+            padding-top: 16px;
+        }
+        body.rtl #modal-panel .modal-files {
+            text-align: right;
+        }
+        #modal-panel .modal-files h4 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        #modal-panel .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            margin-bottom: 8px;
+            gap: 10px;
+            flex-wrap: wrap;
+            transition: background var(--transition-fast);
+        }
+        #modal-panel .file-item:hover {
+            background: var(--surface-hover);
+        }
+        #modal-panel .file-item .file-name {
+            font-size: 13px;
+            color: var(--text-primary);
+            font-weight: 500;
+            flex: 1;
+            min-width: 120px;
+        }
+        #modal-panel .file-item .file-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .btn-sm {
+            padding: 7px 14px;
+            border-radius: 18px;
+            border: 1px solid var(--border-glass);
+            background: var(--surface);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+        .btn-sm:hover {
+            background: var(--accent-gold);
+            color: #0a0f1a;
+            border-color: var(--accent-gold);
+            font-weight: 600;
+        }
+        .btn-sm:active {
+            transform: scale(0.93);
+        }
+        #modal-close {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border-glass);
+            background: var(--surface);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            z-index: 2;
+        }
+        #modal-close:hover {
+            background: #e04040;
+            color: #fff;
+            border-color: #e04040;
+        }
+        body.rtl #modal-close {
+            right: auto;
+            left: 14px;
+        }
+
+        /* Scrollbar */
+        #modal-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+        #modal-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #modal-panel::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            #airline-grid {
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(4, 1fr);
+                gap: 10px;
+            }
+            .airline-card {
+                min-height: 65px;
+                padding: 10px;
+                border-radius: var(--radius-md);
+            }
+            #hero .hero-ar {
+                font-size: 28px;
+            }
+            #hero .hero-en {
+                font-size: 16px;
+            }
+            #header {
+                padding: 0 14px;
+                gap: 8px;
+            }
+            #header .header-clock {
+                font-size: 20px;
+                min-width: 70px;
+            }
+            #header .brand .brand-ar {
+                font-size: 12px;
+            }
+            #header .brand .brand-en {
+                font-size: 9px;
+            }
+            #header .brand svg {
+                width: 32px;
+                height: 32px;
+            }
+            #content-area {
+                padding: 10px 12px 6px;
+            }
+            #modal-panel {
+                padding: 24px 16px 20px;
+                max-width: 95vw;
+            }
+        }
+        @media (max-width: 500px) {
+            #airline-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(6, 1fr);
+                gap: 8px;
+            }
+            .airline-card {
+                min-height: 55px;
+                padding: 8px;
+                border-radius: var(--radius-sm);
+            }
+            #hero .hero-ar {
+                font-size: 22px;
+            }
+            #hero .hero-en {
+                font-size: 13px;
+            }
+            #header .header-clock {
+                font-size: 16px;
+                min-width: 55px;
+            }
+            #header .header-date {
+                font-size: 10px;
+            }
+            #header .brand .brand-ar {
+                font-size: 10px;
+            }
+            #header .brand .brand-en {
+                font-size: 7px;
+            }
+            #header {
+                padding: 0 8px;
+                gap: 4px;
+            }
+            .btn-lang {
+                padding: 0 10px;
+                font-size: 10px;
+            }
+            .btn-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <svg class="loader-logo" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="easGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#c8a44e"/>
+                    <stop offset="100%" stop-color="#e0c06c"/>
+                </linearGradient>
+            </defs>
+            <circle cx="45" cy="45" r="42" fill="none" stroke="url(#easGrad)" stroke-width="2.5" opacity="0.6"/>
+            <path d="M28 55 L38 28 L45 48 L52 28 L62 55 L55 40 L45 62 L35 40 Z" fill="url(#easGrad)" opacity="0.9"/>
+            <text x="45" y="76" text-anchor="middle" fill="#c8a44e" font-size="10" font-weight="700" letter-spacing="0.3em" font-family="sans-serif">EAS</text>
+        </svg>
+        <div class="loader-bar-track"><div class="loader-bar-fill"></div></div>
+        <div class="loader-text">Initializing Systems</div>
+    </div>
+
+    <!-- Background -->
+    <div id="bg-layer">
+        <div class="bg-gradient"></div>
+        <div class="bg-grid-lines"></div>
+        <div class="bg-particles">
+            <div class="bg-particle" style="width:180px;height:180px;top:10%;left:15%;animation-delay:0s;"></div>
+            <div class="bg-particle" style="width:140px;height:140px;top:55%;left:70%;animation-delay:-4s;"></div>
+            <div class="bg-particle" style="width:200px;height:200px;top:30%;left:45%;animation-delay:-8s;"></div>
+            <div class="bg-particle" style="width:120px;height:120px;top:70%;left:25%;animation-delay:-2s;"></div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="main-container">
+        <!-- Header -->
+        <header id="header">
+            <div class="brand">
+                <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                    <defs><linearGradient id="easGrad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#c8a44e"/><stop offset="100%" stop-color="#e0c06c"/></linearGradient></defs>
+                    <circle cx="25" cy="25" r="23" fill="none" stroke="url(#easGrad2)" stroke-width="2"/>
+                    <path d="M15 31 L21 15 L25 27 L29 15 L35 31 L31 22 L25 35 L19 22 Z" fill="url(#easGrad2)"/>
+                    <text x="25" y="43" text-anchor="middle" fill="#c8a44e" font-size="6.5" font-weight="700" letter-spacing="0.25em" font-family="sans-serif">EAS</text>
+                </svg>
+                <div class="brand-text">
+                    <span class="brand-ar">خدمات الطيران المصرية</span>
+                    <span class="brand-en">Egyptian Aviation Services</span>
+                </div>
+            </div>
+            <div class="header-center">
+                <span class="header-date" id="header-date"></span>
+                <span class="header-clock" id="header-clock"></span>
+            </div>
+            <div class="header-actions">
+                <button class="btn-icon btn-lang" id="btn-lang-switch" title="Switch Language" aria-label="Language Switcher">
+                    <span id="lang-indicator">AR / EN</span>
+                </button>
+                <button class="btn-icon" id="btn-theme" title="Toggle Dark/Light Mode" aria-label="Theme Toggle">
+                    <span id="theme-icon">☀️</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div id="content-area">
+            <div id="hero">
+                <div class="hero-ar">شركات الطيران</div>
+                <div class="hero-en">Operating Airlines</div>
+            </div>
+            <div id="search-wrap">
+                <input type="text" id="search-input" placeholder="Search airlines...">
+                <span id="search-icon">🔍</span>
+            </div>
+            <div id="airline-grid"></div>
+        </div>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="#c8a44e" stroke-width="1.5"/><path d="M8 14 L10 8 L12 12 L14 8 L16 14 L14 11 L12 16 L10 11 Z" fill="#c8a44e"/></svg>
+            <span>© 2024 Egyptian Aviation Services</span>
+        </footer>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal-overlay">
+        <div id="modal-panel">
+            <button id="modal-close" aria-label="Close">✕</button>
+            <div class="modal-logo" id="modal-logo"></div>
+            <div class="modal-name" id="modal-name"></div>
+            <div class="modal-country" id="modal-country"></div>
+            <div class="modal-alliance" id="modal-alliance"></div>
+            <div class="modal-third-lang" id="modal-third-lang-btn"></div>
+            <div class="modal-files" id="modal-files"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // === AIRLINE DATA ===
+            const airlines = [{
+                id: 'british-airways',
+                name: 'British Airways',
+                nameAr: 'الخطوط الجوية البريطانية',
+                country: 'United Kingdom',
+                countryAr: 'المملكة المتحدة',
+                alliance: 'Oneworld',
+                thirdLang: 'English',
+                thirdLangCode: 'en',
+                thirdLangNative: 'English',
+                color: '#1a3058',
+                accentColor: '#c41230',
+                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#1a3058"/><path d="M30 25 L55 25 L55 55 L30 55 Z" fill="#c41230" opacity="0.9"/><path d="M38 25 L38 55 M46 25 L46 55" stroke="#fff" stroke-width="2.5"/><text x="70" y="48" fill="#fff" font-size="18" font-weight="700" letter-spacing="0.06em" font-family="sans-serif">BRITISH AIRWAYS</text></svg>`,
+                files: [
+                    { name: 'Flight Schedule 2024.pdf', nameAr: 'جدول الرحلات 2024.pdf' },
+                    { name: 'Safety Protocol Document.pdf', nameAr: 'وثيقة بروتوكول السلامة.pdf' },
+                    { name: 'Partnership Agreement.pdf', nameAr: 'اتفاقية الشراكة.pdf' }
+                ]
+            }, {
+                id: 'air-france',
+                name: 'Air France',
+                nameAr: 'الخطوط الجوية الفرنسية',
+                country: 'France',
+                countryAr: 'فرنسا',
+                alliance: 'SkyTeam',
+                thirdLang: 'Français',
+                thirdLangCode: 'fr',
+                thirdLangNative: 'Français',
+                color: '#002157',
+                accentColor: '#ed1c24',
+                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#fff"/><rect x="0" y="0" width="8" height="80" fill="#ed1c24"/><rect x="0" y="0" width="200" height="8" fill="#002157"/><text x="30" y="50" fill="#002157" font-size="20" font-weight="700" letter-spacing="0.08em" font-family="sans-serif">AIR FRANCE</text><rect x="30" y="56" width="140" height="3" fill="#ed1c24"/></svg>`,
+                files: [
+                    { name: 'Horaires des vols 2024.pdf', nameAr: 'جدول الرحلات 2024.pdf' },
+                    { name: 'Protocole de sécurité.pdf', nameAr: 'بروتوكول السلامة.pdf' }
+                ]
+            }, {
+                id: 'qatar-airways',
+                name: 'Qatar Airways',
+                nameAr: 'الخطوط الجوية القطرية',
+                country: 'Qatar',
+                countryAr: 'قطر',
+                alliance: 'Oneworld',
+                thirdLang: 'العربية',
+                thirdLangCode: 'ar',
+                thirdLangNative: 'العربية',
+                color: '#5c1a2a',
+                accentColor: '#c4a35a',
+                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#5c1a2a"/><ellipse cx="40" cy="40" rx="20" ry="18" fill="none" stroke="#c4a35a" stroke-width="3"/><text x="70" y="48" fill="#c4a35a" font-size="17" font-weight="700" letter-spacing="0.06em" font-family="sans-serif">QATAR AIRWAYS</text></svg>`,
+                files: [
+                    { name: 'جدول الرحلات 2024.pdf', nameAr: 'جدول الرحلات 2024.pdf' },
+                    { name: 'بروتوكول السلامة.pdf', nameAr: 'بروتوكول السلامة.pdf' }
+                ]
+            }, {
+                id: 'aeroflot',
+                name: 'Aeroflot',
+                nameAr: 'إيروفلوت',
+                country: 'Russia',
+                countryAr: 'روسيا',
+                alliance: 'SkyTeam (suspended)',
+                thirdLang: 'Русский',
+                thirdLangCode: 'ru',
+                thirdLangNative: 'Русский',
+                color: '#0039a6',
+                accentColor: '#d52b1e',
+                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#0039a6"/><path d="M35 20 L65 40 L35 60" fill="none" stroke="#d52b1e" stroke-width="4"/><text x="80" y="48" fill="#fff" font-size="18" font-weight="700" letter-spacing="0.08em" font-family="sans-serif">AEROFLOT</text></svg>`,
+                files: [
+                    { name: 'Расписание рейсов 2024.pdf', nameAr: 'جدول الرحلات 2024.pdf' },
+                    { name: 'Протокол безопасности.pdf', nameAr: 'بروتوكول السلامة.pdf' }
+                ]
+            }, {
+                id: 'sichuan-airlines',
+                name: 'Sichuan Airlines',
+                nameAr: 'خطوط سيتشوان الجوية',
+                country: 'China',
+                countryAr: 'الصين',
+                alliance: 'None',
+                thirdLang: '中文',
+                thirdLangCode: 'zh',
+                thirdLangNative: '中文',
+                color: '#d4212b',
+                accentColor: '#ffcc00',
+                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#d4212b"/><circle cx="40" cy="40" r="16" fill="none" stroke="#ffcc00" stroke-width="3"/><text x="68" y="48" fill="#ffcc00" font-size="15" font-weight="700" letter-spacing="0.05em" font-family="sans-serif">SICHUAN AIRLINES</text></svg>`,
+                files: [
+                    { name: '航班时刻表 2024.pdf', nameAr: 'جدول الرحلات 2024.pdf' },
+                    { name: '安全协议.pdf', nameAr: 'بروتوكول السلامة.pdf' }
+                ]
+            }, {
+                id: 'tarco-aviation',
+                name: 'Tarco Aviation',
+                nameAr: 'تاركو للطيران',
+                country: 'Sudan',
+                countryAr: 'السودان',
+                alliance: 'None',
+                thirdLang: 'العربية',
+                thirdLangCode: 'ar',
+                thirdLangNative: 'العربية',
+                color: '#1b5e20',
+                accentColor: '#ffab00',
+                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#1b5e20"/><path d="M30 30 L50 20 L50 60 L30 50 Z" fill="#ffab00" opacity="0.8"/><text x="65" y="48" fill="#fff" font-size="16" font-weight="700" letter-spacing="0.06em" font-family="sans-serif">TARCO AVIATION</text></svg>`,
+                files: [
+                    { name: 'جدول الرحلات 2024.pdf', nameAr: 'جدول الرحلات 2024.pdf' },
+                    { name: 'بروتوكول السلامة.pdf', nameAr: 'بروتوكول السلامة.pdf' }
+                ]
+            }, {
+                id: 'lufthansa',
+                name: 'Lufthansa',
+                nameAr: 'لوفتهانزا',
+                country: 'Germany',
+                countryAr: 'ألمانيا',
+                alliance: 'Star Alliance',
+                thirdLang: 'Deutsch',
+                thirdLangCode: 'de',
+                thirdLangNative: 'Deutsch',
+                color: '#0a1e3d',
+                accentColor: '#ffcc00',
+                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#0a1e3d"/><circle cx="38" cy="40" r="18" fill="none" stroke="#ffcc00" stroke-width="3.5"/><text x="68" y="48" fill="#ffcc00" font-size="18" font-weight="700" letter-spacing="0.07em" font-family="sans-serif">LUFTHANSA</text></svg>`,
+                files: [
+                    { name: 'Flugplan 2024.pdf', nameAr: 'جدول الرحلات 2024.pdf' },
+                    { name: 'Sicherheitsprotokoll.pdf', nameAr: 'بروتوكول السلامة.pdf' }
+                ]
+            }, {
+                id: 'swiss',
+                name: 'Swiss International Air Lines',
+                nameAr: 'الخطوط الجوية السويسرية',
+                country: 'Switzerland',
+                countryAr: 'سويسرا',
+                alliance: 'Star Alliance',
+                thirdLang: 'Deutsch',
+                thirdLangCode: 'de',
+                thirdLangNative: 'Deutsch',
+                color: '#d50000',
+                accentColor: '#ffffff',
+                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#d50000"/><rect x="30" y="28" width="18" height="24" fill="#fff" rx="2"/><rect x="52" y="28" width="18" height="24" fill="#fff" rx="2"/><text x="82" y="50" fill="#fff" font-size="16" font-weight="700" letter-spacing="0.06em" font-family="sans-serif">SWISS</text></svg>`,
+                files: [
+                    { name: 'Flugplan 2024.pdf', nameAr: 'جدول الرحلات 2024.pdf' },
+                    { name: 'Sicherheitsprotokoll.pdf', nameAr: 'بروتوكول السلامة.pdf' }
+                ]
+            }, {
+                id: 'austrian-airlines',
+                name: 'Austrian Airlines',
+                nameAr: 'الخطوط الجوية النمساوية',
+                country: 'Austria',
+                countryAr: 'النمسا',
+                alliance: 'Star Alliance',
+                thirdLang: 'Deutsch',
+                thirdLangCode: 'de',
+                thirdLangNative: 'Deutsch',
+                color: '#e60000',
+                accentColor: '#ffffff',
+                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#e60000"/><path d="M32 30 L48 40 L32 50" fill="none" stroke="#fff" stroke-width="4"/><text x="62" y="48" fill="#fff" font-size="15" font-weight="700" letter-spacing="0.06em" font-family="sans-serif">AUSTRIAN</text></svg>`,
+                files: [
+                    { name: 'Flugplan 2024.pdf', nameAr: 'جدول الرحلات 2024.pdf' },
+                    { name: 'Sicherheitsprotokoll.pdf', nameAr: 'بروتوكول السلامة.pdf' }
+                ]
+            }, {
+                id: 'condor',
+                name: 'Condor',
+                nameAr: 'كوندور',
+                country: 'Germany',
+                countryAr: 'ألمانيا',
+                alliance: 'None',
+                thirdLang: 'Deutsch',
+                thirdLangCode: 'de',
+                thirdLangNative: 'Deutsch',
+                color: '#003d73',
+                accentColor: '#f7a600',
+                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#003d73"/><circle cx="38" cy="40" r="16" fill="#f7a600"/><text x="66" y="48" fill="#fff" font-size="17" font-weight="700" letter-spacing="0.07em" font-family="sans-serif">CONDOR</text></svg>`,
+                files: [
+                    { name: 'Flugplan 2024.pdf', nameAr: 'جدول الرحلات 2024.pdf' },
+                    { name: 'Sicherheitsprotokoll.pdf', nameAr: 'بروتوكول السلامة.pdf' }
+                ]
+            }, {
+                id: 'china-eastern',
+                name: 'China Eastern Airlines',
+                nameAr: 'خطوط شرق الصين الجوية',
+                country: 'China',
+                countryAr: 'الصين',
+                alliance: 'SkyTeam',
+                thirdLang: '中文',
+                thirdLangCode: 'zh',
+                thirdLangNative: '中文',
+                color: '#1a3c6e',
+                accentColor: '#c41230',
+                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#1a3c6e"/><path d="M28 25 L48 40 L28 55" fill="none" stroke="#c41230" stroke-width="4"/><text x="60" y="48" fill="#fff" font-size="14" font-weight="700" letter-spacing="0.05em" font-family="sans-serif">CHINA EASTERN</text></svg>`,
+                files: [
+                    { name: '航班时刻表 2024.pdf', nameAr: 'جدول الرحلات 2024.pdf' },
+                    { name: '安全协议.pdf', nameAr: 'بروتوكول السلامة.pdf' }
+                ]
+            }, {
+                id: 'air-china',
+                name: 'Air China',
+                nameAr: 'طيران الصين',
+                country: 'China',
+                countryAr: 'الصين',
+                alliance: 'Star Alliance',
+                thirdLang: '中文',
+                thirdLangCode: 'zh',
+                thirdLangNative: '中文',
+                color: '#c41230',
+                accentColor: '#ffcc00',
+                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#c41230"/><path d="M30 35 L55 40 L30 45" fill="none" stroke="#ffcc00" stroke-width="4"/><text x="68" y="48" fill="#fff" font-size="17" font-weight="700" letter-spacing="0.07em" font-family="sans-serif">AIR CHINA</text></svg>`,
+                files: [
+                    { name: '航班时刻表 2024.pdf', nameAr: 'جدول الرحلات 2024.pdf' },
+                    { name: '安全协议.pdf', nameAr: 'بروتوكول السلامة.pdf' }
+                ]
+            }];
+
+            // === STATE ===
+            let currentLang = 'en'; // 'en' | 'ar'
+            let isDarkMode = true;
+            let selectedAirline = null;
+
+            // === DOM REFS ===
+            const loadingScreen = document.getElementById('loading-screen');
+            const mainContainer = document.getElementById('main-container');
+            const airlineGrid = document.getElementById('airline-grid');
+            const searchInput = document.getElementById('search-input');
+            const headerDate = document.getElementById('header-date');
+            const headerClock = document.getElementById('header-clock');
+            const btnLangSwitch = document.getElementById('btn-lang-switch');
+            const langIndicator = document.getElementById('lang-indicator');
+            const btnTheme = document.getElementById('btn-theme');
+            const themeIcon = document.getElementById('theme-icon');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const modalPanel = document.getElementById('modal-panel');
+            const modalLogo = document.getElementById('modal-logo');
+            const modalName = document.getElementById('modal-name');
+            const modalCountry = document.getElementById('modal-country');
+            const modalAlliance = document.getElementById('modal-alliance');
+            const modalThirdLangBtn = document.getElementById('modal-third-lang-btn');
+            const modalFiles = document.getElementById('modal-files');
+            const modalClose = document.getElementById('modal-close');
+            const body = document.body;
+
+            // === INIT ===
+            function init() {
+                buildAirlineGrid();
+                updateDateTime();
+                setInterval(updateDateTime, 1000);
+                bindEvents();
+                // Hide loading screen after animations
+                setTimeout(() => {
+                    loadingScreen.classList.add('hidden');
+                }, 1700);
+                // Initial theme
+                applyTheme();
+            }
+
+            // === BUILD AIRLINE GRID ===
+            function buildAirlineGrid() {
+                airlineGrid.innerHTML = '';
+                airlines.forEach((airline, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'airline-card';
+                    card.setAttribute('data-airline-id', airline.id);
+                    card.setAttribute('data-index', index);
+                    card.style.animationDelay = (2 + index * 0.06) + 's';
+                    card.innerHTML = `<div class="card-logo">${airline.logoSVG}</div>`;
+                    card.addEventListener('click', (e) => {
+                        createRipple(e, card);
+                        openModal(airline);
+                    });
+                    airlineGrid.appendChild(card);
+                });
+            }
+
+            // === RIPPLE EFFECT ===
+            function createRipple(e, el) {
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                const rect = el.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                el.appendChild(ripple);
+                ripple.addEventListener('animationend', () => ripple.remove());
+            }
+
+            // === MODAL ===
+            function openModal(airline) {
+                selectedAirline = airline;
+                modalLogo.innerHTML = airline.logoSVG;
+                modalName.textContent = currentLang === 'ar' ? airline.nameAr : airline.name;
+                modalCountry.textContent = currentLang === 'ar' ? airline.countryAr : airline.country;
+                modalAlliance.textContent = airline.alliance !== 'None' ? airline.alliance : (currentLang ===
+                    'ar' ? 'لا يوجد تحالف' : 'No Alliance');
+                modalThirdLangBtn.textContent = airline.thirdLangNative + ' (' + airline.thirdLang + ')';
+                modalThirdLangBtn.setAttribute('data-third-lang', airline.thirdLangCode);
+                renderModalFiles(airline, currentLang);
+                modalOverlay.classList.add('active');
+                body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                modalOverlay.classList.remove('active');
+                body.style.overflow = '';
+                selectedAirline = null;
+            }
+
+            function renderModalFiles(airline, lang) {
+                modalFiles.innerHTML = '<h4>' + (lang === 'ar' ? 'ملفات الشركة' : 'Company Files') + '</h4>';
+                airline.files.forEach(file => {
+                    const displayName = lang === 'ar' ? (file.nameAr || file.name) : file.name;
+                    const item = document.createElement('div');
+                    item.className = 'file-item';
+                    item.innerHTML = `
+                        <span class="file-name">📄 ${displayName}</span>
+                        <div class="file-actions">
+                            <button class="btn-sm open-file-btn">${lang === 'ar' ? 'فتح الملف' : 'Open File'}</button>
+                            <button class="btn-sm download-file-btn">${lang === 'ar' ? 'تحميل' : 'Download'}</button>
+                        </div>
+                    `;
+                    item.querySelector('.open-file-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        createRipple(e, item.querySelector('.open-file-btn'));
+                        showToast(lang === 'ar' ? 'جاري فتح الملف: ' : 'Opening file: ' + displayName);
+                    });
+                    item.querySelector('.download-file-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        createRipple(e, item.querySelector('.download-file-btn'));
+                        showToast(lang === 'ar' ? 'جاري التحميل: ' : 'Downloading: ' + displayName);
+                    });
+                    modalFiles.appendChild(item);
+                });
+            }
+
+            // === TOAST ===
+            function showToast(message) {
+                let toast = document.querySelector('.custom-toast');
+                if (!toast) {
+                    toast = document.createElement('div');
+                    toast.className = 'custom-toast';
+                    toast.style.cssText = `
+                        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+                        background: var(--accent-gold); color: #0a0f1a; padding: 12px 24px;
+                        border-radius: 25px; font-weight: 600; font-size: 14px; z-index: 6000;
+                        letter-spacing: 0.03em; box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+                        animation: toastIn 0.4s ease forwards; pointer-events: none;
+                        white-space: nowrap;
+                    `;
+                    document.body.appendChild(toast);
+                }
+                toast.textContent = message;
+                toast.style.animation = 'none';
+                toast.offsetHeight;
+                toast.style.animation = 'toastIn 0.4s ease forwards';
+                clearTimeout(toast._timeout);
+                toast._timeout = setTimeout(() => {
+                    toast.style.animation = 'toastOut 0.35s ease forwards';
+                    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 350);
+                }, 2200);
+            }
+
+            // Add toast keyframes dynamically
+            const toastStyle = document.createElement('style');
+            toastStyle.textContent = `
+                @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(20px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+                @keyframes toastOut { from { opacity:1; transform:translateX(-50%) translateY(0); } to { opacity:0; transform:translateX(-50%) translateY(-15px); } }
+            `;
+            document.head.appendChild(toastStyle);
+
+            // === DATE & CLOCK ===
+            function updateDateTime() {
+                const now = new Date();
+                const dateStr = now.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                const timeStr = now.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+                headerDate.textContent = dateStr;
+                headerClock.textContent = timeStr;
+            }
+
+            // === LANGUAGE SWITCH ===
+            function switchLanguage() {
+                currentLang = currentLang === 'en' ? 'ar' : 'en';
+                applyLanguage();
+                updateDateTime();
+                if (selectedAirline) {
+                    modalName.textContent = currentLang === 'ar' ? selectedAirline.nameAr : selectedAirline.name;
+                    modalCountry.textContent = currentLang === 'ar' ? selectedAirline.countryAr : selectedAirline
+                        .country;
+                    modalAlliance.textContent = selectedAirline.alliance !== 'None' ? selectedAirline.alliance : (
+                        currentLang === 'ar' ? 'لا يوجد تحالف' : 'No Alliance');
+                    renderModalFiles(selectedAirline, currentLang);
+                }
+                // Update search placeholder
+                searchInput.placeholder = currentLang === 'ar' ? 'ابحث عن شركات الطيران...' : 'Search airlines...';
+                // Update hero
+                document.querySelector('.hero-en').textContent = currentLang === 'ar' ? 'شركات الطيران العاملة' :
+                    'Operating Airlines';
+                document.querySelector('.hero-ar').textContent = currentLang === 'ar' ? 'شركات الطيران' :
+                    'شركات الطيران';
+            }
+
+            function applyLanguage() {
+                if (currentLang === 'ar') {
+                    body.classList.add('rtl');
+                    body.setAttribute('dir', 'rtl');
+                    langIndicator.textContent = 'EN';
+                    searchInput.placeholder = 'ابحث عن شركات الطيران...';
+                } else {
+                    body.classList.remove('rtl');
+                    body.setAttribute('dir', 'ltr');
+                    langIndicator.textContent = 'AR';
+                    searchInput.placeholder = 'Search airlines...';
+                }
+                // Update file section header in modal if open
+                if (selectedAirline && modalOverlay.classList.contains('active')) {
+                    renderModalFiles(selectedAirline, currentLang);
+                }
+            }
+
+            // === THEME ===
+            function toggleTheme() {
+                isDarkMode = !isDarkMode;
+                applyTheme();
+            }
+
+            function applyTheme() {
+                if (isDarkMode) {
+                    body.classList.remove('light-mode');
+                    body.classList.add('dark-mode');
+                    themeIcon.textContent = '☀️';
+                } else {
+                    body.classList.add('light-mode');
+                    body.classList.remove('dark-mode');
+                    themeIcon.textContent = '🌙';
+                }
+            }
+
+            // === SEARCH ===
+            function handleSearch() {
+                const query = searchInput.value.toLowerCase().trim();
+                const cards = airlineGrid.querySelectorAll('.airline-card');
+                let anyVisible = false;
+                cards.forEach(card => {
+                    const airlineId = card.getAttribute('data-airline-id');
+                    const airline = airlines.find(a => a.id === airlineId);
+                    if (!airline) return;
+                    const match = query === '' ||
+                        airline.name.toLowerCase().includes(query) ||
+                        airline.nameAr.includes(query) ||
+                        airline.country.toLowerCase().includes(query) ||
+                        airline.countryAr.includes(query) ||
+                        (airline.alliance && airline.alliance.toLowerCase().includes(query));
+                    if (!match && query !== '') {
+                        card.classList.add('hidden-by-search');
+                        card.classList.remove('match-highlight');
+                    } else {
+                        card.classList.remove('hidden-by-search');
+                        if (query !== '' && match) {
+                            card.classList.add('match-highlight');
+                        } else {
+                            card.classList.remove('match-highlight');
+                        }
+                        anyVisible = true;
+                    }
+                });
+            }
+
+            // === EVENTS ===
+            function bindEvents() {
+                btnLangSwitch.addEventListener('click', (e) => {
+                    createRipple(e, btnLangSwitch);
+                    switchLanguage();
+                });
+                btnTheme.addEventListener('click', (e) => {
+                    createRipple(e, btnTheme);
+                    toggleTheme();
+                });
+                modalClose.addEventListener('click', closeModal);
+                modalOverlay.addEventListener('click', (e) => {
+                    if (e.target === modalOverlay) closeModal();
+                });
+                searchInput.addEventListener('input', handleSearch);
+                // Keyboard shortcut for closing modal
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+                        closeModal();
+                    }
+                });
+                // Modal third language button
+                modalThirdLangBtn.addEventListener('click', (e) => {
+                    if (!selectedAirline) return;
+                    createRipple(e, modalThirdLangBtn);
+                    const thirdLang = selectedAirline.thirdLangCode;
+                    const nativeName = selectedAirline.thirdLangNative;
+                    showToast((currentLang === 'ar' ? 'اللغة الثالثة: ' : 'Third Language: ') + nativeName +
+                        ' (' + thirdLang + ')');
+                });
+                // Ripple on all icon buttons
+                document.querySelectorAll('.btn-icon').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        createRipple(e, this);
+                    });
+                });
+            }
+
+            // === START ===
+            init();
+        })();
+    </script>
+</body>
+</html>
