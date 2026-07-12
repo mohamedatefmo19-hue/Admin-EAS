@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>EAS - Passenger Information Screen</title>
 
     <!-- Firebase SDKs -->
@@ -89,18 +89,23 @@
             align-items: center;
             gap: 14px;
             flex-shrink: 0;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
         #ps-header .logo-area img {
             height: 48px;
             width: auto;
             object-fit: contain;
             border-radius: 6px;
+            pointer-events: none;
         }
         #ps-header .company-name {
             font-size: 1.2rem;
             font-weight: 700;
             letter-spacing: 0.5px;
             white-space: nowrap;
+            pointer-events: none;
         }
         #ps-header .titles {
             text-align: center;
@@ -699,7 +704,7 @@
     <div id="passenger-screen">
         <div class="bg-overlay"></div>
         <div id="ps-header">
-            <div class="logo-area">
+            <div class="logo-area" id="secret-gesture-zone">
                 <img id="ps-header-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect fill='%23fff' width='48' height='48' rx='8'/%3E%3Ctext x='24' y='32' text-anchor='middle' font-size='22' font-weight='bold' fill='%23003'%3EEAS%3C/text%3E%3C/svg%3E"
                 alt="Logo">
                 <span class="company-name" id="ps-company-name">EAS Company</span>
@@ -1021,19 +1026,58 @@
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.shiftKey && e.key === 'A') {
                 e.preventDefault();
+                toggleAdminFromShortcut();
+            }
+        });
+
+        function toggleAdminFromShortcut() {
+            if (!currentUser) {
+                showToast('Please login first.', 'error');
+                $adminLogin.classList.remove('hidden');
+                return;
+            }
+            const isActive = $adminPanel.classList.contains('active');
+            if (isActive) {
+                $adminPanel.classList.remove('active');
+                $passengerScreen.classList.remove('blurred');
+            } else {
+                $adminPanel.classList.add('active');
+                $passengerScreen.classList.add('blurred');
+                refreshAdminPanel();
+            }
+        }
+
+        // ============ SECRET 7-TAP GESTURE ON EAS LOGO ============
+        let tapCount = 0;
+        let tapTimer = null;
+        const TAP_RESET_DELAY = 2500; // milliseconds
+
+        document.getElementById('secret-gesture-zone').addEventListener('click', function(e) {
+            // Prevent click from propagating to underlying elements
+            e.stopPropagation();
+            tapCount++;
+            if (tapTimer) clearTimeout(tapTimer);
+            tapTimer = setTimeout(() => {
+                tapCount = 0;
+            }, TAP_RESET_DELAY);
+
+            if (tapCount === 7) {
+                tapCount = 0;
+                clearTimeout(tapTimer);
+                // Toggle admin panel (or show login if not authenticated)
                 if (!currentUser) {
-                    showToast('Please login first.', 'error');
                     $adminLogin.classList.remove('hidden');
-                    return;
-                }
-                const isActive = $adminPanel.classList.contains('active');
-                if (isActive) {
-                    $adminPanel.classList.remove('active');
-                    $passengerScreen.classList.remove('blurred');
+                    showToast('Please login to access admin panel.', '');
                 } else {
-                    $adminPanel.classList.add('active');
-                    $passengerScreen.classList.add('blurred');
-                    refreshAdminPanel();
+                    const isActive = $adminPanel.classList.contains('active');
+                    if (isActive) {
+                        $adminPanel.classList.remove('active');
+                        $passengerScreen.classList.remove('blurred');
+                    } else {
+                        $adminPanel.classList.add('active');
+                        $passengerScreen.classList.add('blurred');
+                        refreshAdminPanel();
+                    }
                 }
             }
         });
@@ -1636,7 +1680,7 @@
         renderPassengerGrid();
 
         console.log('✅ EAS Admin Panel Ready');
-        console.log('🔑 Press Ctrl+Shift+A to toggle Admin Panel (after login)');
+        console.log('🔑 Press Ctrl+Shift+A or tap EAS logo 7 times to toggle Admin Panel');
         console.log('📋 Passenger screen is always visible');
         console.log('☁️ Cloudinary:', CLOUD_NAME);
         console.log('🔥 Firebase:', firebaseConfig.projectId);
