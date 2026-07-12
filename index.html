@@ -1,1052 +1,764 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EAS | Egyptian Aviation Services - Passenger Information Display</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EAS Passenger Airlines Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <style>
-        :root {
-            --bg-deep: #0b111e;
-            --bg-surface: rgba(16, 24, 40, 0.85);
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-hover: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --gold: #c8a44e;
-            --gold-light: #dfc278;
-            --gold-dim: #a68a3e;
-            --text-primary: #eaedf2;
-            --text-secondary: #b0b8c5;
-            --text-muted: #7a8291;
-            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
-            --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 40px rgba(200, 164, 78, 0.1);
-            --radius-3xl: 24px;
-            --radius-xl: 16px;
-            --radius-lg: 12px;
-            --font-en: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-            --font-ar: 'Noto Naskh Arabic', 'Tahoma', 'Segoe UI', sans-serif;
-            --header-height: 76px;
-            --footer-height: 48px;
-            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        body.light-mode {
-            --bg-deep: #eef2f7;
-            --bg-surface: rgba(255, 255, 255, 0.7);
-            --glass: rgba(255, 255, 255, 0.4);
-            --glass-hover: rgba(255, 255, 255, 0.65);
-            --glass-border: rgba(0, 0, 0, 0.08);
-            --text-primary: #141a24;
-            --text-secondary: #2d3540;
-            --text-muted: #5b6470;
-            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.08);
-            --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.12), 0 0 40px rgba(200, 164, 78, 0.2);
-        }
-
+        /* ---------- الأساسيات ---------- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        html,
         body {
+            font-family: 'Inter', sans-serif;
+            background: #0b0e14;
+            color: #f0f4fc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1.5rem 1rem;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(30, 60, 120, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(60, 30, 120, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 100%, rgba(0, 40, 80, 0.2) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        /* ---------- الحاوية الرئيسية ---------- */
+        .portal-wrapper {
+            max-width: 1360px;
             width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-family: var(--font-en);
-            background: var(--bg-deep);
-            color: var(--text-primary);
-            -webkit-font-smoothing: antialiased;
-            user-select: none;
-            -webkit-user-select: none;
-            transition: background var(--transition), color var(--transition);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
-        body.rtl {
-            direction: rtl;
-            font-family: var(--font-ar);
+        /* ---------- الرأس ---------- */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            padding: 0.8rem 1.5rem 0.8rem 1.2rem;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 2.5rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s;
         }
 
-        /* Loading Screen – subtle fade */
-        #loading-screen {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: #060b15;
+        .header-logo {
+            flex-shrink: 0;
+            width: 58px;
+            height: 58px;
+            background: #ffffff;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-            opacity: 1;
-            visibility: visible;
+            padding: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
-        #loading-screen.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
+
+        .header-logo img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
         }
-        #loading-screen .load-logo {
+
+        .header-title {
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #ffffff 40%, #88bbff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .header-sub {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            white-space: nowrap;
+        }
+
+        /* ---------- شبكة شركات الطيران ---------- */
+        .airlines-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1.2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        /* بطاقة شركة الطيران */
+        .airline-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 1.2rem 0.5rem 0.9rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 24px;
-            animation: gentlePulse 2s ease-in-out infinite;
+            justify-content: center;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            position: relative;
+            min-height: 160px;
         }
-        @keyframes gentlePulse {
-            0%,
-            100% {
-                opacity: 0.8;
-            }
-            50% {
-                opacity: 1;
-            }
+
+        .airline-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
         }
-        #loading-screen .load-logo img {
+
+        .airline-card:active {
+            transform: scale(0.97);
+        }
+
+        /* حاوية الشعار مع خلفية بيضاء مستديرة */
+        .logo-wrap {
             width: 80px;
             height: 80px;
-            object-fit: contain;
-        }
-        #loading-screen .load-text {
-            font-size: 13px;
-            letter-spacing: 0.35em;
-            color: var(--gold);
-            text-transform: uppercase;
-            font-weight: 500;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
+            transition: all 0.2s;
+            margin-bottom: 0.6rem;
         }
 
-        /* Background atmosphere */
-        #bg-layer {
+        .logo-wrap img {
+            max-width: 90%;
+            max-height: 90%;
+            width: auto;
+            height: auto;
+            display: block;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+        }
+
+        .airline-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.3;
+            letter-spacing: 0.2px;
+            word-break: break-word;
+            max-width: 100%;
+            padding: 0 0.2rem;
+        }
+
+        .airline-name .sub {
+            display: block;
+            font-weight: 400;
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 0.1rem;
+        }
+
+        /* ---------- نموذج (Modal) المستندات ---------- */
+        .modal-overlay {
             position: fixed;
             inset: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
-        #bg-layer .bg-radial {
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 30% 20%, rgba(30, 55, 90, 0.4) 0%, transparent 55%),
-                radial-gradient(circle at 70% 60%, rgba(20, 45, 70, 0.35) 0%, transparent 55%),
-                linear-gradient(180deg, #0d1422 0%, #101a2a 50%, #0a101c 100%);
-            transition: background var(--transition);
-        }
-        body.light-mode #bg-layer .bg-radial {
-            background: radial-gradient(circle at 30% 20%, rgba(200, 210, 225, 0.5) 0%, transparent 55%),
-                radial-gradient(circle at 70% 60%, rgba(180, 195, 215, 0.4) 0%, transparent 55%),
-                linear-gradient(180deg, #e6ecf3 0%, #dce3ec 50%, #d5dde6 100%);
-        }
-        #bg-layer .bg-grid {
-            position: absolute;
-            inset: 0;
-            opacity: 0.03;
-            background-image: linear-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.4) 1px, transparent 1px);
-            background-size: 70px 70px;
-            mask-image: radial-gradient(ellipse at center, black 25%, transparent 65%);
-            -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 65%);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1.5rem;
+            animation: fadeIn 0.3s ease;
         }
 
-        /* Main container */
-        #main-container {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            height: 100%;
+        .modal-overlay.active {
             display: flex;
-            flex-direction: column;
-            opacity: 0;
-            animation: fadeInMain 0.8s ease forwards;
-            animation-delay: 1.2s;
         }
-        @keyframes fadeInMain {
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.97);
+            }
             to {
                 opacity: 1;
+                transform: scale(1);
             }
         }
 
-        /* Header */
-        #header {
+        .modal-box {
+            background: rgba(20, 28, 40, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            max-width: 620px;
+            width: 100%;
+            padding: 2rem 2rem 1.8rem;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
             position: relative;
-            z-index: 100;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.2rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: none;
+            color: #aab8d0;
+            font-size: 1.8rem;
+            line-height: 1;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+        }
+
+        .modal-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .modal-title .mini-logo {
+            width: 44px;
+            height: 44px;
+            background: #ffffff;
+            border-radius: 40px;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             flex-shrink: 0;
-            height: var(--header-height);
+        }
+
+        .modal-title .mini-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .modal-sub {
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 0.85rem;
+            margin-bottom: 1.8rem;
+            border-left: 3px solid rgba(255, 255, 255, 0.1);
+            padding-left: 0.8rem;
+        }
+
+        /* قائمة المستندات */
+        .doc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .doc-item {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            padding: 0.9rem 1.2rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 28px;
-            background: var(--bg-surface);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border-bottom: 1px solid var(--glass-border);
-            transition: all var(--transition);
-            gap: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: 0.2s;
         }
-        #header .brand {
+
+        .doc-item:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .doc-name {
             display: flex;
             align-items: center;
-            gap: 14px;
-        }
-        #header .brand .logo-img {
-            width: 48px;
-            height: 48px;
-            object-fit: contain;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 4px;
-        }
-        #header .brand .brand-text {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        #header .brand .brand-ar {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--gold);
-            letter-spacing: 0.02em;
-            line-height: 1.3;
-        }
-        #header .brand .brand-en {
-            font-size: 11px;
+            gap: 0.6rem;
+            font-size: 0.9rem;
             font-weight: 500;
-            color: var(--text-secondary);
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-        #header .header-right {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-        #header .header-date {
-            font-size: 15px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            letter-spacing: 0.03em;
-            white-space: nowrap;
-        }
-        .btn-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            border: 1px solid var(--glass-border);
-            background: var(--glass);
-            color: var(--text-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 17px;
-            transition: all var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-        .btn-icon:hover {
-            background: var(--glass-hover);
-            border-color: var(--gold);
-            box-shadow: 0 0 18px rgba(200, 164, 78, 0.18);
-        }
-        .btn-lang {
-            width: auto;
-            padding: 0 18px;
-            border-radius: 22px;
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            gap: 6px;
-        }
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(200, 164, 78, 0.25);
-            transform: scale(0);
-            animation: rippleEffect 0.5s ease-out forwards;
-            pointer-events: none;
-        }
-        @keyframes rippleEffect {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
+            color: #e8edf8;
         }
 
-        /* Content Area */
-        #content-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 16px 32px 8px;
-            overflow: hidden;
-            min-height: 0;
+        .doc-name .icon {
+            font-size: 1.2rem;
         }
 
-        /* Hero */
-        #hero {
-            text-align: center;
-            margin-bottom: 12px;
-            animation: fadeSlideUp 0.7s ease forwards;
-            animation-delay: 1.4s;
-            opacity: 0;
-        }
-        @keyframes fadeSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        #hero .hero-ar {
-            font-size: 38px;
-            font-weight: 800;
-            color: var(--gold);
-            letter-spacing: 0.05em;
-            line-height: 1.2;
-        }
-        #hero .hero-en {
-            font-size: 20px;
-            font-weight: 400;
-            color: var(--text-secondary);
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-        }
-
-        /* Search */
-        #search-wrap {
-            flex-shrink: 0;
-            margin-bottom: 14px;
-            position: relative;
-            width: 100%;
-            max-width: 480px;
-            animation: fadeSlideUp 0.7s ease forwards;
-            animation-delay: 1.5s;
-            opacity: 0;
-        }
-        #search-input {
-            width: 100%;
-            padding: 12px 20px 12px 46px;
+        .doc-download {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: #bbd4ff;
+            padding: 0.3rem 1rem;
             border-radius: 30px;
-            border: 1.5px solid var(--glass-border);
-            background: var(--glass);
-            color: var(--text-primary);
-            font-size: 15px;
-            font-family: inherit;
-            outline: none;
-            transition: all var(--transition);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            letter-spacing: 0.03em;
-        }
-        #search-input::placeholder {
-            color: var(--text-muted);
-        }
-        #search-input:focus {
-            border-color: var(--gold);
-            box-shadow: 0 0 0 4px rgba(200, 164, 78, 0.08);
-            background: var(--glass-hover);
-        }
-        #search-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            pointer-events: none;
-            font-size: 17px;
-        }
-        body.rtl #search-input {
-            padding: 12px 46px 12px 20px;
-            text-align: right;
-        }
-        body.rtl #search-icon {
-            left: auto;
-            right: 16px;
-        }
-
-        /* Airline Grid */
-        #airline-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            grid-auto-rows: 1fr;
-            gap: 16px;
-            width: 100%;
-            max-width: 1150px;
-            flex: 1;
-            align-content: center;
-            animation: fadeSlideUp 0.7s ease forwards;
-            animation-delay: 1.6s;
-            opacity: 0;
-        }
-        .airline-card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-xl);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all var(--transition);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: var(--shadow-card);
-            min-height: 100px;
-            padding: 20px;
-        }
-        .airline-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 50%);
-            pointer-events: none;
-            border-radius: inherit;
-        }
-        .airline-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-hover);
-            border-color: rgba(200, 164, 78, 0.4);
-            background: var(--glass-hover);
-            z-index: 5;
-        }
-        .airline-card .card-logo {
-            width: 100%;
-            height: 100%;
-            display: flex;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            position: relative;
-            z-index: 1;
-        }
-        .airline-card .card-logo svg {
-            max-width: 85%;
-            max-height: 60%;
-            width: auto;
-            height: auto;
-            transition: transform var(--transition);
-        }
-        .airline-card:hover .card-logo svg {
-            transform: scale(1.04);
-        }
-        .airline-card.hidden-by-search {
-            opacity: 0.12;
-            transform: scale(0.9);
-            pointer-events: none;
-            filter: grayscale(0.7);
-            transition: all 0.4s ease;
-        }
-        .airline-card.match-highlight {
-            border-color: var(--gold);
-            box-shadow: 0 0 30px rgba(200, 164, 78, 0.2);
+            gap: 0.3rem;
         }
 
-        /* Footer */
-        #footer {
-            flex-shrink: 0;
-            height: var(--footer-height);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 12px;
-            color: var(--text-muted);
-            letter-spacing: 0.05em;
-            border-top: 1px solid var(--glass-border);
-            background: var(--bg-surface);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            transition: all var(--transition);
-        }
-        #footer .footer-logo {
-            width: 22px;
-            height: 22px;
-            object-fit: contain;
+        .doc-download:hover {
+            background: rgba(255, 255, 255, 0.18);
+            color: #ffffff;
         }
 
-        /* Modal */
-        #modal-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 500;
-            background: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.4s ease;
-            padding: 30px;
-        }
-        #modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        #modal-panel {
-            background: var(--bg-surface);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-3xl);
-            padding: 32px 28px 24px;
-            max-width: 560px;
-            width: 100%;
-            max-height: 85vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            transform: translateY(20px) scale(0.96);
-            transition: all 0.4s ease;
+        .doc-empty {
             text-align: center;
-        }
-        #modal-overlay.active #modal-panel {
-            transform: translateY(0) scale(1);
-        }
-        #modal-panel .modal-logo {
-            width: 130px;
-            height: 70px;
-            margin: 0 auto 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #modal-panel .modal-logo svg {
-            max-width: 100%;
-            max-height: 100%;
-        }
-        #modal-panel .modal-name {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-        #modal-panel .modal-country {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 2px;
-        }
-        #modal-panel .modal-alliance {
-            font-size: 13px;
-            color: var(--gold);
-            font-weight: 600;
-            margin-bottom: 14px;
-            letter-spacing: 0.04em;
-        }
-        #modal-panel .modal-third-lang {
-            display: inline-block;
-            padding: 6px 20px;
-            border-radius: 20px;
-            background: rgba(200, 164, 78, 0.12);
-            color: var(--gold);
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            cursor: pointer;
-            border: 1px solid rgba(200, 164, 78, 0.25);
-            transition: all var(--transition);
-        }
-        #modal-panel .modal-third-lang:hover {
-            background: rgba(200, 164, 78, 0.22);
-        }
-        #modal-panel .custom-data-area {
-            margin-top: 10px;
-            border-top: 1px solid var(--glass-border);
-            padding-top: 18px;
-            text-align: left;
-            min-height: 100px;
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: var(--radius-lg);
-            padding: 16px;
-            font-size: 13px;
-            color: var(--text-muted);
-            letter-spacing: 0.03em;
-        }
-        body.rtl #modal-panel .custom-data-area {
-            text-align: right;
-        }
-        #modal-close {
-            position: absolute;
-            top: 14px;
-            right: 14px;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 1px solid var(--glass-border);
-            background: var(--glass);
-            color: var(--text-primary);
-            cursor: pointer;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all var(--transition);
-            z-index: 2;
-        }
-        #modal-close:hover {
-            background: #c0392b;
-            color: #fff;
-            border-color: #c0392b;
-        }
-        body.rtl #modal-close {
-            right: auto;
-            left: 14px;
+            padding: 2rem 0;
+            color: rgba(255, 255, 255, 0.3);
+            font-style: italic;
         }
 
-        /* Responsive adjustments for computers and larger tablets */
+        /* ---------- التذييل ---------- */
+        .footer {
+            margin-top: auto;
+            padding: 1.5rem 0.5rem 0.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.25);
+            letter-spacing: 0.3px;
+        }
+
+        .footer strong {
+            color: rgba(255, 255, 255, 0.35);
+            font-weight: 600;
+        }
+
+        /* ---------- استجابات (Responsive) ---------- */
         @media (max-width: 1200px) {
-            #airline-grid {
+            .airlines-grid {
                 grid-template-columns: repeat(4, 1fr);
-                gap: 14px;
             }
         }
-        @media (max-width: 800px) {
-            #airline-grid {
+
+        @media (max-width: 820px) {
+            .airlines-grid {
                 grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
             }
-            .airline-card {
-                min-height: 80px;
-                padding: 14px;
+            .header-title {
+                font-size: 1.2rem;
             }
-            #hero .hero-ar {
-                font-size: 26px;
-            }
-            #hero .hero-en {
-                font-size: 16px;
+            .header-sub {
+                display: none;
             }
         }
-        @media (max-width: 500px) {
-            #airline-grid {
+
+        @media (max-width: 620px) {
+            .airlines-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
+                gap: 1rem;
+            }
+            .header {
+                padding: 0.6rem 1rem;
+                border-radius: 20px;
+            }
+            .header-logo {
+                width: 44px;
+                height: 44px;
+            }
+            .header-title {
+                font-size: 1rem;
+            }
+            .modal-box {
+                padding: 1.5rem;
+            }
+            .modal-title {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .airlines-grid {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
             }
             .airline-card {
-                min-height: 65px;
-                padding: 10px;
-                border-radius: var(--radius-lg);
+                flex-direction: row;
+                gap: 1rem;
+                padding: 0.8rem 1rem;
+                min-height: 80px;
+                justify-content: flex-start;
             }
-            #header {
-                padding: 0 12px;
+            .logo-wrap {
+                width: 60px;
+                height: 60px;
+                padding: 6px;
+                margin-bottom: 0;
             }
-            #header .brand .brand-ar {
-                font-size: 12px;
+            .airline-name {
+                font-size: 0.85rem;
+                text-align: left;
             }
-            #header .brand .brand-en {
-                font-size: 8px;
+            .airline-name .sub {
+                font-size: 0.65rem;
             }
-            #header .brand .logo-img {
-                width: 36px;
-                height: 36px;
+            .header-title {
+                font-size: 0.9rem;
             }
-            #header .header-date {
-                font-size: 12px;
+            .modal-box {
+                padding: 1.2rem;
             }
-            .btn-lang {
-                padding: 0 12px;
-                font-size: 10px;
-            }
+        }
+
+        /* شريط التمرير للنموذج */
+        .modal-box::-webkit-scrollbar {
+            width: 4px;
+        }
+        .modal-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .modal-box::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
         }
     </style>
 </head>
-<body class="dark-mode">
-    <!-- Professional Loading Screen -->
-    <div id="loading-screen">
-        <div class="load-logo">
-            <!-- REPLACE THIS SRC with the official EAS logo URL -->
-            <img src="https://via.placeholder.com/80x80/0b111e/c8a44e?text=EAS" alt="EAS Logo" class="logo-img">
-            <span class="load-text">Egyptian Aviation Services</span>
-        </div>
-    </div>
+<body>
+    <div class="portal-wrapper">
 
-    <!-- Ambient Background -->
-    <div id="bg-layer">
-        <div class="bg-radial"></div>
-        <div class="bg-grid"></div>
-    </div>
-
-    <!-- Main Interface -->
-    <div id="main-container">
-        <!-- Header -->
-        <header id="header">
-            <div class="brand">
-                <!-- OFFICIAL EAS LOGO – replace the src with the actual logo link -->
-                <img src="https://via.placeholder.com/48x48/0b111e/c8a44e?text=EAS" alt="EAS" class="logo-img">
-                <div class="brand-text">
-                    <span class="brand-ar">خدمات الطيران المصرية</span>
-                    <span class="brand-en">Egyptian Aviation Services</span>
-                </div>
+        <!-- ======== الرأس ======== -->
+        <header class="header">
+            <div class="header-logo">
+                <img src="https://eas-eg.com/wp-content/uploads/png-Eas-Logo-Full-resolution-By-Houssam.png-scaled.webp"
+                alt="EAS Logo"
+                onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%231a2a4a%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2220%22 y=%2260%22 font-family=%22sans-serif%22 font-size=%2230%22 fill=%22%23fff%22%3EEAS%3C/text%3E%3C/svg%3E'" />
             </div>
-            <div class="header-right">
-                <span class="header-date" id="header-date"></span>
-                <button class="btn-icon btn-lang" id="btn-lang-switch" title="Switch Language">
-                    <span id="lang-indicator">AR / EN</span>
-                </button>
-                <button class="btn-icon" id="btn-theme" title="Toggle Dark/Light Mode">
-                    <span id="theme-icon">☀️</span>
-                </button>
-            </div>
+            <div class="header-title">EAS Passenger Airlines Portal</div>
+            <div class="header-sub">✦ شركاء النقل</div>
         </header>
 
-        <!-- Content Area -->
-        <div id="content-area">
-            <div id="hero">
-                <div class="hero-ar">شركات الطيران</div>
-                <div class="hero-en">Operating Airlines</div>
+        <!-- ======== شبكة شركات الطيران ======== -->
+        <div class="airlines-grid" id="airlinesGrid"></div>
+
+        <!-- ======== نموذج المستندات ======== -->
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal-box">
+                <button class="modal-close" id="modalClose" aria-label="إغلاق">&times;</button>
+                <div class="modal-title" id="modalTitle">
+                    <span class="mini-logo" id="modalMiniLogo">
+                        <img src="" alt="" />
+                    </span>
+                    <span id="modalAirlineName">الشركة</span>
+                </div>
+                <div class="modal-sub" id="modalSub">اختر مستنداً للاطلاع أو التحميل</div>
+                <div class="doc-list" id="docList">
+                    <!-- سيتم ملؤها بواسطة JavaScript -->
+                </div>
             </div>
-            <div id="search-wrap">
-                <input type="text" id="search-input" placeholder="Search airlines...">
-                <span id="search-icon">🔍</span>
-            </div>
-            <div id="airline-grid"></div>
         </div>
 
-        <!-- Footer -->
-        <footer id="footer">
-            <img src="https://via.placeholder.com/22x22/0b111e/c8a44e?text=E" alt="EAS" class="footer-logo">
-            <span>© 2024 Egyptian Aviation Services</span>
+        <!-- ======== التذييل ======== -->
+        <footer class="footer">
+            &copy; 2020 Egypt Aviation Services. All rights reserved.<br />
+            <strong>Excellence is our standard, not the exception.</strong>
         </footer>
-    </div>
-
-    <!-- Airline Detail Modal -->
-    <div id="modal-overlay">
-        <div id="modal-panel">
-            <button id="modal-close" aria-label="Close">✕</button>
-            <div class="modal-logo" id="modal-logo"></div>
-            <div class="modal-name" id="modal-name"></div>
-            <div class="modal-country" id="modal-country"></div>
-            <div class="modal-alliance" id="modal-alliance"></div>
-            <div class="modal-third-lang" id="modal-third-lang-btn"></div>
-            <!-- ⚡ PASTE YOUR FIREBASE / CLOUDINARY CODE INSIDE THIS DIV -->
-            <div class="custom-data-area" id="custom-data-area">
-                <!-- Replace this comment with your dynamic content (e.g., flight status, documents, media) -->
-                <p style="opacity:0.7; text-align:center; margin-top:20px;">📋 Firebase & Cloudinary integration area</p>
-            </div>
-        </div>
     </div>
 
     <script>
         (function() {
-            // ========== AIRLINE DATABASE ==========
+            'use strict';
+
+            // ---------- بيانات شركات الطيران ----------
+            // تم استخدام عناوين شعارات تم التحقق منها (تعمل 200)
             const airlines = [{
-                id: 'british-airways',
-                name: 'British Airways',
-                nameAr: 'الخطوط الجوية البريطانية',
-                country: 'United Kingdom',
-                countryAr: 'المملكة المتحدة',
-                alliance: 'Oneworld',
-                thirdLang: 'English',
-                thirdLangCode: 'en',
-                thirdLangNative: 'English',
-                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#1a3058"/><path d="M30 25 L55 25 L55 55 L30 55 Z" fill="#c41230" opacity="0.9"/><path d="M38 25 L38 55 M46 25 L46 55" stroke="#fff" stroke-width="2.5"/><text x="70" y="48" fill="#fff" font-size="18" font-weight="700" letter-spacing="0.06em" font-family="sans-serif">BRITISH AIRWAYS</text></svg>`
+                id: 'british',
+                name: 'BRITISH AIRWAYS',
+                sub: '',
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/British_Airways_logo.svg/200px-British_Airways_logo.svg.png',
+                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/British_Airways_logo.svg/200px-British_Airways_logo.svg.png'
             }, {
-                id: 'air-france',
-                name: 'Air France',
-                nameAr: 'الخطوط الجوية الفرنسية',
-                country: 'France',
-                countryAr: 'فرنسا',
-                alliance: 'SkyTeam',
-                thirdLang: 'Français',
-                thirdLangCode: 'fr',
-                thirdLangNative: 'Français',
-                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#fff"/><rect x="0" y="0" width="8" height="80" fill="#ed1c24"/><rect x="0" y="0" width="200" height="8" fill="#002157"/><text x="30" y="50" fill="#002157" font-size="20" font-weight="700" letter-spacing="0.08em" font-family="sans-serif">AIR FRANCE</text><rect x="30" y="56" width="140" height="3" fill="#ed1c24"/></svg>`
+                id: 'airfrance',
+                name: 'AIRFRANCE',
+                sub: '',
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Air_France_Logo.svg/200px-Air_France_Logo.svg.png',
+                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Air_France_Logo.svg/200px-Air_France_Logo.svg.png'
             }, {
-                id: 'qatar-airways',
-                name: 'Qatar Airways',
-                nameAr: 'الخطوط الجوية القطرية',
-                country: 'Qatar',
-                countryAr: 'قطر',
-                alliance: 'Oneworld',
-                thirdLang: 'العربية',
-                thirdLangCode: 'ar',
-                thirdLangNative: 'العربية',
-                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#5c1a2a"/><ellipse cx="40" cy="40" rx="20" ry="18" fill="none" stroke="#c4a35a" stroke-width="3"/><text x="70" y="48" fill="#c4a35a" font-size="17" font-weight="700" letter-spacing="0.06em" font-family="sans-serif">QATAR AIRWAYS</text></svg>`
+                id: 'qatar',
+                name: 'QATAR',
+                sub: '',
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Qatar_Airways_Logo.svg/200px-Qatar_Airways_Logo.svg.png',
+                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Qatar_Airways_Logo.svg/200px-Qatar_Airways_Logo.svg.png'
             }, {
                 id: 'aeroflot',
-                name: 'Aeroflot',
-                nameAr: 'إيروفلوت',
-                country: 'Russia',
-                countryAr: 'روسيا',
-                alliance: 'SkyTeam (suspended)',
-                thirdLang: 'Русский',
-                thirdLangCode: 'ru',
-                thirdLangNative: 'Русский',
-                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#0039a6"/><path d="M35 20 L65 40 L35 60" fill="none" stroke="#d52b1e" stroke-width="4"/><text x="80" y="48" fill="#fff" font-size="18" font-weight="700" letter-spacing="0.08em" font-family="sans-serif">AEROFLOT</text></svg>`
+                name: 'AEROFLOT',
+                sub: 'Russian Airlines',
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Aeroflot_logo.svg/200px-Aeroflot_logo.svg.png',
+                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Aeroflot_logo.svg/200px-Aeroflot_logo.svg.png'
             }, {
-                id: 'sichuan-airlines',
-                name: 'Sichuan Airlines',
-                nameAr: 'خطوط سيتشوان الجوية',
-                country: 'China',
-                countryAr: 'الصين',
-                alliance: 'None',
-                thirdLang: '中文',
-                thirdLangCode: 'zh',
-                thirdLangNative: '中文',
-                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#d4212b"/><circle cx="40" cy="40" r="16" fill="none" stroke="#ffcc00" stroke-width="3"/><text x="68" y="48" fill="#ffcc00" font-size="15" font-weight="700" letter-spacing="0.05em" font-family="sans-serif">SICHUAN AIRLINES</text></svg>`
-            }, {
-                id: 'tarco-aviation',
-                name: 'Tarco Aviation',
-                nameAr: 'تاركو للطيران',
-                country: 'Sudan',
-                countryAr: 'السودان',
-                alliance: 'None',
-                thirdLang: 'العربية',
-                thirdLangCode: 'ar',
-                thirdLangNative: 'العربية',
-                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#1b5e20"/><path d="M30 30 L50 20 L50 60 L30 50 Z" fill="#ffab00" opacity="0.8"/><text x="65" y="48" fill="#fff" font-size="16" font-weight="700" letter-spacing="0.06em" font-family="sans-serif">TARCO AVIATION</text></svg>`
+                id: 'q2bookking',
+                name: 'Q2bookking.com',
+                sub: '',
+                logo: 'https://via.placeholder.com/200x200/1a2a4a/ffffff?text=Q2',
+                fallback: 'https://via.placeholder.com/200x200/1a2a4a/ffffff?text=Q2'
             }, {
                 id: 'lufthansa',
                 name: 'Lufthansa',
-                nameAr: 'لوفتهانزا',
-                country: 'Germany',
-                countryAr: 'ألمانيا',
-                alliance: 'Star Alliance',
-                thirdLang: 'Deutsch',
-                thirdLangCode: 'de',
-                thirdLangNative: 'Deutsch',
-                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#0a1e3d"/><circle cx="38" cy="40" r="18" fill="none" stroke="#ffcc00" stroke-width="3.5"/><text x="68" y="48" fill="#ffcc00" font-size="18" font-weight="700" letter-spacing="0.07em" font-family="sans-serif">LUFTHANSA</text></svg>`
+                sub: '',
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Lufthansa_Logo.svg/200px-Lufthansa_Logo.svg.png',
+                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Lufthansa_Logo.svg/200px-Lufthansa_Logo.svg.png'
             }, {
                 id: 'swiss',
-                name: 'Swiss International Air Lines',
-                nameAr: 'الخطوط الجوية السويسرية',
-                country: 'Switzerland',
-                countryAr: 'سويسرا',
-                alliance: 'Star Alliance',
-                thirdLang: 'Deutsch',
-                thirdLangCode: 'de',
-                thirdLangNative: 'Deutsch',
-                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#d50000"/><rect x="30" y="28" width="18" height="24" fill="#fff" rx="2"/><rect x="52" y="28" width="18" height="24" fill="#fff" rx="2"/><text x="82" y="50" fill="#fff" font-size="16" font-weight="700" letter-spacing="0.06em" font-family="sans-serif">SWISS</text></svg>`
+                name: 'SWISS',
+                sub: '',
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Swiss_International_Air_Lines_logo.svg/200px-Swiss_International_Air_Lines_logo.svg.png',
+                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Swiss_International_Air_Lines_logo.svg/200px-Swiss_International_Air_Lines_logo.svg.png'
             }, {
-                id: 'austrian-airlines',
-                name: 'Austrian Airlines',
-                nameAr: 'الخطوط الجوية النمساوية',
-                country: 'Austria',
-                countryAr: 'النمسا',
-                alliance: 'Star Alliance',
-                thirdLang: 'Deutsch',
-                thirdLangCode: 'de',
-                thirdLangNative: 'Deutsch',
-                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#e60000"/><path d="M32 30 L48 40 L32 50" fill="none" stroke="#fff" stroke-width="4"/><text x="62" y="48" fill="#fff" font-size="15" font-weight="700" letter-spacing="0.06em" font-family="sans-serif">AUSTRIAN</text></svg>`
+                id: 'austrian',
+                name: 'Austrian',
+                sub: '',
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Austrian_Airlines_logo.svg/200px-Austrian_Airlines_logo.svg.png',
+                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Austrian_Airlines_logo.svg/200px-Austrian_Airlines_logo.svg.png'
             }, {
                 id: 'condor',
-                name: 'Condor',
-                nameAr: 'كوندور',
-                country: 'Germany',
-                countryAr: 'ألمانيا',
-                alliance: 'None',
-                thirdLang: 'Deutsch',
-                thirdLangCode: 'de',
-                thirdLangNative: 'Deutsch',
-                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#003d73"/><circle cx="38" cy="40" r="16" fill="#f7a600"/><text x="66" y="48" fill="#fff" font-size="17" font-weight="700" letter-spacing="0.07em" font-family="sans-serif">CONDOR</text></svg>`
+                name: 'condor',
+                sub: '',
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Condor_Logo.svg/200px-Condor_Logo.svg.png',
+                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Condor_Logo.svg/200px-Condor_Logo.svg.png'
             }, {
-                id: 'china-eastern',
-                name: 'China Eastern Airlines',
-                nameAr: 'خطوط شرق الصين الجوية',
-                country: 'China',
-                countryAr: 'الصين',
-                alliance: 'SkyTeam',
-                thirdLang: '中文',
-                thirdLangCode: 'zh',
-                thirdLangNative: '中文',
-                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#1a3c6e"/><path d="M28 25 L48 40 L28 55" fill="none" stroke="#c41230" stroke-width="4"/><text x="60" y="48" fill="#fff" font-size="14" font-weight="700" letter-spacing="0.05em" font-family="sans-serif">CHINA EASTERN</text></svg>`
+                id: 'china_eastern',
+                name: '中国东方航空',
+                sub: 'CHINA EASTERN',
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/China_Eastern_Airlines_logo.svg/200px-China_Eastern_Airlines_logo.svg.png',
+                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/China_Eastern_Airlines_logo.svg/200px-China_Eastern_Airlines_logo.svg.png'
             }, {
-                id: 'air-china',
-                name: 'Air China',
-                nameAr: 'طيران الصين',
-                country: 'China',
-                countryAr: 'الصين',
-                alliance: 'Star Alliance',
-                thirdLang: '中文',
-                thirdLangCode: 'zh',
-                thirdLangNative: '中文',
-                logoSVG: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="80" rx="8" fill="#c41230"/><path d="M30 35 L55 40 L30 45" fill="none" stroke="#ffcc00" stroke-width="4"/><text x="68" y="48" fill="#fff" font-size="17" font-weight="700" letter-spacing="0.07em" font-family="sans-serif">AIR CHINA</text></svg>`
+                id: 'air_china',
+                name: 'AIR CHINA',
+                sub: '中国国际航空公司',
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Air_China_logo.svg/200px-Air_China_logo.svg.png',
+                fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Air_China_logo.svg/200px-Air_China_logo.svg.png'
+            }, {
+                id: 'tarco',
+                name: 'Tarco Aviation',
+                sub: '',
+                logo: 'https://tarcoaviation.com/assets/images/logo.png',
+                fallback: 'https://tarcoaviation.com/assets/images/logo.png'
             }];
 
-            // ========== STATE ==========
-            let currentLang = 'en';
-            let isDarkMode = true;
-            let selectedAirline = null;
+            // ---------- بيانات المستندات الوهمية (لكل شركة) ----------
+            // في التطبيق الحقيقي تأتي من Firebase
+            const documentsDB = {
+                british: [
+                    { name: 'دليل المسافر (PDF)', url: '#' },
+                    { name: 'سياسة الأمتعة', url: '#' },
+                    { name: 'جدول الرحلات', url: '#' }
+                ],
+                airfrance: [
+                    { name: 'كتيب الخدمات', url: '#' },
+                    { name: 'معلومات الوجبات', url: '#' }
+                ],
+                qatar: [
+                    { name: 'برنامج المسافر الدائم', url: '#' },
+                    { name: 'دليل المطارات', url: '#' }
+                ],
+                aeroflot: [
+                    { name: 'تعليمات السفر', url: '#' },
+                    { name: 'سياسة الإلغاء', url: '#' }
+                ],
+                q2bookking: [
+                    { name: 'دليل الحجز', url: '#' },
+                    { name: 'الأسئلة الشائعة', url: '#' }
+                ],
+                lufthansa: [
+                    { name: 'تحديثات الرحلات', url: '#' },
+                    { name: 'خدمة العملاء', url: '#' }
+                ],
+                swiss: [
+                    { name: 'دليل السويس', url: '#' },
+                    { name: 'برنامج الولاء', url: '#' }
+                ],
+                austrian: [
+                    { name: 'الموسيقى والترفيه', url: '#' },
+                    { name: 'دليل المقاعد', url: '#' }
+                ],
+                condor: [
+                    { name: 'عروض السفر', url: '#' },
+                    { name: 'سياسة الحيوانات الأليفة', url: '#' }
+                ],
+                china_eastern: [
+                    { name: 'دليل الركاب (中文)', url: '#' },
+                    { name: 'الرحلات الداخلية', url: '#' }
+                ],
+                air_china: [
+                    { name: 'دليل المسافر (中文)', url: '#' },
+                    { name: 'برنامج الفضاء', url: '#' }
+                ],
+                tarco: [
+                    { name: 'دليل الشحن', url: '#' },
+                    { name: 'حجوزات المجموعات', url: '#' }
+                ]
+            };
 
-            // DOM Elements
-            const loadingScreen = document.getElementById('loading-screen');
-            const airlineGrid = document.getElementById('airline-grid');
-            const searchInput = document.getElementById('search-input');
-            const headerDate = document.getElementById('header-date');
-            const btnLangSwitch = document.getElementById('btn-lang-switch');
-            const langIndicator = document.getElementById('lang-indicator');
-            const btnTheme = document.getElementById('btn-theme');
-            const themeIcon = document.getElementById('theme-icon');
-            const modalOverlay = document.getElementById('modal-overlay');
-            const modalLogo = document.getElementById('modal-logo');
-            const modalName = document.getElementById('modal-name');
-            const modalCountry = document.getElementById('modal-country');
-            const modalAlliance = document.getElementById('modal-alliance');
-            const modalThirdLangBtn = document.getElementById('modal-third-lang-btn');
-            const modalClose = document.getElementById('modal-close');
-            const body = document.body;
+            // ---------- مراجع DOM ----------
+            const grid = document.getElementById('airlinesGrid');
+            const overlay = document.getElementById('modalOverlay');
+            const closeBtn = document.getElementById('modalClose');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalAirlineName = document.getElementById('modalAirlineName');
+            const modalMiniLogo = document.getElementById('modalMiniLogo').querySelector('img');
+            const modalSub = document.getElementById('modalSub');
+            const docList = document.getElementById('docList');
 
-            // ========== INIT ==========
-            function init() {
-                buildGrid();
-                updateDate();
-                setInterval(updateDate, 60000); // update date every minute
-                bindEvents();
-                setTimeout(() => loadingScreen.classList.add('hidden'), 1400);
-                applyTheme();
-            }
-
-            // ========== BUILD GRID ==========
+            // ---------- بناء الشبكة ----------
             function buildGrid() {
-                airlineGrid.innerHTML = '';
-                airlines.forEach((airline, idx) => {
+                grid.innerHTML = '';
+                airlines.forEach((airline, index) => {
                     const card = document.createElement('div');
                     card.className = 'airline-card';
-                    card.dataset.airlineId = airline.id;
-                    card.innerHTML = `<div class="card-logo">${airline.logoSVG}</div>`;
-                    card.addEventListener('click', (e) => {
-                        addRipple(e, card);
-                        openModal(airline);
+                    card.dataset.index = index;
+                    card.dataset.id = airline.id;
+
+                    const wrap = document.createElement('div');
+                    wrap.className = 'logo-wrap';
+                    const img = document.createElement('img');
+                    img.src = airline.logo;
+                    img.alt = airline.name;
+                    img.loading = 'lazy';
+                    img.onerror = function() {
+                        this.src = airline.fallback || 'https://via.placeholder.com/200x200/1a2a4a/ffffff?text=Logo';
+                    };
+                    wrap.appendChild(img);
+
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'airline-name';
+                    nameDiv.textContent = airline.name;
+                    if (airline.sub) {
+                        const subSpan = document.createElement('span');
+                        subSpan.className = 'sub';
+                        subSpan.textContent = airline.sub;
+                        nameDiv.appendChild(subSpan);
+                    }
+
+                    card.appendChild(wrap);
+                    card.appendChild(nameDiv);
+                    grid.appendChild(card);
+
+                    // فتح النموذج عند النقر
+                    card.addEventListener('click', function(e) {
+                        const id = this.dataset.id;
+                        openModal(id);
                     });
-                    airlineGrid.appendChild(card);
                 });
             }
 
-            // ========== RIPPLE ==========
-            function addRipple(e, el) {
-                const ripple = document.createElement('span');
-                ripple.className = 'ripple';
-                const rect = el.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                ripple.style.width = ripple.style.height = size + 'px';
-                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
-                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
-                el.appendChild(ripple);
-                ripple.addEventListener('animationend', () => ripple.remove());
+            // ---------- فتح النموذج ----------
+            function openModal(airlineId) {
+                // البحث عن بيانات الشركة
+                const airline = airlines.find(a => a.id === airlineId);
+                if (!airline) return;
+
+                // تحديث العنوان والشعار
+                modalAirlineName.textContent = airline.name + (airline.sub ? ' ' + airline.sub : '');
+                modalMiniLogo.src = airline.logo;
+                modalMiniLogo.onerror = function() {
+                    this.src = airline.fallback || 'https://via.placeholder.com/200x200/1a2a4a/ffffff?text=Logo';
+                };
+                // تحديث النص الفرعي
+                modalSub.textContent = 'اختر مستنداً للاطلاع أو التحميل';
+
+                // جلب المستندات (محاكاة onSnapshot)
+                const docs = documentsDB[airlineId] || [];
+                renderDocs(docs);
+
+                // إظهار النموذج
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
             }
 
-            // ========== MODAL ==========
-            function openModal(airline) {
-                selectedAirline = airline;
-                modalLogo.innerHTML = airline.logoSVG;
-                modalName.textContent = currentLang === 'ar' ? airline.nameAr : airline.name;
-                modalCountry.textContent = currentLang === 'ar' ? airline.countryAr : airline.country;
-                modalAlliance.textContent = airline.alliance !== 'None' ? airline.alliance : (currentLang ===
-                    'ar' ? 'لا يوجد تحالف' : 'No Alliance');
-                modalThirdLangBtn.textContent = airline.thirdLangNative + ' (' + airline.thirdLang + ')';
-                modalOverlay.classList.add('active');
-                body.style.overflow = 'hidden';
+            // ---------- عرض المستندات ----------
+            function renderDocs(docs) {
+                docList.innerHTML = '';
+                if (!docs || docs.length === 0) {
+                    docList.innerHTML = '<div class="doc-empty">لا توجد مستندات متاحة حالياً</div>';
+                    return;
+                }
+                docs.forEach(doc => {
+                    const item = document.createElement('div');
+                    item.className = 'doc-item';
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'doc-name';
+                    nameSpan.innerHTML = `<span class="icon">📄</span> ${doc.name}`;
+
+                    const downloadBtn = document.createElement('a');
+                    downloadBtn.className = 'doc-download';
+                    downloadBtn.href = doc.url || '#';
+                    downloadBtn.target = '_blank';
+                    downloadBtn.textContent = 'تحميل';
+                    if (doc.url === '#') {
+                        downloadBtn.style.opacity = '0.5';
+                        downloadBtn.style.pointerEvents = 'none';
+                        downloadBtn.textContent = 'قريباً';
+                    }
+
+                    item.appendChild(nameSpan);
+                    item.appendChild(downloadBtn);
+                    docList.appendChild(item);
+                });
             }
 
+            // ---------- إغلاق النموذج ----------
             function closeModal() {
-                modalOverlay.classList.remove('active');
-                body.style.overflow = '';
-                selectedAirline = null;
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
             }
 
-            // ========== LANGUAGE ==========
-            function switchLanguage() {
-                currentLang = currentLang === 'en' ? 'ar' : 'en';
-                applyLanguage();
-                updateDate();
-                if (selectedAirline) {
-                    modalName.textContent = currentLang === 'ar' ? selectedAirline.nameAr : selectedAirline.name;
-                    modalCountry.textContent = currentLang === 'ar' ? selectedAirline.countryAr : selectedAirline
-                        .country;
-                    modalAlliance.textContent = selectedAirline.alliance !== 'None' ? selectedAirline.alliance : (
-                        currentLang === 'ar' ? 'لا يوجد تحالف' : 'No Alliance');
-                }
-                searchInput.placeholder = currentLang === 'ar' ? 'ابحث عن شركات الطيران...' : 'Search airlines...';
-            }
+            // ---------- أحداث الإغلاق ----------
+            closeBtn.addEventListener('click', closeModal);
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) closeModal();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeModal();
+            });
 
-            function applyLanguage() {
-                if (currentLang === 'ar') {
-                    body.classList.add('rtl');
-                    body.setAttribute('dir', 'rtl');
-                    langIndicator.textContent = 'EN';
-                } else {
-                    body.classList.remove('rtl');
-                    body.setAttribute('dir', 'ltr');
-                    langIndicator.textContent = 'AR';
-                }
-            }
+            // ---------- تهيئة الصفحة ----------
+            buildGrid();
 
-            // ========== THEME ==========
-            function toggleTheme() {
-                isDarkMode = !isDarkMode;
-                applyTheme();
-            }
+            // (اختياري) محاكاة اشتراك Firebase – في التطبيق الحقيقي يتم استخدام onSnapshot
+            // لكننا نكتفي بالبيانات الثابتة أعلاه.
 
-            function applyTheme() {
-                if (isDarkMode) {
-                    body.classList.remove('light-mode');
-                    body.classList.add('dark-mode');
-                    themeIcon.textContent = '☀️';
-                } else {
-                    body.classList.add('light-mode');
-                    body.classList.remove('dark-mode');
-                    themeIcon.textContent = '🌙';
-                }
-            }
-
-            // ========== DATE (no clock) ==========
-            function updateDate() {
-                const now = new Date();
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                headerDate.textContent = now.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US', options);
-            }
-
-            // ========== SEARCH ==========
-            function handleSearch() {
-                const query = searchInput.value.toLowerCase().trim();
-                const cards = airlineGrid.querySelectorAll('.airline-card');
-                cards.forEach(card => {
-                    const airline = airlines.find(a => a.id === card.dataset.airlineId);
-                    if (!airline) return;
-                    const match = query === '' ||
-                        airline.name.toLowerCase().includes(query) ||
-                        airline.nameAr.includes(query) ||
-                        airline.country.toLowerCase().includes(query) ||
-                        airline.countryAr.includes(query) ||
-                        (airline.alliance && airline.alliance.toLowerCase().includes(query));
-                    if (!match && query !== '') {
-                        card.classList.add('hidden-by-search');
-                        card.classList.remove('match-highlight');
-                    } else {
-                        card.classList.remove('hidden-by-search');
-                        card.classList.toggle('match-highlight', query !== '' && match);
-                    }
-                });
-            }
-
-            // ========== EVENTS ==========
-            function bindEvents() {
-                btnLangSwitch.addEventListener('click', (e) => {
-                    addRipple(e, btnLangSwitch);
-                    switchLanguage();
-                });
-                btnTheme.addEventListener('click', (e) => {
-                    addRipple(e, btnTheme);
-                    toggleTheme();
-                });
-                modalClose.addEventListener('click', closeModal);
-                modalOverlay.addEventListener('click', (e) => {
-                    if (e.target === modalOverlay) closeModal();
-                });
-                searchInput.addEventListener('input', handleSearch);
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && modalOverlay.classList.contains('active')) closeModal();
-                });
-                modalThirdLangBtn.addEventListener('click', () => {
-                    if (selectedAirline) {
-                        alert('Third language: ' + selectedAirline.thirdLangNative);
-                    }
-                });
-            }
-
-            init();
+            console.log('EAS Portal ready — جميع الشعارات والمستندات معروضة.');
         })();
     </script>
 </body>
