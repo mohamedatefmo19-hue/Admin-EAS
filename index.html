@@ -42,7 +42,6 @@
             background: #1a1a2e;
         }
 
-        /* ============ PASSENGER SCREEN ============ */
         #passenger-screen {
             position: fixed;
             inset: 0;
@@ -58,7 +57,6 @@
         #passenger-screen.blurred {
             filter: blur(4px);
         }
-
         #passenger-screen .bg-overlay {
             position: absolute;
             inset: 0;
@@ -66,8 +64,6 @@
             z-index: 0;
             pointer-events: none;
         }
-
-        /* Animated background shapes */
         #animated-bg {
             position: absolute;
             inset: 0;
@@ -87,7 +83,6 @@
             100% { transform: translate(0, 0) scale(1); }
         }
 
-        /* Header */
         #ps-header {
             position: relative;
             z-index: 2;
@@ -144,7 +139,6 @@
             opacity: 0.9;
         }
 
-        /* Airlines Grid */
         #ps-grid-container {
             position: relative;
             z-index: 2;
@@ -190,11 +184,7 @@
             pointer-events: none;
             user-select: none;
         }
-        .airline-card.hidden-card {
-            display: none;
-        }
 
-        /* Footer */
         #ps-footer {
             position: relative;
             z-index: 2;
@@ -207,80 +197,136 @@
             letter-spacing: 0.5px;
         }
 
-        /* ============ POPUP OVERLAY ============ */
+        /* Full‑screen popup overlay */
         #popup-overlay {
             position: fixed;
             inset: 0;
             z-index: 100;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.92);
             display: none;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(3px);
+            flex-direction: column;
+            backdrop-filter: blur(5px);
         }
         #popup-overlay.active {
             display: flex;
         }
-        #popup-box {
+        #popup-fullpage {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             background: #fff;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 750px;
-            max-height: 85vh;
-            overflow-y: auto;
-            padding: 30px;
+            overflow: hidden;
             position: relative;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            animation: popIn 0.3s ease;
-        }
-        @keyframes popIn {
-            from { transform: scale(0.85); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
         }
         #popup-close {
             position: absolute;
-            top: 12px;
-            right: 16px;
-            background: none;
+            top: 18px;
+            right: 22px;
+            background: rgba(0,0,0,0.5);
             border: none;
-            font-size: 28px;
+            font-size: 32px;
             cursor: pointer;
-            color: #555;
-            z-index: 5;
-            width: 40px;
-            height: 40px;
+            color: #fff;
+            z-index: 10;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
+            transition: background 0.2s;
         }
-        #popup-close:hover { background: #f0f0f0; color: #000; }
-        #popup-content .popup-section {
-            margin-bottom: 20px;
+        #popup-close:hover { background: rgba(0,0,0,0.8); }
+
+        .popup-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: #f0f2f5;
+            border-bottom: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+        .popup-header img.eas-logo { height: 42px; }
+        .popup-header img.airline-logo { height: 50px; max-width: 140px; object-fit: contain; }
+
+        .popup-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+        .popup-body .section {
+            margin-bottom: 22px;
             padding: 14px;
-            border-radius: 10px;
             background: #f9fafb;
+            border-radius: 10px;
             border-left: 4px solid #0066cc;
         }
-        #popup-content .popup-section h3 { margin-bottom: 8px; color: #333; font-size: 1rem; }
-        #popup-content .popup-section p, #popup-content .popup-section ul { color: #555; font-size: 0.9rem; line-height: 1.6; }
-        #popup-content .popup-section img { max-width: 100%; border-radius: 8px; margin: 6px 0; }
-        #popup-content .popup-section a.download-btn {
+        .popup-body .section h3 {
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 1rem;
+        }
+        .popup-body .qr-block {
+            text-align: center;
+            margin: 12px 0;
+        }
+        .popup-body .qr-block .qr-caption {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #444;
+        }
+        .popup-body .qr-block img {
+            max-width: 200px;
+            height: auto;
+            border-radius: 8px;
+        }
+        .popup-body a.ext-link {
             display: inline-block;
-            margin: 4px 6px;
-            padding: 8px 16px;
+            padding: 10px 24px;
             background: #0066cc;
             color: #fff;
             border-radius: 6px;
             text-decoration: none;
-            font-weight: 500;
-            transition: background 0.2s;
+            font-weight: 600;
+            margin-top: 6px;
         }
-        #popup-content .popup-section a.download-btn:hover { background: #004d99; }
-        .placeholder-text { color: #aaa; font-style: italic; }
+        .popup-body .phone-item {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #222;
+            margin: 4px 0;
+        }
 
-        /* ============ ADMIN PANEL ============ */
+        .popup-footer {
+            flex-shrink: 0;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 14px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            border-top: 2px solid #444;
+        }
+        .popup-footer .hotline {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #f1c40f;
+        }
+        .popup-footer .phones {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .popup-footer .phones span {
+            background: rgba(255,255,255,0.15);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
         #admin-panel {
             position: fixed;
             inset: 0;
@@ -367,7 +413,6 @@
             box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
         }
         #admin-content textarea { min-height: 80px; resize: vertical; }
-        #admin-content input[type="file"] { font-size: 0.85rem; }
         #admin-content button {
             padding: 8px 18px;
             border: none;
@@ -381,90 +426,44 @@
         .btn-primary { background: #3498db; color: #fff; }
         .btn-primary:hover { background: #2980b9; }
         .btn-danger { background: #e74c3c; color: #fff; }
-        .btn-danger:hover { background: #c0392b; }
         .btn-sm { padding: 5px 10px; font-size: 0.75rem; }
         .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            inset: 0;
-            background: #ccc;
-            border-radius: 24px;
-            transition: 0.3s;
+            position: absolute; cursor: pointer; inset: 0; background: #ccc; border-radius: 24px; transition: 0.3s;
         }
         .toggle-slider::before {
-            content: '';
-            position: absolute;
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background: #fff;
-            border-radius: 50%;
-            transition: 0.3s;
+            content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background: #fff; border-radius: 50%; transition: 0.3s;
         }
         .toggle-switch input:checked+.toggle-slider { background: #27ae60; }
         .toggle-switch input:checked+.toggle-slider::before { transform: translateX(20px); }
-        .status-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
+        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
         .badge-visible { background: #d4edda; color: #155724; }
         .badge-hidden { background: #f8d7da; color: #721c24; }
 
         #admin-login {
-            position: fixed;
-            inset: 0;
-            z-index: 250;
-            background: #1a1a2e;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: fixed; inset: 0; z-index: 250; background: #1a1a2e;
+            display: flex; align-items: center; justify-content: center;
         }
         #admin-login.hidden { display: none; }
         #login-box {
-            background: #fff;
-            border-radius: 14px;
-            padding: 30px;
-            width: 380px;
-            max-width: 90%;
+            background: #fff; border-radius: 14px; padding: 30px; width: 380px; max-width: 90%;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
         #login-box h2 { text-align: center; margin-bottom: 20px; color: #1a1a2e; }
-        #login-box input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #d0d0d0; border-radius: 7px; font-size: 0.9rem; }
-        #login-box button { width: 100%; padding: 10px; margin: 6px 0; border: none; border-radius: 7px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+        #login-box input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #d0d0d0; border-radius: 7px; }
+        #login-box button { width: 100%; padding: 10px; margin: 6px 0; border: none; border-radius: 7px; cursor: pointer; font-weight: 600; }
         #login-error { color: #e74c3c; font-size: 0.8rem; text-align: center; min-height: 20px; }
 
         #toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 999;
-            background: #333;
-            color: #fff;
-            padding: 12px 22px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.35s;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            position: fixed; bottom: 30px; right: 30px; z-index: 999; background: #333; color: #fff;
+            padding: 12px 22px; border-radius: 8px; font-size: 0.85rem; opacity: 0; pointer-events: none;
+            transition: opacity 0.35s; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
         #toast.show { opacity: 1; }
         #toast.success { background: #27ae60; }
         #toast.error { background: #e74c3c; }
-
-        @media (max-width: 768px) {
-            #admin-sidebar { width: 60px; }
-            #admin-sidebar .nav-item { padding: 10px 8px; font-size: 0.7rem; text-align: center; }
-            #ps-header { flex-wrap: wrap; padding: 8px 14px; gap: 8px; }
-            #ps-header .titles .arabic-title { font-size: 1.1rem; }
-            #ps-header .titles .english-title { font-size: 0.75rem; }
-        }
     </style>
 </head>
 <body>
@@ -487,10 +486,16 @@
         <div id="ps-footer">© 2025 EAS. All rights reserved.</div>
     </div>
 
+    <!-- Full‑screen popup -->
     <div id="popup-overlay">
-        <div id="popup-box">
+        <div id="popup-fullpage">
             <button id="popup-close">&times;</button>
-            <div id="popup-content"></div>
+            <div class="popup-header">
+                <img id="popup-eas-logo" class="eas-logo" src="" alt="EAS">
+                <img id="popup-airline-logo" class="airline-logo" src="" alt="Airline">
+            </div>
+            <div class="popup-body" id="popup-body-content"></div>
+            <div class="popup-footer" id="popup-footer-content"></div>
         </div>
     </div>
 
@@ -520,13 +525,14 @@
                 <div class="nav-item" data-section="sec-airlines">✈️ Airlines</div>
                 <div class="nav-item" data-section="sec-layout">📐 Layout</div>
                 <div class="nav-item" data-section="sec-popups">📋 Popup Content</div>
+                <div class="nav-item" data-section="sec-footer">📞 Global Footer</div>
             </div>
             <div id="admin-content">
                 <div class="section active" id="sec-header">
                     <h3>Header Management</h3>
                     <label>EAS Logo</label>
                     <input type="file" id="hdr-logo-upload" accept="image/*">
-                    <img id="hdr-logo-preview" src="" style="max-height:50px;margin:6px 0;display:block;">
+                    <img id="hdr-logo-preview" src="" style="max-height:50px;display:block;margin:6px 0;">
                     <button class="btn-primary btn-sm" id="btn-upload-hdr-logo">Upload Logo</button>
                     <label>Company Name</label>
                     <input type="text" id="hdr-company-name">
@@ -538,11 +544,11 @@
                     <input type="file" id="hdr-bg-upload" accept="image/*">
                     <button class="btn-primary btn-sm" id="btn-upload-bg">Upload Background</button>
                     <label>Header Colors</label>
-                    <div style="display:flex;gap:10px;align-items:center;">
+                    <div style="display:flex;gap:10px;">
                         <input type="color" id="hdr-bg-color" value="#003366">
                         <input type="color" id="hdr-text-color" value="#ffffff">
                     </div>
-                    <label>Footer Information</label>
+                    <label>Footer Text</label>
                     <textarea id="hdr-footer-info"></textarea>
                 </div>
                 <div class="section" id="sec-airlines">
@@ -551,14 +557,12 @@
                     <p style="font-size:0.75rem;color:#888;">Drag & drop to reorder.</p>
                     <div id="airline-list"></div>
                     <div id="airline-edit-form" style="display:none;background:#fff;padding:16px;border-radius:10px;margin-top:12px;border:2px solid #3498db;">
-                        <h4 id="airline-edit-title">Edit Airline</h4>
+                        <h4>Edit Airline</h4>
                         <input type="hidden" id="edit-airline-id">
                         <label>Airline Name (internal)</label>
                         <input type="text" id="edit-airline-name">
                         <label>Country</label>
                         <input type="text" id="edit-airline-country">
-                        <label>Third Language</label>
-                        <input type="text" id="edit-airline-thirdlang">
                         <label>Logo</label>
                         <input type="file" id="edit-airline-logo" accept="image/*">
                         <img id="edit-airline-logo-preview" src="" style="max-height:50px;display:block;margin:4px 0;">
@@ -589,7 +593,7 @@
                     <input type="number" id="layout-card-height" value="120" min="80" max="400">
                     <label>Border Radius (px)</label>
                     <input type="number" id="layout-border-radius" value="12" min="0" max="40">
-                    <label>Shadow Intensity (0-10)</label>
+                    <label>Shadow Intensity</label>
                     <input type="number" id="layout-shadow" value="4" min="0" max="10">
                     <label>Glass Effect</label>
                     <select id="layout-glass">
@@ -604,7 +608,7 @@
                         <option value="0.3s" selected>Normal</option>
                         <option value="0.5s">Slow</option>
                     </select>
-                    <label>Background Overlay Opacity (0-1)</label>
+                    <label>Background Overlay Opacity</label>
                     <input type="range" id="layout-overlay-opacity" min="0" max="1" step="0.05" value="0.35">
                     <span id="overlay-value">0.35</span>
                     <label>Background Animation</label>
@@ -615,39 +619,44 @@
                     <button class="btn-primary" id="btn-apply-layout">Apply Layout</button>
                 </div>
                 <div class="section" id="sec-popups">
-                    <h3>Popup Content Management</h3>
+                    <h3>Popup Content (per airline)</h3>
                     <label>Select Airline</label>
                     <select id="popup-airline-select"><option value="">-- Choose --</option></select>
                     <div id="popup-editor" style="display:none;margin-top:12px;">
-                        <label>General Notice / Apology</label>
-                        <textarea id="popup-apology"></textarea>
-                        <label>Company Description</label>
-                        <textarea id="popup-desc"></textarea>
-                        <label>Important Instructions</label>
-                        <textarea id="popup-instructions"></textarea>
-
-                        <label>QR Code 1</label>
+                        <label>Text Content</label>
+                        <textarea id="popup-text-content" placeholder="Write text..."></textarea>
+                        <label>Font Size (px)</label>
+                        <input type="number" id="popup-font-size" value="16" min="10" max="50">
+                        <label>QR Code 1 Image</label>
                         <input type="file" id="popup-qr1-upload" accept="image/*">
-                        <button class="btn-primary btn-sm" id="btn-upload-qr1">Upload QR1</button>
-                        <img id="popup-qr1-preview" src="" style="max-width:150px;display:block;margin:6px 0;">
-                        <input type="hidden" id="popup-qr1" value="">
-
-                        <label>QR Code 2</label>
+                        <button class="btn-primary btn-sm" id="btn-upload-qr1">Upload</button>
+                        <img id="popup-qr1-preview" src="" style="max-width:120px;display:block;margin:6px 0;">
+                        <input type="hidden" id="popup-qr1">
+                        <label>Caption above QR1</label>
+                        <input type="text" id="popup-qr1-caption" placeholder="Scan for...">
+                        <label>QR Code 2 Image</label>
                         <input type="file" id="popup-qr2-upload" accept="image/*">
-                        <button class="btn-primary btn-sm" id="btn-upload-qr2">Upload QR2</button>
-                        <img id="popup-qr2-preview" src="" style="max-width:150px;display:block;margin:6px 0;">
-                        <input type="hidden" id="popup-qr2" value="">
-
-                        <label>PDF Files</label>
-                        <input type="file" id="popup-pdf-upload" accept=".pdf">
-                        <button class="btn-primary btn-sm" id="btn-upload-pdf">Upload PDF</button>
-                        <textarea id="popup-pdfs" placeholder="https://... (one per line)"></textarea>
-
-                        <label>External Links (one per line)</label>
-                        <textarea id="popup-links" placeholder="https://..."></textarea>
-
+                        <button class="btn-primary btn-sm" id="btn-upload-qr2">Upload</button>
+                        <img id="popup-qr2-preview" src="" style="max-width:120px;display:block;margin:6px 0;">
+                        <input type="hidden" id="popup-qr2">
+                        <label>Caption above QR2</label>
+                        <input type="text" id="popup-qr2-caption" placeholder="Scan for...">
+                        <label>External Link</label>
+                        <input type="text" id="popup-link" placeholder="https://...">
+                        <label>Call Center</label>
+                        <input type="text" id="popup-callcenter" placeholder="Phone number">
+                        <label>Free Format Text</label>
+                        <textarea id="popup-free-text" placeholder="Any additional text..."></textarea>
                         <button class="btn-primary" id="btn-save-popup">Save Popup Content</button>
                     </div>
+                </div>
+                <div class="section" id="sec-footer">
+                    <h3>Global Footer (shown on all popups)</h3>
+                    <label>Hotline</label>
+                    <input type="text" id="global-hotline" placeholder="e.g. 19991">
+                    <label>Phone Numbers (one per line)</label>
+                    <textarea id="global-phones" placeholder="+20 100 123 4567&#10;+20 100 765 4321"></textarea>
+                    <button class="btn-primary" id="btn-save-footer">Save Footer</button>
                 </div>
             </div>
         </div>
@@ -661,52 +670,41 @@
             projectId: "eas-eg",
             storageBucket: "eas-eg.firebasestorage.app",
             messagingSenderId: "254601190180",
-            appId: "1:254601190180:web:c18fa5fa28dcade5b1f1b1",
-            measurementId: "G-TS80N7M49D"
+            appId: "1:254601190180:web:c18fa5fa28dcade5b1f1b1"
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-        const storage = firebase.storage();
-
         const CLOUD_NAME = 'deaevfmvm';
         const UPLOAD_PRESET = 'ml_default';
 
         async function uploadToCloudinary(file, folder = 'eas-assets', resourceType = 'image') {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', UPLOAD_PRESET);
-            formData.append('api_key', '873157495374219');
-            formData.append('folder', folder);
-            const endpoint = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType === 'raw' ? 'raw' : 'image'}/upload`;
-            const resp = await fetch(endpoint, { method: 'POST', body: formData });
-            if (!resp.ok) throw new Error('Upload failed');
-            const data = await resp.json();
-            return data.secure_url;
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('upload_preset', UPLOAD_PRESET);
+            fd.append('api_key', '873157495374219');
+            fd.append('folder', folder);
+            const endp = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType === 'raw' ? 'raw' : 'image'}/upload`;
+            const r = await fetch(endp, { method: 'POST', body: fd });
+            if (!r.ok) throw new Error('Upload failed');
+            const d = await r.json();
+            return d.secure_url;
         }
 
-        // State
-        let allAirlines = [];
-        let settings = {};
-        let currentUser = null;
-        let selectedAirlineId = null;
-        let unsubscribeSettings = null;
-        let unsubscribeAirlines = null;
+        let allAirlines = [], settings = {}, currentUser = null, selectedAirlineId = null;
+        let unsubSettings, unsubAirlines;
 
-        const $passengerScreen = document.getElementById('passenger-screen');
-        const $psGrid = document.getElementById('ps-grid');
-        const $psHeaderLogo = document.getElementById('ps-header-logo');
-        const $psCompanyName = document.getElementById('ps-company-name');
-        const $psArabicTitle = document.getElementById('ps-arabic-title');
-        const $psEnglishTitle = document.getElementById('ps-english-title');
-        const $psFooter = document.getElementById('ps-footer');
-        const $popupOverlay = document.getElementById('popup-overlay');
-        const $popupContent = document.getElementById('popup-content');
-        const $popupClose = document.getElementById('popup-close');
-        const $adminPanel = document.getElementById('admin-panel');
-        const $adminLogin = document.getElementById('admin-login');
-        const $toast = document.getElementById('toast');
-        const $loginError = document.getElementById('login-error');
+        const $ = id => document.getElementById(id);
+        const $passengerScreen = $('passenger-screen');
+        const $psGrid = $('ps-grid');
+        const $popupOverlay = $('popup-overlay');
+        const $popupBody = $('popup-body-content');
+        const $popupFooter = $('popup-footer-content');
+        const $popupEasLogo = $('popup-eas-logo');
+        const $popupAirlineLogo = $('popup-airline-logo');
+        const $adminPanel = $('admin-panel');
+        const $adminLogin = $('admin-login');
+        const $toast = $('toast');
 
         let toastTimer;
         function showToast(msg, type = '') {
@@ -716,59 +714,42 @@
             toastTimer = setTimeout(() => $toast.className = '', 3000);
         }
 
-        // Auth
         auth.onAuthStateChanged(user => {
             currentUser = user;
             if (user) {
-                initRealtimeListeners();
+                initListeners();
             } else {
                 $adminPanel.classList.remove('active');
                 $passengerScreen.classList.remove('blurred');
-                if (unsubscribeSettings) unsubscribeSettings();
-                if (unsubscribeAirlines) unsubscribeAirlines();
-                currentUser = null;
+                if (unsubSettings) unsubSettings();
+                if (unsubAirlines) unsubAirlines();
             }
         });
 
-        document.getElementById('btn-login').addEventListener('click', async () => {
-            const email = document.getElementById('login-email').value.trim();
-            const pass = document.getElementById('login-password').value;
-            $loginError.textContent = '';
-            if (!email || !pass) { $loginError.textContent = 'Please fill all fields.'; return; }
+        $('btn-login').onclick = async () => {
+            const email = $('login-email').value.trim(), pass = $('login-password').value;
+            $('login-error').textContent = '';
+            if (!email || !pass) { $('login-error').textContent = 'Fill all fields'; return; }
             try {
                 await auth.signInWithEmailAndPassword(email, pass);
                 $adminLogin.classList.add('hidden');
                 $adminPanel.classList.add('active');
                 $passengerScreen.classList.add('blurred');
-                refreshAdminPanel();
+                refreshAdmin();
                 showToast('Welcome!', 'success');
-            } catch (e) {
-                $loginError.textContent = 'Incorrect email or password.';
-            }
-        });
-        document.getElementById('btn-signup').addEventListener('click', async () => {
-            const email = document.getElementById('login-email').value.trim();
-            const pass = document.getElementById('login-password').value;
-            $loginError.textContent = '';
-            if (!email || !pass) { $loginError.textContent = 'Please fill all fields.'; return; }
-            if (pass.length < 6) { $loginError.textContent = 'Password too short.'; return; }
-            try {
-                await auth.createUserWithEmailAndPassword(email, pass);
-                showToast('Account created!', 'success');
-            } catch (e) { $loginError.textContent = e.message; }
-        });
-        document.getElementById('btn-admin-logout').addEventListener('click', () => {
-            $adminPanel.classList.remove('active');
-            $passengerScreen.classList.remove('blurred');
-            auth.signOut();
-        });
-        document.getElementById('btn-close-admin').addEventListener('click', () => {
-            $adminPanel.classList.remove('active');
-            $passengerScreen.classList.remove('blurred');
-            auth.signOut();
-        });
+            } catch (e) { $('login-error').textContent = 'Incorrect email or password'; }
+        };
+        $('btn-signup').onclick = async () => {
+            const email = $('login-email').value.trim(), pass = $('login-password').value;
+            if (!email || !pass) return;
+            if (pass.length < 6) { $('login-error').textContent = 'Password too short'; return; }
+            try { await auth.createUserWithEmailAndPassword(email, pass); showToast('Account created', 'success'); }
+            catch (e) { $('login-error').textContent = e.message; }
+        };
+        $('btn-admin-logout').onclick = () => { $adminPanel.classList.remove('active'); $passengerScreen.classList.remove('blurred'); auth.signOut(); };
+        $('btn-close-admin').onclick = () => { $adminPanel.classList.remove('active'); $passengerScreen.classList.remove('blurred'); auth.signOut(); };
 
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener('keydown', e => {
             if (e.ctrlKey && e.shiftKey && e.key === 'A') {
                 e.preventDefault();
                 $adminLogin.classList.remove('hidden');
@@ -777,35 +758,29 @@
             }
         });
 
-        let tapCount = 0;
-        let tapTimer = null;
-        document.getElementById('secret-gesture-zone').addEventListener('click', (e) => {
+        let tapCnt = 0, tapTimer;
+        $('secret-gesture-zone').onclick = e => {
             e.stopPropagation();
-            tapCount++;
-            if (tapTimer) clearTimeout(tapTimer);
-            tapTimer = setTimeout(() => tapCount = 0, 2500);
-            if (tapCount === 7) {
-                tapCount = 0;
-                clearTimeout(tapTimer);
+            tapCnt++;
+            clearTimeout(tapTimer);
+            tapTimer = setTimeout(() => tapCnt = 0, 2500);
+            if (tapCnt === 7) {
+                tapCnt = 0;
                 $adminLogin.classList.remove('hidden');
-                document.getElementById('login-email').value = '';
-                document.getElementById('login-password').value = '';
-                $loginError.textContent = '';
-                $adminPanel.classList.remove('active');
-                $passengerScreen.classList.remove('blurred');
+                $('login-email').value = ''; $('login-password').value = ''; $('login-error').textContent = '';
+                $adminPanel.classList.remove('active'); $passengerScreen.classList.remove('blurred');
             }
-        });
+        };
 
-        function initRealtimeListeners() {
-            if (unsubscribeSettings) unsubscribeSettings();
-            if (unsubscribeAirlines) unsubscribeAirlines();
-            unsubscribeSettings = db.collection('settings').doc('global').onSnapshot(doc => {
-                if (doc.exists) settings = doc.data();
-                else settings = getDefaultSettings();
+        function initListeners() {
+            if (unsubSettings) unsubSettings();
+            if (unsubAirlines) unsubAirlines();
+            unsubSettings = db.collection('settings').doc('global').onSnapshot(doc => {
+                settings = doc.exists ? doc.data() : getDefaultSettings();
                 applySettings();
-                populateAdminFields();
+                populateFields();
             });
-            unsubscribeAirlines = db.collection('airlines').orderBy('order', 'asc').onSnapshot(snap => {
+            unsubAirlines = db.collection('airlines').orderBy('order').onSnapshot(snap => {
                 allAirlines = [];
                 snap.forEach(d => allAirlines.push({ id: d.id, ...d.data() }));
                 renderGrid();
@@ -816,22 +791,14 @@
 
         function getDefaultSettings() {
             return {
-                headerLogo: '',
-                companyName: 'EAS Company',
-                arabicTitle: 'شركة إياس للنقل الجوي',
-                englishTitle: 'EAS Air Transport Company',
-                backgroundImage: '',
-                headerBgColor: 'rgba(0,51,102,0.95)',
-                headerTextColor: '#ffffff',
+                headerLogo: '', companyName: 'EAS Company', arabicTitle: 'شركة إياس للنقل الجوي',
+                englishTitle: 'EAS Air Transport Company', backgroundImage: '',
+                headerBgColor: 'rgba(0,51,102,0.95)', headerTextColor: '#ffffff',
                 footerInfo: '© 2025 EAS. All rights reserved.',
-                cardSpacing: 16,
-                cardHeight: 120,
-                borderRadius: 12,
-                shadow: 4,
-                glassEffect: 'none',
-                animationSpeed: '0.3s',
-                overlayOpacity: 0.35,
-                animationStyle: 'none'
+                cardSpacing: 16, cardHeight: 120, borderRadius: 12, shadow: 4,
+                glassEffect: 'none', animationSpeed: '0.3s', overlayOpacity: 0.35,
+                animationStyle: 'none',
+                globalHotline: '', globalPhoneNumbers: ''
             };
         }
 
@@ -849,167 +816,193 @@
             root.setProperty('--anim-speed', s.animationSpeed || '0.3s');
             root.setProperty('--overlay-opacity', s.overlayOpacity ?? 0.35);
 
-            if (s.headerLogo) $psHeaderLogo.src = s.headerLogo;
-            $psCompanyName.textContent = s.companyName || 'EAS Company';
-            $psArabicTitle.textContent = s.arabicTitle || '';
-            $psEnglishTitle.textContent = s.englishTitle || '';
-            $psFooter.textContent = s.footerInfo || '';
-            if (s.backgroundImage) $passengerScreen.style.backgroundImage = `url(${s.backgroundImage})`;
-            else $passengerScreen.style.backgroundImage = '';
+            $('ps-header-logo').src = s.headerLogo || '';
+            $('ps-company-name').textContent = s.companyName || '';
+            $('ps-arabic-title').textContent = s.arabicTitle || '';
+            $('ps-english-title').textContent = s.englishTitle || '';
+            $('ps-footer').textContent = s.footerInfo || '';
+            $passengerScreen.style.backgroundImage = s.backgroundImage ? `url(${s.backgroundImage})` : '';
 
-            // Animated background
-            const animBg = document.getElementById('animated-bg');
+            const animBg = $('animated-bg');
             animBg.innerHTML = '';
             if (s.animationStyle === 'shapes') {
-                for (let i = 0; i < 6; i++) {
-                    const shape = document.createElement('div');
-                    shape.className = 'bg-shape';
-                    shape.style.width = (40 + Math.random() * 60) + 'px';
-                    shape.style.height = shape.style.width;
-                    shape.style.left = Math.random() * 90 + '%';
-                    shape.style.top = Math.random() * 90 + '%';
-                    shape.style.animationDelay = Math.random() * 10 + 's';
-                    animBg.appendChild(shape);
+                for (let i=0; i<6; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'bg-shape';
+                    el.style.width = el.style.height = (40+Math.random()*60)+'px';
+                    el.style.left = Math.random()*90+'%';
+                    el.style.top = Math.random()*90+'%';
+                    el.style.animationDelay = Math.random()*10+'s';
+                    animBg.appendChild(el);
                 }
             }
         }
 
         function renderGrid() {
             $psGrid.innerHTML = '';
-            const visible = allAirlines.filter(a => a.visible !== false);
-            visible.forEach(airline => {
+            const vis = allAirlines.filter(a => a.visible !== false);
+            vis.forEach(a => {
                 const card = document.createElement('div');
                 card.className = 'airline-card';
-                card.style.backgroundColor = airline.cardBgColor || '#ffffff';
-                if (airline.cardHeight) card.style.height = airline.cardHeight + 'px';
-                card.addEventListener('click', () => openPopup(airline));
+                card.style.backgroundColor = a.cardBgColor || '#fff';
+                if (a.cardHeight) card.style.height = a.cardHeight + 'px';
+                card.onclick = () => openPopup(a);
                 const img = document.createElement('img');
-                img.src = airline.logoUrl || '';
+                img.src = a.logoUrl || '';
                 img.alt = '';
-                img.style.maxWidth = (airline.logoWidth || 75) + '%';
+                img.style.maxWidth = (a.logoWidth || 75) + '%';
                 card.appendChild(img);
                 $psGrid.appendChild(card);
             });
-            if (visible.length === 0) $psGrid.innerHTML = '<div style="text-align:center;color:#aaa;padding:40px;">No airlines</div>';
+            if (!vis.length) $psGrid.innerHTML = '<div style="text-align:center;color:#aaa;padding:40px;">No airlines</div>';
         }
 
         function openPopup(airline) {
             const pc = airline.popupContent || {};
-            let html = '';
-            html += `<div class="popup-section"><h3>📢 General Notice</h3>${pc.apology ? `<p>${pc.apology}</p>` : '<p class="placeholder-text">No notice</p>'}</div>`;
-            html += `<div class="popup-section"><h3>📝 Description</h3>${pc.description ? `<p>${pc.description}</p>` : '<p class="placeholder-text">No description</p>'}</div>`;
-            html += `<div class="popup-section"><h3>⚠️ Instructions</h3>${pc.instructions ? `<p>${pc.instructions}</p>` : '<p class="placeholder-text">No instructions</p>'}</div>`;
-            html += `<div class="popup-section"><h3>📱 QR Code 1</h3>${pc.qr1 ? `<img src="${pc.qr1}" style="max-width:200px;">` : '<p class="placeholder-text">No QR</p>'}</div>`;
-            html += `<div class="popup-section"><h3>📱 QR Code 2</h3>${pc.qr2 ? `<img src="${pc.qr2}" style="max-width:200px;">` : '<p class="placeholder-text">No QR</p>'}</div>`;
-            const pdfs = pc.pdfs || [];
-            html += `<div class="popup-section"><h3>📄 PDFs</h3>${pdfs.length ? pdfs.map(u => `<a href="${u}" target="_blank" class="download-btn">📥 Download PDF</a>`).join(' ') : '<p class="placeholder-text">No PDFs</p>'}</div>`;
-            const links = pc.links || [];
-            html += `<div class="popup-section"><h3>🔗 Links</h3>${links.length ? links.map(u => `<a href="${u}" target="_blank" class="download-btn">Open Link</a>`).join(' ') : '<p class="placeholder-text">No links</p>'}</div>`;
-            $popupContent.innerHTML = html;
+            $popupEasLogo.src = settings.headerLogo || '';
+            $popupAirlineLogo.src = airline.logoUrl || '';
+
+            let body = '';
+            if (pc.textContent) {
+                body += `<div class="section"><div style="font-size:${pc.fontSize||16}px; white-space:pre-wrap;">${pc.textContent}</div></div>`;
+            }
+            if (pc.qr1) {
+                body += `<div class="section"><div class="qr-block">`;
+                if (pc.qr1Caption) body += `<div class="qr-caption">${pc.qr1Caption}</div>`;
+                body += `<img src="${pc.qr1}" alt="QR1"></div></div>`;
+            }
+            if (pc.qr2) {
+                body += `<div class="section"><div class="qr-block">`;
+                if (pc.qr2Caption) body += `<div class="qr-caption">${pc.qr2Caption}</div>`;
+                body += `<img src="${pc.qr2}" alt="QR2"></div></div>`;
+            }
+            if (pc.link) {
+                body += `<div class="section"><a href="${pc.link}" target="_blank" class="ext-link">🔗 Open Link</a></div>`;
+            }
+            if (pc.callCenter) {
+                body += `<div class="section"><h3>📞 Call Center</h3><div class="phone-item">${pc.callCenter}</div></div>`;
+            }
+            if (pc.freeText) {
+                body += `<div class="section"><div style="white-space:pre-wrap;">${pc.freeText}</div></div>`;
+            }
+            $popupBody.innerHTML = body;
+
+            // Footer
+            let footer = '';
+            const hotline = settings.globalHotline || '';
+            const phones = (settings.globalPhoneNumbers || '').split('\n').filter(Boolean);
+            if (hotline) footer += `<div class="hotline">📞 Hotline: ${hotline}</div>`;
+            if (phones.length) {
+                footer += `<div class="phones">`;
+                phones.forEach(p => footer += `<span>${p}</span>`);
+                footer += `</div>`;
+            }
+            $popupFooter.innerHTML = footer || '';
+
             $popupOverlay.classList.add('active');
         }
 
-        $popupClose.onclick = () => $popupOverlay.classList.remove('active');
-        $popupOverlay.onclick = (e) => { if (e.target === $popupOverlay) $popupOverlay.classList.remove('active'); };
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $popupOverlay.classList.remove('active'); });
+        $('popup-close').onclick = () => $popupOverlay.classList.remove('active');
+        $popupOverlay.onclick = e => { if (e.target === $popupOverlay) $popupOverlay.classList.remove('active'); };
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') $popupOverlay.classList.remove('active'); });
 
-        function populateAdminFields() {
+        function populateFields() {
             const s = settings;
-            document.getElementById('hdr-company-name').value = s.companyName || '';
-            document.getElementById('hdr-arabic-title').value = s.arabicTitle || '';
-            document.getElementById('hdr-english-title').value = s.englishTitle || '';
-            document.getElementById('hdr-bg-color').value = s.headerBgColor || '#003366';
-            document.getElementById('hdr-text-color').value = s.headerTextColor || '#ffffff';
-            document.getElementById('hdr-footer-info').value = s.footerInfo || '';
-            document.getElementById('hdr-logo-preview').src = s.headerLogo || '';
-            document.getElementById('layout-card-spacing').value = s.cardSpacing || 16;
-            document.getElementById('layout-card-height').value = s.cardHeight || 120;
-            document.getElementById('layout-border-radius').value = s.borderRadius || 12;
-            document.getElementById('layout-shadow').value = s.shadow || 4;
-            document.getElementById('layout-glass').value = s.glassEffect || 'none';
-            document.getElementById('layout-anim-speed').value = s.animationSpeed || '0.3s';
-            document.getElementById('layout-overlay-opacity').value = s.overlayOpacity ?? 0.35;
-            document.getElementById('overlay-value').textContent = s.overlayOpacity ?? 0.35;
-            document.getElementById('layout-animation-style').value = s.animationStyle || 'none';
+            $('hdr-company-name').value = s.companyName || '';
+            $('hdr-arabic-title').value = s.arabicTitle || '';
+            $('hdr-english-title').value = s.englishTitle || '';
+            $('hdr-bg-color').value = s.headerBgColor || '#003366';
+            $('hdr-text-color').value = s.headerTextColor || '#ffffff';
+            $('hdr-footer-info').value = s.footerInfo || '';
+            $('hdr-logo-preview').src = s.headerLogo || '';
+            $('layout-card-spacing').value = s.cardSpacing || 16;
+            $('layout-card-height').value = s.cardHeight || 120;
+            $('layout-border-radius').value = s.borderRadius || 12;
+            $('layout-shadow').value = s.shadow || 4;
+            $('layout-glass').value = s.glassEffect || 'none';
+            $('layout-anim-speed').value = s.animationSpeed || '0.3s';
+            $('layout-overlay-opacity').value = s.overlayOpacity ?? 0.35;
+            $('overlay-value').textContent = s.overlayOpacity ?? 0.35;
+            $('layout-animation-style').value = s.animationStyle || 'none';
+            $('global-hotline').value = s.globalHotline || '';
+            $('global-phones').value = s.globalPhoneNumbers || '';
         }
 
-        function refreshAdminPanel() {
-            populateAdminFields();
-            renderAirlineList();
-            populatePopupSelect();
-        }
+        function refreshAdmin() { populateFields(); renderAirlineList(); populatePopupSelect(); }
 
-        document.getElementById('btn-upload-hdr-logo').onclick = async () => {
-            const file = document.getElementById('hdr-logo-upload').files[0];
-            if (!file) return showToast('Select image', 'error');
-            const url = await uploadToCloudinary(file, 'eas-assets/header');
-            document.getElementById('hdr-logo-preview').src = url;
-            await db.collection('settings').doc('global').update({ headerLogo: url });
-            showToast('Logo uploaded', 'success');
+        $('btn-upload-hdr-logo').onclick = async () => {
+            const f = $('hdr-logo-upload').files[0]; if (!f) return;
+            const url = await uploadToCloudinary(f, 'eas-assets/header');
+            $('hdr-logo-preview').src = url;
+            await db.collection('settings').doc('global').update({headerLogo: url});
+            showToast('Logo uploaded','success');
         };
-        document.getElementById('btn-upload-bg').onclick = async () => {
-            const file = document.getElementById('hdr-bg-upload').files[0];
-            if (!file) return showToast('Select image', 'error');
-            const url = await uploadToCloudinary(file, 'eas-assets/backgrounds');
-            await db.collection('settings').doc('global').update({ backgroundImage: url });
-            showToast('Background uploaded', 'success');
+        $('btn-upload-bg').onclick = async () => {
+            const f = $('hdr-bg-upload').files[0]; if (!f) return;
+            const url = await uploadToCloudinary(f, 'eas-assets/backgrounds');
+            await db.collection('settings').doc('global').update({backgroundImage: url});
+            showToast('Background uploaded','success');
         };
+        $('btn-save-all').onclick = async () => {
+            await db.collection('settings').doc('global').update({
+                companyName: $('hdr-company-name').value,
+                arabicTitle: $('hdr-arabic-title').value,
+                englishTitle: $('hdr-english-title').value,
+                headerBgColor: $('hdr-bg-color').value,
+                headerTextColor: $('hdr-text-color').value,
+                footerInfo: $('hdr-footer-info').value,
+                cardSpacing: +$('layout-card-spacing').value,
+                cardHeight: +$('layout-card-height').value,
+                borderRadius: +$('layout-border-radius').value,
+                shadow: +$('layout-shadow').value,
+                glassEffect: $('layout-glass').value,
+                animationSpeed: $('layout-anim-speed').value,
+                overlayOpacity: +$('layout-overlay-opacity').value,
+                animationStyle: $('layout-animation-style').value
+            });
+            showToast('Saved','success');
+        };
+        $('btn-apply-layout').onclick = $('btn-save-all').onclick;
+        $('layout-overlay-opacity').oninput = function() { $('overlay-value').textContent = this.value; };
 
-        document.getElementById('btn-save-all').onclick = async () => {
-            const updates = {
-                companyName: document.getElementById('hdr-company-name').value,
-                arabicTitle: document.getElementById('hdr-arabic-title').value,
-                englishTitle: document.getElementById('hdr-english-title').value,
-                headerBgColor: document.getElementById('hdr-bg-color').value,
-                headerTextColor: document.getElementById('hdr-text-color').value,
-                footerInfo: document.getElementById('hdr-footer-info').value,
-                cardSpacing: +document.getElementById('layout-card-spacing').value,
-                cardHeight: +document.getElementById('layout-card-height').value,
-                borderRadius: +document.getElementById('layout-border-radius').value,
-                shadow: +document.getElementById('layout-shadow').value,
-                glassEffect: document.getElementById('layout-glass').value,
-                animationSpeed: document.getElementById('layout-anim-speed').value,
-                overlayOpacity: +document.getElementById('layout-overlay-opacity').value,
-                animationStyle: document.getElementById('layout-animation-style').value
-            };
-            await db.collection('settings').doc('global').update(updates);
-            showToast('Saved!', 'success');
-        };
-        document.getElementById('btn-apply-layout').onclick = document.getElementById('btn-save-all').onclick;
-        document.getElementById('layout-overlay-opacity').oninput = function() {
-            document.getElementById('overlay-value').textContent = this.value;
+        $('btn-save-footer').onclick = async () => {
+            await db.collection('settings').doc('global').update({
+                globalHotline: $('global-hotline').value,
+                globalPhoneNumbers: $('global-phones').value
+            });
+            showToast('Footer saved','success');
         };
 
-        // Airlines
+        // Airlines list & drag
         function renderAirlineList() {
-            const list = document.getElementById('airline-list');
+            const list = $('airline-list');
             list.innerHTML = '';
-            allAirlines.forEach((a, i) => {
+            allAirlines.forEach((a,i) => {
                 const div = document.createElement('div');
                 div.className = 'airline-list-item';
                 div.draggable = true;
                 div.dataset.id = a.id;
                 div.dataset.index = i;
                 div.innerHTML = `<span class="drag-handle">☰</span><div class="item-info"><strong>${a.name||'Unnamed'}</strong><span>${a.country||''} | ${a.visible!==false?'Visible':'Hidden'}</span></div><button class="btn-primary btn-sm btn-edit-airline" data-id="${a.id}">✏️</button>`;
-                div.addEventListener('dragstart', handleDragStart);
-                div.addEventListener('dragover', handleDragOver);
-                div.addEventListener('drop', handleDrop);
-                div.addEventListener('dragend', handleDragEnd);
+                div.addEventListener('dragstart', ds);
+                div.addEventListener('dragover', dv);
+                div.addEventListener('drop', dd);
+                div.addEventListener('dragend', de);
                 list.appendChild(div);
             });
-            document.querySelectorAll('.btn-edit-airline').forEach(b => b.onclick = () => openAirlineEditor(b.dataset.id));
+            document.querySelectorAll('.btn-edit-airline').forEach(b => b.onclick = () => openEditor(b.dataset.id));
         }
-        let draggedItem = null, draggedIndex = null;
-        function handleDragStart(e) { draggedItem = this; draggedIndex = +this.dataset.index; this.style.opacity='0.5'; e.dataTransfer.setData('text', this.dataset.id); }
-        function handleDragOver(e) { e.preventDefault(); this.classList.add('drag-over'); }
-        function handleDrop(e) {
+        let draggedItem, draggedIndex;
+        function ds(e) { draggedItem=this; draggedIndex=+this.dataset.index; this.style.opacity='0.5'; e.dataTransfer.setData('text', this.dataset.id); }
+        function dv(e) { e.preventDefault(); this.classList.add('drag-over'); }
+        function dd(e) {
             e.preventDefault();
             this.classList.remove('drag-over');
             if (draggedItem === this) return;
-            reorder(draggedIndex, +this.dataset.index);
+            reorderAirlines(draggedIndex, +this.dataset.index);
         }
-        function handleDragEnd() { this.style.opacity='1'; document.querySelectorAll('.airline-list-item').forEach(e=>e.classList.remove('drag-over')); }
-        async function reorder(from, to) {
+        function de() { this.style.opacity='1'; document.querySelectorAll('.airline-list-item').forEach(e=>e.classList.remove('drag-over')); }
+        async function reorderAirlines(from, to) {
             const arr = [...allAirlines];
             const [moved] = arr.splice(from,1);
             arr.splice(to,0,moved);
@@ -1019,143 +1012,133 @@
             showToast('Reordered','success');
         }
 
-        function openAirlineEditor(id) {
+        function openEditor(id) {
             const a = allAirlines.find(x => x.id === id);
             if (!a) return;
             selectedAirlineId = id;
-            document.getElementById('airline-edit-form').style.display = 'block';
-            document.getElementById('edit-airline-id').value = id;
-            document.getElementById('edit-airline-name').value = a.name || '';
-            document.getElementById('edit-airline-country').value = a.country || '';
-            document.getElementById('edit-airline-thirdlang').value = a.thirdLanguage || '';
-            document.getElementById('edit-airline-card-bg').value = a.cardBgColor || '#ffffff';
-            document.getElementById('edit-airline-logo-width').value = a.logoWidth || 75;
-            document.getElementById('edit-airline-card-height').value = a.cardHeight || '';
-            document.getElementById('edit-airline-visible').checked = a.visible !== false;
-            document.getElementById('edit-airline-logo-preview').src = a.logoUrl || '';
+            $('airline-edit-form').style.display = 'block';
+            $('edit-airline-id').value = id;
+            $('edit-airline-name').value = a.name || '';
+            $('edit-airline-country').value = a.country || '';
+            $('edit-airline-card-bg').value = a.cardBgColor || '#ffffff';
+            $('edit-airline-logo-width').value = a.logoWidth || 75;
+            $('edit-airline-card-height').value = a.cardHeight || '';
+            $('edit-airline-visible').checked = a.visible !== false;
+            $('edit-airline-logo-preview').src = a.logoUrl || '';
         }
-        document.getElementById('btn-cancel-airline-edit').onclick = () => { document.getElementById('airline-edit-form').style.display='none'; selectedAirlineId=null; };
-        document.getElementById('btn-add-airline').onclick = async () => {
+        $('btn-cancel-airline-edit').onclick = () => { $('airline-edit-form').style.display='none'; selectedAirlineId=null; };
+        $('btn-add-airline').onclick = async () => {
             const order = Math.max(...allAirlines.map(a=>a.order||0), -1) + 1;
             const ref = await db.collection('airlines').add({
-                name:'New Airline', country:'', thirdLanguage:'', logoUrl:'', cardBgColor:'#ffffff', logoWidth:75, cardHeight:null, visible:true, order,
-                popupContent:{apology:'',description:'',instructions:'',qr1:'',qr2:'',pdfs:[],links:[]}
+                name:'New Airline', country:'', logoUrl:'', cardBgColor:'#fff', logoWidth:75,
+                cardHeight:null, visible:true, order,
+                popupContent: { textContent:'', fontSize:16, qr1:'', qr1Caption:'', qr2:'', qr2Caption:'', link:'', callCenter:'', freeText:'' }
             });
             showToast('Added','success');
-            setTimeout(()=>openAirlineEditor(ref.id),400);
+            setTimeout(()=>openEditor(ref.id),400);
         };
-        document.getElementById('btn-save-airline-edit').onclick = async () => {
+        $('btn-save-airline-edit').onclick = async () => {
             if (!selectedAirlineId) return;
             await db.collection('airlines').doc(selectedAirlineId).update({
-                name: document.getElementById('edit-airline-name').value,
-                country: document.getElementById('edit-airline-country').value,
-                thirdLanguage: document.getElementById('edit-airline-thirdlang').value,
-                cardBgColor: document.getElementById('edit-airline-card-bg').value,
-                logoWidth: +document.getElementById('edit-airline-logo-width').value || 75,
-                cardHeight: +document.getElementById('edit-airline-card-height').value || null,
-                visible: document.getElementById('edit-airline-visible').checked
+                name: $('edit-airline-name').value,
+                country: $('edit-airline-country').value,
+                cardBgColor: $('edit-airline-card-bg').value,
+                logoWidth: +$('edit-airline-logo-width').value || 75,
+                cardHeight: +$('edit-airline-card-height').value || null,
+                visible: $('edit-airline-visible').checked
             });
-            document.getElementById('airline-edit-form').style.display='none';
+            $('airline-edit-form').style.display='none';
             selectedAirlineId=null;
             showToast('Saved','success');
         };
-        document.getElementById('btn-delete-airline').onclick = async () => {
+        $('btn-delete-airline').onclick = async () => {
             if (!selectedAirlineId || !confirm('Delete?')) return;
             await db.collection('airlines').doc(selectedAirlineId).delete();
-            document.getElementById('airline-edit-form').style.display='none';
+            $('airline-edit-form').style.display='none';
             selectedAirlineId=null;
             showToast('Deleted','success');
         };
-        document.getElementById('btn-upload-airline-logo').onclick = async () => {
-            const file = document.getElementById('edit-airline-logo').files[0];
-            if (!file || !selectedAirlineId) return;
-            const url = await uploadToCloudinary(file, 'eas-assets/airline-logos');
-            document.getElementById('edit-airline-logo-preview').src = url;
-            await db.collection('airlines').doc(selectedAirlineId).update({logoUrl:url});
+        $('btn-upload-airline-logo').onclick = async () => {
+            const f = $('edit-airline-logo').files[0];
+            if (!f || !selectedAirlineId) return;
+            const url = await uploadToCloudinary(f, 'eas-assets/airline-logos');
+            $('edit-airline-logo-preview').src = url;
+            await db.collection('airlines').doc(selectedAirlineId).update({logoUrl: url});
             showToast('Logo uploaded','success');
         };
 
-        // Popup Editor
+        // Popup editor
         function populatePopupSelect() {
-            const sel = document.getElementById('popup-airline-select');
-            const val = sel.value;
+            const sel = $('popup-airline-select');
+            const cur = sel.value;
             sel.innerHTML = '<option value="">-- Choose --</option>';
-            allAirlines.forEach(a => sel.innerHTML += `<option value="${a.id}" ${a.id===val?'selected':''}>${a.name||'Unnamed'}</option>`);
+            allAirlines.forEach(a => sel.innerHTML += `<option value="${a.id}" ${a.id===cur?'selected':''}>${a.name||'Unnamed'}</option>`);
         }
-        document.getElementById('popup-airline-select').onchange = function() {
+        $('popup-airline-select').onchange = function() {
             const id = this.value;
-            const editor = document.getElementById('popup-editor');
+            const editor = $('popup-editor');
             if (!id) { editor.style.display='none'; return; }
             editor.style.display='block';
-            const a = allAirlines.find(x=>x.id===id);
+            const a = allAirlines.find(x => x.id === id);
             if (!a) return;
             const pc = a.popupContent || {};
-            document.getElementById('popup-apology').value = pc.apology || '';
-            document.getElementById('popup-desc').value = pc.description || '';
-            document.getElementById('popup-instructions').value = pc.instructions || '';
-            document.getElementById('popup-qr1').value = pc.qr1 || '';
-            document.getElementById('popup-qr2').value = pc.qr2 || '';
-            document.getElementById('popup-pdfs').value = (pc.pdfs||[]).join('\n');
-            document.getElementById('popup-links').value = (pc.links||[]).join('\n');
-            document.getElementById('popup-qr1-preview').src = pc.qr1 || '';
-            document.getElementById('popup-qr2-preview').src = pc.qr2 || '';
+            $('popup-text-content').value = pc.textContent || '';
+            $('popup-font-size').value = pc.fontSize || 16;
+            $('popup-qr1').value = pc.qr1 || '';
+            $('popup-qr1-caption').value = pc.qr1Caption || '';
+            $('popup-qr2').value = pc.qr2 || '';
+            $('popup-qr2-caption').value = pc.qr2Caption || '';
+            $('popup-link').value = pc.link || '';
+            $('popup-callcenter').value = pc.callCenter || '';
+            $('popup-free-text').value = pc.freeText || '';
+            $('popup-qr1-preview').src = pc.qr1 || '';
+            $('popup-qr2-preview').src = pc.qr2 || '';
         };
-
-        document.getElementById('btn-upload-qr1').onclick = async () => {
-            const file = document.getElementById('popup-qr1-upload').files[0];
-            if (!file) return;
-            const url = await uploadToCloudinary(file, 'eas-assets/qrcodes');
-            document.getElementById('popup-qr1').value = url;
-            document.getElementById('popup-qr1-preview').src = url;
+        $('btn-upload-qr1').onclick = async () => {
+            const f = $('popup-qr1-upload').files[0]; if (!f) return;
+            const url = await uploadToCloudinary(f, 'eas-assets/qrcodes');
+            $('popup-qr1').value = url; $('popup-qr1-preview').src = url;
         };
-        document.getElementById('btn-upload-qr2').onclick = async () => {
-            const file = document.getElementById('popup-qr2-upload').files[0];
-            if (!file) return;
-            const url = await uploadToCloudinary(file, 'eas-assets/qrcodes');
-            document.getElementById('popup-qr2').value = url;
-            document.getElementById('popup-qr2-preview').src = url;
+        $('btn-upload-qr2').onclick = async () => {
+            const f = $('popup-qr2-upload').files[0]; if (!f) return;
+            const url = await uploadToCloudinary(f, 'eas-assets/qrcodes');
+            $('popup-qr2').value = url; $('popup-qr2-preview').src = url;
         };
-        document.getElementById('btn-upload-pdf').onclick = async () => {
-            const file = document.getElementById('popup-pdf-upload').files[0];
-            if (!file) return;
-            const url = await uploadToCloudinary(file, 'eas-assets/pdfs', 'raw');
-            const textarea = document.getElementById('popup-pdfs');
-            textarea.value = textarea.value.trim() ? textarea.value + '\n' + url : url;
-            showToast('PDF uploaded, link added','success');
-        };
-
-        document.getElementById('btn-save-popup').onclick = async () => {
-            const id = document.getElementById('popup-airline-select').value;
+        $('btn-save-popup').onclick = async () => {
+            const id = $('popup-airline-select').value;
             if (!id) return showToast('Select airline','error');
-            const popupContent = {
-                apology: document.getElementById('popup-apology').value,
-                description: document.getElementById('popup-desc').value,
-                instructions: document.getElementById('popup-instructions').value,
-                qr1: document.getElementById('popup-qr1').value,
-                qr2: document.getElementById('popup-qr2').value,
-                pdfs: document.getElementById('popup-pdfs').value.split('\n').map(s=>s.trim()).filter(Boolean),
-                links: document.getElementById('popup-links').value.split('\n').map(s=>s.trim()).filter(Boolean)
-            };
-            await db.collection('airlines').doc(id).update({popupContent});
+            await db.collection('airlines').doc(id).update({
+                popupContent: {
+                    textContent: $('popup-text-content').value,
+                    fontSize: +$('popup-font-size').value || 16,
+                    qr1: $('popup-qr1').value,
+                    qr1Caption: $('popup-qr1-caption').value,
+                    qr2: $('popup-qr2').value,
+                    qr2Caption: $('popup-qr2-caption').value,
+                    link: $('popup-link').value,
+                    callCenter: $('popup-callcenter').value,
+                    freeText: $('popup-free-text').value
+                }
+            });
             showToast('Popup saved','success');
         };
 
         document.querySelectorAll('#admin-sidebar .nav-item').forEach(item => {
             item.onclick = () => {
-                document.querySelectorAll('#admin-sidebar .nav-item').forEach(n=>n.classList.remove('active'));
+                document.querySelectorAll('#admin-sidebar .nav-item').forEach(n => n.classList.remove('active'));
                 item.classList.add('active');
-                const sec = document.getElementById(item.dataset.section);
-                document.querySelectorAll('#admin-content .section').forEach(s=>s.classList.remove('active'));
+                const sec = $(item.dataset.section);
+                document.querySelectorAll('#admin-content .section').forEach(s => s.classList.remove('active'));
                 if (sec) sec.classList.add('active');
                 if (item.dataset.section === 'sec-popups') populatePopupSelect();
+                if (item.dataset.section === 'sec-footer') { $('global-hotline').value = settings.globalHotline || ''; $('global-phones').value = settings.globalPhoneNumbers || ''; }
             };
         });
 
-        // Init
         (async () => {
-            const doc = await db.collection('settings').doc('global').get();
-            if (!doc.exists) await db.collection('settings').doc('global').set(getDefaultSettings());
-            settings = doc.exists ? doc.data() : getDefaultSettings();
+            const d = await db.collection('settings').doc('global').get();
+            if (!d.exists) await db.collection('settings').doc('global').set(getDefaultSettings());
+            settings = d.exists ? d.data() : getDefaultSettings();
             applySettings();
             renderGrid();
         })();
