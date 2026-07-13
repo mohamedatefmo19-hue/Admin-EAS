@@ -22,13 +22,11 @@
             --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             --card-glass: none;
             --card-spacing: 16px;
-            --card-width: 200px;
-            --card-height: 100px;
+            --card-min-height: 120px;
             --anim-speed: 0.3s;
             --header-bg: rgba(0, 51, 102, 0.95);
             --header-text: #ffffff;
-            --columns: 4;
-            --rows: 3;
+            --overlay-opacity: 0.35;
         }
 
         * {
@@ -64,9 +62,29 @@
         #passenger-screen .bg-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.35);
+            background: rgba(0, 0, 0, var(--overlay-opacity));
             z-index: 0;
             pointer-events: none;
+        }
+
+        /* Animated background shapes */
+        #animated-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            animation: floatShape 20s infinite ease-in-out;
+        }
+        @keyframes floatShape {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(40px, -30px) scale(1.2); }
+            100% { transform: translate(0, 0) scale(1); }
         }
 
         /* Header */
@@ -139,14 +157,11 @@
         }
         #ps-grid {
             display: grid;
-            grid-template-columns: repeat(var(--columns), var(--card-width));
-            grid-auto-rows: var(--card-height);
+            grid-template-columns: repeat(2, 1fr);
             gap: var(--card-spacing);
-            justify-content: center;
-            align-content: center;
-            max-height: calc(var(--rows) * (var(--card-height) + var(--card-spacing)));
-            overflow-y: auto;
-            padding: 8px;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
         }
         .airline-card {
             background: var(--card-glass) var(--card-bg);
@@ -162,9 +177,10 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
+            min-height: var(--card-min-height);
         }
         .airline-card:hover {
-            transform: translateY(-3px) scale(1.03);
+            transform: translateY(-3px) scale(1.02);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
         }
         .airline-card img {
@@ -218,14 +234,8 @@
             animation: popIn 0.3s ease;
         }
         @keyframes popIn {
-            from {
-                transform: scale(0.85);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
+            from { transform: scale(0.85); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
         #popup-close {
             position: absolute;
@@ -245,10 +255,7 @@
             justify-content: center;
             transition: all 0.2s;
         }
-        #popup-close:hover {
-            background: #f0f0f0;
-            color: #000;
-        }
+        #popup-close:hover { background: #f0f0f0; color: #000; }
         #popup-content .popup-section {
             margin-bottom: 20px;
             padding: 14px;
@@ -256,26 +263,9 @@
             background: #f9fafb;
             border-left: 4px solid #0066cc;
         }
-        #popup-content .popup-section h3 {
-            margin-bottom: 8px;
-            color: #333;
-            font-size: 1rem;
-        }
-        #popup-content .popup-section p,
-        #popup-content .popup-section ul {
-            color: #555;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-        #popup-content .popup-section img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin: 6px 0;
-        }
-        #popup-content .popup-section video {
-            max-width: 100%;
-            border-radius: 8px;
-        }
+        #popup-content .popup-section h3 { margin-bottom: 8px; color: #333; font-size: 1rem; }
+        #popup-content .popup-section p, #popup-content .popup-section ul { color: #555; font-size: 0.9rem; line-height: 1.6; }
+        #popup-content .popup-section img { max-width: 100%; border-radius: 8px; margin: 6px 0; }
         #popup-content .popup-section a.download-btn {
             display: inline-block;
             margin: 4px 6px;
@@ -287,13 +277,8 @@
             font-weight: 500;
             transition: background 0.2s;
         }
-        #popup-content .popup-section a.download-btn:hover {
-            background: #004d99;
-        }
-        #popup-content .popup-section .placeholder-text {
-            color: #aaa;
-            font-style: italic;
-        }
+        #popup-content .popup-section a.download-btn:hover { background: #004d99; }
+        .placeholder-text { color: #aaa; font-style: italic; }
 
         /* ============ ADMIN PANEL ============ */
         #admin-panel {
@@ -305,9 +290,7 @@
             flex-direction: column;
             overflow: hidden;
         }
-        #admin-panel.active {
-            display: flex;
-        }
+        #admin-panel.active { display: flex; }
         #admin-header-bar {
             background: #1a1a2e;
             color: #fff;
@@ -318,10 +301,7 @@
             flex-shrink: 0;
             gap: 12px;
         }
-        #admin-header-bar h2 {
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-        }
+        #admin-header-bar h2 { font-size: 1.1rem; letter-spacing: 1px; }
         #admin-header-bar button {
             padding: 7px 16px;
             border: none;
@@ -331,33 +311,14 @@
             font-size: 0.85rem;
             transition: all 0.2s;
         }
-        .btn-close {
-            background: #e74c3c;
-            color: #fff;
-        }
-        .btn-close:hover {
-            background: #c0392b;
-        }
-        .btn-save {
-            background: #27ae60;
-            color: #fff;
-        }
-        .btn-save:hover {
-            background: #219a52;
-        }
-        .btn-logout {
-            background: #555;
-            color: #fff;
-        }
-        .btn-logout:hover {
-            background: #333;
-        }
+        .btn-close { background: #e74c3c; color: #fff; }
+        .btn-close:hover { background: #c0392b; }
+        .btn-save { background: #27ae60; color: #fff; }
+        .btn-save:hover { background: #219a52; }
+        .btn-logout { background: #555; color: #fff; }
+        .btn-logout:hover { background: #333; }
 
-        #admin-body {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
+        #admin-body { display: flex; flex: 1; overflow: hidden; }
         #admin-sidebar {
             width: 220px;
             background: #2c2c3e;
@@ -374,24 +335,14 @@
             transition: all 0.2s;
             letter-spacing: 0.5px;
         }
-        #admin-sidebar .nav-item:hover,
-        #admin-sidebar .nav-item.active {
+        #admin-sidebar .nav-item:hover, #admin-sidebar .nav-item.active {
             background: #3a3a52;
             color: #fff;
             border-left-color: #3498db;
         }
-        #admin-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px 24px;
-            background: #f9fafb;
-        }
-        #admin-content .section {
-            display: none;
-        }
-        #admin-content .section.active {
-            display: block;
-        }
+        #admin-content { flex: 1; overflow-y: auto; padding: 20px 24px; background: #f9fafb; }
+        #admin-content .section { display: none; }
+        #admin-content .section.active { display: block; }
         #admin-content h3 {
             margin-bottom: 16px;
             color: #1a1a2e;
@@ -399,19 +350,9 @@
             border-bottom: 2px solid #e0e0e0;
             padding-bottom: 8px;
         }
-        #admin-content label {
-            display: block;
-            font-weight: 600;
-            margin: 10px 0 4px;
-            color: #333;
-            font-size: 0.85rem;
-        }
-        #admin-content input[type="text"],
-        #admin-content input[type="number"],
-        #admin-content input[type="url"],
-        #admin-content input[type="color"],
-        #admin-content textarea,
-        #admin-content select {
+        #admin-content label { display: block; font-weight: 600; margin: 10px 0 4px; color: #333; font-size: 0.85rem; }
+        #admin-content input[type="text"], #admin-content input[type="number"], #admin-content input[type="url"],
+        #admin-content input[type="color"], #admin-content textarea, #admin-content select {
             width: 100%;
             padding: 9px 12px;
             border: 1px solid #d0d0d0;
@@ -420,20 +361,13 @@
             transition: border 0.2s;
             background: #fff;
         }
-        #admin-content input:focus,
-        #admin-content textarea:focus,
-        #admin-content select:focus {
+        #admin-content input:focus, #admin-content textarea:focus, #admin-content select:focus {
             outline: none;
             border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
         }
-        #admin-content textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-        #admin-content input[type="file"] {
-            font-size: 0.85rem;
-        }
+        #admin-content textarea { min-height: 80px; resize: vertical; }
+        #admin-content input[type="file"] { font-size: 0.85rem; }
         #admin-content button {
             padding: 8px 18px;
             border: none;
@@ -444,96 +378,13 @@
             transition: all 0.2s;
             margin: 4px 2px;
         }
-        .btn-primary {
-            background: #3498db;
-            color: #fff;
-        }
-        .btn-primary:hover {
-            background: #2980b9;
-        }
-        .btn-danger {
-            background: #e74c3c;
-            color: #fff;
-        }
-        .btn-danger:hover {
-            background: #c0392b;
-        }
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 0.75rem;
-        }
-        .card-preview {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            border: 2px dashed #ccc;
-            margin: 6px 0;
-            background: #fff;
-            overflow: hidden;
-            transition: all 0.3s;
-        }
-        .card-preview img {
-            max-width: 85%;
-            max-height: 75%;
-            object-fit: contain;
-        }
-        .airline-list-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            background: #fff;
-            border-radius: 8px;
-            margin: 6px 0;
-            border: 1px solid #e8e8e8;
-            cursor: grab;
-            transition: all 0.2s;
-            user-select: none;
-        }
-        .airline-list-item:active {
-            cursor: grabbing;
-        }
-        .airline-list-item.drag-over {
-            border-color: #3498db;
-            background: #eef7ff;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-        }
-        .airline-list-item .drag-handle {
-            color: #aaa;
-            font-size: 1.2rem;
-            cursor: grab;
-            padding: 4px;
-        }
-        .airline-list-item .item-info {
-            flex: 1;
-            min-width: 0;
-        }
-        .airline-list-item .item-info strong {
-            display: block;
-            font-size: 0.9rem;
-            color: #333;
-        }
-        .airline-list-item .item-info span {
-            font-size: 0.75rem;
-            color: #888;
-        }
-        .airline-list-item .item-actions {
-            display: flex;
-            gap: 4px;
-            flex-shrink: 0;
-        }
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
-        }
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+        .btn-primary { background: #3498db; color: #fff; }
+        .btn-primary:hover { background: #2980b9; }
+        .btn-danger { background: #e74c3c; color: #fff; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-sm { padding: 5px 10px; font-size: 0.75rem; }
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .toggle-slider {
             position: absolute;
             cursor: pointer;
@@ -553,47 +404,18 @@
             border-radius: 50%;
             transition: 0.3s;
         }
-        .toggle-switch input:checked+.toggle-slider {
-            background: #27ae60;
-        }
-        .toggle-switch input:checked+.toggle-slider::before {
-            transform: translateX(20px);
-        }
-        .color-row {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .color-row label {
-            margin: 0;
-            font-weight: 500;
-            font-size: 0.8rem;
-        }
-        .color-row input[type="color"] {
-            width: 44px;
-            height: 34px;
-            padding: 2px;
-            cursor: pointer;
-        }
+        .toggle-switch input:checked+.toggle-slider { background: #27ae60; }
+        .toggle-switch input:checked+.toggle-slider::before { transform: translateX(20px); }
         .status-badge {
             display: inline-block;
             padding: 3px 10px;
             border-radius: 12px;
             font-size: 0.7rem;
             font-weight: 600;
-            letter-spacing: 0.5px;
         }
-        .badge-visible {
-            background: #d4edda;
-            color: #155724;
-        }
-        .badge-hidden {
-            background: #f8d7da;
-            color: #721c24;
-        }
+        .badge-visible { background: #d4edda; color: #155724; }
+        .badge-hidden { background: #f8d7da; color: #721c24; }
 
-        /* Login */
         #admin-login {
             position: fixed;
             inset: 0;
@@ -603,48 +425,20 @@
             align-items: center;
             justify-content: center;
         }
-        #admin-login.hidden {
-            display: none;
-        }
+        #admin-login.hidden { display: none; }
         #login-box {
             background: #fff;
             border-radius: 14px;
             padding: 30px;
             width: 380px;
             max-width: 90%;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        #login-box h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #1a1a2e;
-        }
-        #login-box input {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border: 1px solid #d0d0d0;
-            border-radius: 7px;
-            font-size: 0.9rem;
-        }
-        #login-box button {
-            width: 100%;
-            padding: 10px;
-            margin: 6px 0;
-            border: none;
-            border-radius: 7px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        #login-error {
-            color: #e74c3c;
-            font-size: 0.8rem;
-            text-align: center;
-            min-height: 20px;
-        }
+        #login-box h2 { text-align: center; margin-bottom: 20px; color: #1a1a2e; }
+        #login-box input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #d0d0d0; border-radius: 7px; font-size: 0.9rem; }
+        #login-box button { width: 100%; padding: 10px; margin: 6px 0; border: none; border-radius: 7px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+        #login-error { color: #e74c3c; font-size: 0.8rem; text-align: center; min-height: 20px; }
 
-        /* Toast */
         #toast {
             position: fixed;
             bottom: 30px;
@@ -658,55 +452,28 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.35s;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
-        #toast.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        #toast.success {
-            background: #27ae60;
-        }
-        #toast.error {
-            background: #e74c3c;
-        }
+        #toast.show { opacity: 1; }
+        #toast.success { background: #27ae60; }
+        #toast.error { background: #e74c3c; }
 
-        /* Responsive */
         @media (max-width: 768px) {
-            #admin-sidebar {
-                width: 60px;
-            }
-            #admin-sidebar .nav-item {
-                padding: 10px 8px;
-                font-size: 0.7rem;
-                text-align: center;
-            }
-            #ps-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
-            }
-            #ps-header {
-                flex-wrap: wrap;
-                padding: 8px 14px;
-                gap: 8px;
-            }
-            #ps-header .titles .arabic-title {
-                font-size: 1.1rem;
-            }
-            #ps-header .titles .english-title {
-                font-size: 0.75rem;
-            }
+            #admin-sidebar { width: 60px; }
+            #admin-sidebar .nav-item { padding: 10px 8px; font-size: 0.7rem; text-align: center; }
+            #ps-header { flex-wrap: wrap; padding: 8px 14px; gap: 8px; }
+            #ps-header .titles .arabic-title { font-size: 1.1rem; }
+            #ps-header .titles .english-title { font-size: 0.75rem; }
         }
     </style>
 </head>
 <body>
-
-    <!-- ========== PASSENGER SCREEN ========== -->
     <div id="passenger-screen">
         <div class="bg-overlay"></div>
+        <div id="animated-bg"></div>
         <div id="ps-header">
             <div class="logo-area" id="secret-gesture-zone">
-                <img id="ps-header-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect fill='%23fff' width='48' height='48' rx='8'/%3E%3Ctext x='24' y='32' text-anchor='middle' font-size='22' font-weight='bold' fill='%23003'%3EEAS%3C/text%3E%3C/svg%3E"
-                alt="Logo">
+                <img id="ps-header-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect fill='%23fff' width='48' height='48' rx='8'/%3E%3Ctext x='24' y='32' text-anchor='middle' font-size='22' font-weight='bold' fill='%23003'%3EEAS%3C/text%3E%3C/svg%3E" alt="Logo">
                 <span class="company-name" id="ps-company-name">EAS Company</span>
             </div>
             <div class="titles">
@@ -720,34 +487,31 @@
         <div id="ps-footer">© 2025 EAS. All rights reserved.</div>
     </div>
 
-    <!-- ========== POPUP OVERLAY ========== -->
     <div id="popup-overlay">
         <div id="popup-box">
-            <button id="popup-close" title="Close">&times;</button>
+            <button id="popup-close">&times;</button>
             <div id="popup-content"></div>
         </div>
     </div>
 
-    <!-- ========== ADMIN LOGIN ========== -->
-    <div id="admin-login">
+    <div id="admin-login" class="hidden">
         <div id="login-box">
             <h2>🔐 Admin Login</h2>
-            <input type="email" id="login-email" placeholder="Email" autocomplete="email">
-            <input type="password" id="login-password" placeholder="Password" autocomplete="current-password">
+            <input type="email" id="login-email" placeholder="Email">
+            <input type="password" id="login-password" placeholder="Password">
             <p id="login-error"></p>
             <button class="btn-primary" id="btn-login">Sign In</button>
             <button style="background:#888;color:#fff;" id="btn-signup">Create Admin Account</button>
         </div>
     </div>
 
-    <!-- ========== ADMIN PANEL ========== -->
     <div id="admin-panel">
         <div id="admin-header-bar">
             <h2>⚙️ Administrator Panel</h2>
-            <div style="display:flex;gap:8px;">
-                <button class="btn-save" id="btn-save-all" title="Save all changes">💾 Save All</button>
+            <div>
+                <button class="btn-save" id="btn-save-all">💾 Save All</button>
                 <button class="btn-logout" id="btn-admin-logout">🚪 Logout</button>
-                <button class="btn-close" id="btn-close-admin">✕ Close Panel</button>
+                <button class="btn-close" id="btn-close-admin">✕ Close</button>
             </div>
         </div>
         <div id="admin-body">
@@ -758,98 +522,75 @@
                 <div class="nav-item" data-section="sec-popups">📋 Popup Content</div>
             </div>
             <div id="admin-content">
-                <!-- Header Section -->
                 <div class="section active" id="sec-header">
                     <h3>Header Management</h3>
                     <label>EAS Logo</label>
                     <input type="file" id="hdr-logo-upload" accept="image/*">
                     <img id="hdr-logo-preview" src="" style="max-height:50px;margin:6px 0;display:block;">
                     <button class="btn-primary btn-sm" id="btn-upload-hdr-logo">Upload Logo</button>
-
                     <label>Company Name</label>
-                    <input type="text" id="hdr-company-name" placeholder="Company Name">
-
+                    <input type="text" id="hdr-company-name">
                     <label>Arabic Title</label>
-                    <input type="text" id="hdr-arabic-title" placeholder="Arabic Title" dir="rtl">
-
+                    <input type="text" id="hdr-arabic-title" dir="rtl">
                     <label>English Title</label>
-                    <input type="text" id="hdr-english-title" placeholder="English Title">
-
+                    <input type="text" id="hdr-english-title">
                     <label>Airport Background Image</label>
                     <input type="file" id="hdr-bg-upload" accept="image/*">
                     <button class="btn-primary btn-sm" id="btn-upload-bg">Upload Background</button>
-
                     <label>Header Colors</label>
-                    <div class="color-row">
-                        <label>Background:</label>
+                    <div style="display:flex;gap:10px;align-items:center;">
                         <input type="color" id="hdr-bg-color" value="#003366">
-                        <label>Text:</label>
                         <input type="color" id="hdr-text-color" value="#ffffff">
                     </div>
-
                     <label>Footer Information</label>
-                    <textarea id="hdr-footer-info" placeholder="Footer text"></textarea>
+                    <textarea id="hdr-footer-info"></textarea>
                 </div>
-
-                <!-- Airlines Section -->
                 <div class="section" id="sec-airlines">
                     <h3>Airline Management</h3>
                     <button class="btn-primary" id="btn-add-airline">➕ Add New Airline</button>
-                    <p style="font-size:0.75rem;color:#888;margin:4px 0;">Drag & drop to reorder. Changes save automatically.</p>
+                    <p style="font-size:0.75rem;color:#888;">Drag & drop to reorder.</p>
                     <div id="airline-list"></div>
-
-                    <!-- Inline Edit Form -->
                     <div id="airline-edit-form" style="display:none;background:#fff;padding:16px;border-radius:10px;margin-top:12px;border:2px solid #3498db;">
                         <h4 id="airline-edit-title">Edit Airline</h4>
                         <input type="hidden" id="edit-airline-id">
-                        <label>Airline Name (Admin reference only - NOT shown to passengers)</label>
-                        <input type="text" id="edit-airline-name" placeholder="Internal reference name">
+                        <label>Airline Name (internal)</label>
+                        <input type="text" id="edit-airline-name">
                         <label>Country</label>
-                        <input type="text" id="edit-airline-country" placeholder="Country">
+                        <input type="text" id="edit-airline-country">
                         <label>Third Language</label>
-                        <input type="text" id="edit-airline-thirdlang" placeholder="e.g., French, German">
+                        <input type="text" id="edit-airline-thirdlang">
                         <label>Logo</label>
                         <input type="file" id="edit-airline-logo" accept="image/*">
                         <img id="edit-airline-logo-preview" src="" style="max-height:50px;display:block;margin:4px 0;">
                         <button class="btn-primary btn-sm" id="btn-upload-airline-logo">Upload Logo</button>
                         <label>Card Background Color</label>
                         <input type="color" id="edit-airline-card-bg" value="#ffffff">
-                        <label>Logo Width (%) inside card</label>
-                        <input type="number" id="edit-airline-logo-width" value="75" min="20" max="98" step="1">
-                        <label>Card Width (px)</label>
-                        <input type="number" id="edit-airline-card-width" value="" min="80" max="500" step="1" placeholder="Inherit from layout">
-                        <label>Card Height (px)</label>
-                        <input type="number" id="edit-airline-card-height" value="" min="60" max="400" step="1" placeholder="Inherit from layout">
-                        <label>Visible on passenger screen</label>
+                        <label>Logo Width (%)</label>
+                        <input type="number" id="edit-airline-logo-width" value="75" min="20" max="98">
+                        <label>Card Height (px) [leave empty for auto]</label>
+                        <input type="number" id="edit-airline-card-height" min="60" max="400" placeholder="Auto">
+                        <label>Visible</label>
                         <label class="toggle-switch">
                             <input type="checkbox" id="edit-airline-visible" checked>
                             <span class="toggle-slider"></span>
                         </label>
                         <div style="margin-top:10px;display:flex;gap:8px;">
                             <button class="btn-primary" id="btn-save-airline-edit">Save Airline</button>
-                            <button class="btn-danger" id="btn-delete-airline">Delete Airline</button>
+                            <button class="btn-danger" id="btn-delete-airline">Delete</button>
                             <button style="background:#888;color:#fff;" id="btn-cancel-airline-edit">Cancel</button>
                         </div>
                     </div>
                 </div>
-
-                <!-- Layout Section -->
                 <div class="section" id="sec-layout">
-                    <h3>Layout Control</h3>
-                    <label>Number of Columns</label>
-                    <input type="number" id="layout-columns" value="4" min="1" max="10" step="1">
-                    <label>Number of Rows (visible area)</label>
-                    <input type="number" id="layout-rows" value="3" min="1" max="10" step="1">
+                    <h3>Layout & Background</h3>
                     <label>Card Spacing (px)</label>
-                    <input type="number" id="layout-card-spacing" value="16" min="4" max="60" step="1">
-                    <label>Default Card Width (px)</label>
-                    <input type="number" id="layout-card-width" value="200" min="80" max="500" step="1">
+                    <input type="number" id="layout-card-spacing" value="16" min="4" max="60">
                     <label>Default Card Height (px)</label>
-                    <input type="number" id="layout-card-height" value="100" min="60" max="400" step="1">
+                    <input type="number" id="layout-card-height" value="120" min="80" max="400">
                     <label>Border Radius (px)</label>
-                    <input type="number" id="layout-border-radius" value="12" min="0" max="40" step="1">
-                    <label>Shadow Intensity (0=none, 10=strong)</label>
-                    <input type="number" id="layout-shadow" value="4" min="0" max="10" step="1">
+                    <input type="number" id="layout-border-radius" value="12" min="0" max="40">
+                    <label>Shadow Intensity (0-10)</label>
+                    <input type="number" id="layout-shadow" value="4" min="0" max="10">
                     <label>Glass Effect</label>
                     <select id="layout-glass">
                         <option value="none">None</option>
@@ -862,51 +603,58 @@
                         <option value="0.15s">Fast</option>
                         <option value="0.3s" selected>Normal</option>
                         <option value="0.5s">Slow</option>
-                        <option value="0.8s">Very Slow</option>
                     </select>
-                    <div style="margin-top:12px;">
-                        <button class="btn-primary" id="btn-apply-layout">Apply Layout</button>
-                    </div>
+                    <label>Background Overlay Opacity (0-1)</label>
+                    <input type="range" id="layout-overlay-opacity" min="0" max="1" step="0.05" value="0.35">
+                    <span id="overlay-value">0.35</span>
+                    <label>Background Animation</label>
+                    <select id="layout-animation-style">
+                        <option value="none">None</option>
+                        <option value="shapes">Floating Shapes</option>
+                    </select>
+                    <button class="btn-primary" id="btn-apply-layout">Apply Layout</button>
                 </div>
-
-                <!-- Popup Content Section -->
                 <div class="section" id="sec-popups">
                     <h3>Popup Content Management</h3>
                     <label>Select Airline</label>
-                    <select id="popup-airline-select">
-                        <option value="">-- Choose an airline --</option>
-                    </select>
+                    <select id="popup-airline-select"><option value="">-- Choose --</option></select>
                     <div id="popup-editor" style="display:none;margin-top:12px;">
+                        <label>General Notice / Apology</label>
+                        <textarea id="popup-apology"></textarea>
                         <label>Company Description</label>
-                        <textarea id="popup-desc" placeholder="Enter company description..."></textarea>
+                        <textarea id="popup-desc"></textarea>
                         <label>Important Instructions</label>
-                        <textarea id="popup-instructions" placeholder="Enter important instructions..."></textarea>
-                        <label>PDF Files (Cloudinary URLs, one per line)</label>
-                        <textarea id="popup-pdfs" placeholder="https://res.cloudinary.com/.../file.pdf"></textarea>
-                        <label>Images (Cloudinary URLs, one per line)</label>
-                        <textarea id="popup-images" placeholder="https://res.cloudinary.com/.../image.jpg"></textarea>
-                        <label>Videos (YouTube/Vimeo embed URLs, one per line)</label>
-                        <textarea id="popup-videos" placeholder="https://www.youtube.com/embed/..."></textarea>
-                        <label>Download Buttons (Label | URL, one per line)</label>
-                        <textarea id="popup-downloads" placeholder="Brochure | https://example.com/brochure.pdf&#10;Form | https://example.com/form.pdf"></textarea>
-                        <label>Upload Document to Cloudinary</label>
-                        <input type="file" id="popup-doc-upload" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt">
-                        <button class="btn-primary btn-sm" id="btn-upload-popup-doc">Upload Document</button>
-                        <span id="popup-doc-url" style="font-size:0.75rem;color:#27ae60;display:block;"></span>
-                        <div style="margin-top:10px;">
-                            <button class="btn-primary" id="btn-save-popup">Save Popup Content</button>
-                        </div>
+                        <textarea id="popup-instructions"></textarea>
+
+                        <label>QR Code 1</label>
+                        <input type="file" id="popup-qr1-upload" accept="image/*">
+                        <button class="btn-primary btn-sm" id="btn-upload-qr1">Upload QR1</button>
+                        <img id="popup-qr1-preview" src="" style="max-width:150px;display:block;margin:6px 0;">
+                        <input type="hidden" id="popup-qr1" value="">
+
+                        <label>QR Code 2</label>
+                        <input type="file" id="popup-qr2-upload" accept="image/*">
+                        <button class="btn-primary btn-sm" id="btn-upload-qr2">Upload QR2</button>
+                        <img id="popup-qr2-preview" src="" style="max-width:150px;display:block;margin:6px 0;">
+                        <input type="hidden" id="popup-qr2" value="">
+
+                        <label>PDF Files</label>
+                        <input type="file" id="popup-pdf-upload" accept=".pdf">
+                        <button class="btn-primary btn-sm" id="btn-upload-pdf">Upload PDF</button>
+                        <textarea id="popup-pdfs" placeholder="https://... (one per line)"></textarea>
+
+                        <label>External Links (one per line)</label>
+                        <textarea id="popup-links" placeholder="https://..."></textarea>
+
+                        <button class="btn-primary" id="btn-save-popup">Save Popup Content</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Toast -->
     <div id="toast"></div>
 
     <script>
-        // ============ FIREBASE INIT ============
         const firebaseConfig = {
             apiKey: "AIzaSyAjqtxNw7ia29lxdYF_NdsC5Q2G-uVZpKI",
             authDomain: "eas-eg.firebaseapp.com",
@@ -921,26 +669,23 @@
         const db = firebase.firestore();
         const storage = firebase.storage();
 
-        // ============ CLOUDINARY CONFIG ============
         const CLOUD_NAME = 'deaevfmvm';
-        const CLOUD_API_KEY = '873157495374219';
         const UPLOAD_PRESET = 'ml_default';
 
         async function uploadToCloudinary(file, folder = 'eas-assets', resourceType = 'image') {
             const formData = new FormData();
             formData.append('file', file);
             formData.append('upload_preset', UPLOAD_PRESET);
-            formData.append('api_key', CLOUD_API_KEY);
+            formData.append('api_key', '873157495374219');
             formData.append('folder', folder);
-            const endpoint =
-                `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType === 'raw' ? 'raw' : 'image'}/upload`;
-            const response = await fetch(endpoint, { method: 'POST', body: formData });
-            if (!response.ok) throw new Error('Upload failed: ' + response.statusText);
-            const data = await response.json();
+            const endpoint = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType === 'raw' ? 'raw' : 'image'}/upload`;
+            const resp = await fetch(endpoint, { method: 'POST', body: formData });
+            if (!resp.ok) throw new Error('Upload failed');
+            const data = await resp.json();
             return data.secure_url;
         }
 
-        // ============ GLOBAL STATE ============
+        // State
         let allAirlines = [];
         let settings = {};
         let currentUser = null;
@@ -948,7 +693,6 @@
         let unsubscribeSettings = null;
         let unsubscribeAirlines = null;
 
-        // ============ DOM REFS ============
         const $passengerScreen = document.getElementById('passenger-screen');
         const $psGrid = document.getElementById('ps-grid');
         const $psHeaderLogo = document.getElementById('ps-header-logo');
@@ -964,28 +708,25 @@
         const $toast = document.getElementById('toast');
         const $loginError = document.getElementById('login-error');
 
-        // ============ TOAST ============
         let toastTimer;
-
         function showToast(msg, type = '') {
             clearTimeout(toastTimer);
             $toast.textContent = msg;
             $toast.className = 'show ' + type;
-            toastTimer = setTimeout(() => { $toast.className = ''; }, 3000);
+            toastTimer = setTimeout(() => $toast.className = '', 3000);
         }
 
-        // ============ AUTH ============
+        // Auth
         auth.onAuthStateChanged(user => {
             currentUser = user;
             if (user) {
-                $adminLogin.classList.add('hidden');
                 initRealtimeListeners();
             } else {
-                $adminLogin.classList.remove('hidden');
                 $adminPanel.classList.remove('active');
                 $passengerScreen.classList.remove('blurred');
                 if (unsubscribeSettings) unsubscribeSettings();
                 if (unsubscribeAirlines) unsubscribeAirlines();
+                currentUser = null;
             }
         });
 
@@ -996,124 +737,80 @@
             if (!email || !pass) { $loginError.textContent = 'Please fill all fields.'; return; }
             try {
                 await auth.signInWithEmailAndPassword(email, pass);
-                showToast('Welcome back!', 'success');
+                $adminLogin.classList.add('hidden');
+                $adminPanel.classList.add('active');
+                $passengerScreen.classList.add('blurred');
+                refreshAdminPanel();
+                showToast('Welcome!', 'success');
             } catch (e) {
-                $loginError.textContent = e.message;
+                $loginError.textContent = 'Incorrect email or password.';
             }
         });
-
         document.getElementById('btn-signup').addEventListener('click', async () => {
             const email = document.getElementById('login-email').value.trim();
             const pass = document.getElementById('login-password').value;
             $loginError.textContent = '';
             if (!email || !pass) { $loginError.textContent = 'Please fill all fields.'; return; }
-            if (pass.length < 6) { $loginError.textContent = 'Password must be at least 6 characters.'; return; }
+            if (pass.length < 6) { $loginError.textContent = 'Password too short.'; return; }
             try {
                 await auth.createUserWithEmailAndPassword(email, pass);
-                showToast('Admin account created!', 'success');
-            } catch (e) {
-                $loginError.textContent = e.message;
-            }
+                showToast('Account created!', 'success');
+            } catch (e) { $loginError.textContent = e.message; }
         });
-
-        document.getElementById('btn-admin-logout').addEventListener('click', () => auth.signOut());
+        document.getElementById('btn-admin-logout').addEventListener('click', () => {
+            $adminPanel.classList.remove('active');
+            $passengerScreen.classList.remove('blurred');
+            auth.signOut();
+        });
         document.getElementById('btn-close-admin').addEventListener('click', () => {
             $adminPanel.classList.remove('active');
             $passengerScreen.classList.remove('blurred');
+            auth.signOut();
         });
 
-        // Keyboard shortcut to toggle admin panel
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.shiftKey && e.key === 'A') {
                 e.preventDefault();
-                toggleAdminFromShortcut();
+                $adminLogin.classList.remove('hidden');
+                $adminPanel.classList.remove('active');
+                $passengerScreen.classList.remove('blurred');
             }
         });
 
-        function toggleAdminFromShortcut() {
-            if (!currentUser) {
-                showToast('Please login first.', 'error');
-                $adminLogin.classList.remove('hidden');
-                return;
-            }
-            const isActive = $adminPanel.classList.contains('active');
-            if (isActive) {
-                $adminPanel.classList.remove('active');
-                $passengerScreen.classList.remove('blurred');
-            } else {
-                $adminPanel.classList.add('active');
-                $passengerScreen.classList.add('blurred');
-                refreshAdminPanel();
-            }
-        }
-
-        // ============ SECRET 7-TAP GESTURE ON EAS LOGO ============
         let tapCount = 0;
         let tapTimer = null;
-        const TAP_RESET_DELAY = 2500; // milliseconds
-
-        document.getElementById('secret-gesture-zone').addEventListener('click', function(e) {
-            // Prevent click from propagating to underlying elements
+        document.getElementById('secret-gesture-zone').addEventListener('click', (e) => {
             e.stopPropagation();
             tapCount++;
             if (tapTimer) clearTimeout(tapTimer);
-            tapTimer = setTimeout(() => {
-                tapCount = 0;
-            }, TAP_RESET_DELAY);
-
+            tapTimer = setTimeout(() => tapCount = 0, 2500);
             if (tapCount === 7) {
                 tapCount = 0;
                 clearTimeout(tapTimer);
-                // Toggle admin panel (or show login if not authenticated)
-                if (!currentUser) {
-                    $adminLogin.classList.remove('hidden');
-                    showToast('Please login to access admin panel.', '');
-                } else {
-                    const isActive = $adminPanel.classList.contains('active');
-                    if (isActive) {
-                        $adminPanel.classList.remove('active');
-                        $passengerScreen.classList.remove('blurred');
-                    } else {
-                        $adminPanel.classList.add('active');
-                        $passengerScreen.classList.add('blurred');
-                        refreshAdminPanel();
-                    }
-                }
+                $adminLogin.classList.remove('hidden');
+                document.getElementById('login-email').value = '';
+                document.getElementById('login-password').value = '';
+                $loginError.textContent = '';
+                $adminPanel.classList.remove('active');
+                $passengerScreen.classList.remove('blurred');
             }
         });
 
-        // ============ REALTIME LISTENERS ============
         function initRealtimeListeners() {
             if (unsubscribeSettings) unsubscribeSettings();
             if (unsubscribeAirlines) unsubscribeAirlines();
-
             unsubscribeSettings = db.collection('settings').doc('global').onSnapshot(doc => {
-                if (doc.exists) {
-                    settings = doc.data();
-                } else {
-                    settings = getDefaultSettings();
-                    db.collection('settings').doc('global').set(settings, { merge: true });
-                }
-                applySettingsToPassengerScreen();
+                if (doc.exists) settings = doc.data();
+                else settings = getDefaultSettings();
+                applySettings();
                 populateAdminFields();
-            }, err => {
-                console.error('Settings listener error:', err);
-                settings = getDefaultSettings();
-                applySettingsToPassengerScreen();
             });
-
-            unsubscribeAirlines = db.collection('airlines').orderBy('order', 'asc').onSnapshot(snapshot => {
+            unsubscribeAirlines = db.collection('airlines').orderBy('order', 'asc').onSnapshot(snap => {
                 allAirlines = [];
-                snapshot.forEach(doc => {
-                    allAirlines.push({ id: doc.id, ...doc.data() });
-                });
-                renderPassengerGrid();
+                snap.forEach(d => allAirlines.push({ id: d.id, ...d.data() }));
+                renderGrid();
                 renderAirlineList();
-                populatePopupAirlineSelect();
-            }, err => {
-                console.error('Airlines listener error:', err);
-                allAirlines = [];
-                renderPassengerGrid();
+                populatePopupSelect();
             });
         }
 
@@ -1127,563 +824,341 @@
                 headerBgColor: 'rgba(0,51,102,0.95)',
                 headerTextColor: '#ffffff',
                 footerInfo: '© 2025 EAS. All rights reserved.',
-                columns: 4,
-                rows: 3,
                 cardSpacing: 16,
-                cardWidth: 200,
-                cardHeight: 100,
+                cardHeight: 120,
                 borderRadius: 12,
                 shadow: 4,
                 glassEffect: 'none',
                 animationSpeed: '0.3s',
+                overlayOpacity: 0.35,
+                animationStyle: 'none'
             };
         }
 
-        function applySettingsToPassengerScreen() {
+        function applySettings() {
             const s = settings;
             const root = document.documentElement.style;
             root.setProperty('--header-bg', s.headerBgColor || 'rgba(0,51,102,0.95)');
             root.setProperty('--header-text', s.headerTextColor || '#ffffff');
-            root.setProperty('--columns', s.columns || 4);
-            root.setProperty('--rows', s.rows || 3);
             root.setProperty('--card-spacing', (s.cardSpacing || 16) + 'px');
-            root.setProperty('--card-width', (s.cardWidth || 200) + 'px');
-            root.setProperty('--card-height', (s.cardHeight || 100) + 'px');
+            root.setProperty('--card-min-height', (s.cardHeight || 120) + 'px');
             root.setProperty('--card-border-radius', (s.borderRadius || 12) + 'px');
-            const shadowVal = s.shadow || 4;
-            root.setProperty('--card-shadow',
-                `0 ${shadowVal}px ${shadowVal*5}px rgba(0,0,0,${0.05 + shadowVal*0.025})`);
-            const glass = s.glassEffect || 'none';
-            root.setProperty('--card-glass', glass === 'none' ? 'transparent' : glass);
+            const sh = s.shadow || 4;
+            root.setProperty('--card-shadow', `0 ${sh}px ${sh*5}px rgba(0,0,0,${0.05+sh*0.025})`);
+            root.setProperty('--card-glass', s.glassEffect === 'none' ? 'transparent' : s.glassEffect);
             root.setProperty('--anim-speed', s.animationSpeed || '0.3s');
+            root.setProperty('--overlay-opacity', s.overlayOpacity ?? 0.35);
 
-            // Header
             if (s.headerLogo) $psHeaderLogo.src = s.headerLogo;
             $psCompanyName.textContent = s.companyName || 'EAS Company';
             $psArabicTitle.textContent = s.arabicTitle || '';
             $psEnglishTitle.textContent = s.englishTitle || '';
             $psFooter.textContent = s.footerInfo || '';
+            if (s.backgroundImage) $passengerScreen.style.backgroundImage = `url(${s.backgroundImage})`;
+            else $passengerScreen.style.backgroundImage = '';
 
-            // Background
-            if (s.backgroundImage) {
-                $passengerScreen.style.backgroundImage = `url(${s.backgroundImage})`;
-            } else {
-                $passengerScreen.style.backgroundImage = '';
+            // Animated background
+            const animBg = document.getElementById('animated-bg');
+            animBg.innerHTML = '';
+            if (s.animationStyle === 'shapes') {
+                for (let i = 0; i < 6; i++) {
+                    const shape = document.createElement('div');
+                    shape.className = 'bg-shape';
+                    shape.style.width = (40 + Math.random() * 60) + 'px';
+                    shape.style.height = shape.style.width;
+                    shape.style.left = Math.random() * 90 + '%';
+                    shape.style.top = Math.random() * 90 + '%';
+                    shape.style.animationDelay = Math.random() * 10 + 's';
+                    animBg.appendChild(shape);
+                }
             }
-
-            // Update grid CSS
-            $psGrid.style.gridTemplateColumns = `repeat(${s.columns || 4}, ${s.cardWidth || 200}px)`;
-            $psGrid.style.gridAutoRows = `${s.cardHeight || 100}px`;
-            $psGrid.style.gap = `${s.cardSpacing || 16}px`;
-            $psGrid.style.maxHeight = `calc(${s.rows || 3} * (${s.cardHeight || 100}px + ${s.cardSpacing || 16}px))`;
         }
 
-        function renderPassengerGrid() {
+        function renderGrid() {
             $psGrid.innerHTML = '';
-            const visibleAirlines = allAirlines.filter(a => a.visible !== false);
-            visibleAirlines.forEach(airline => {
+            const visible = allAirlines.filter(a => a.visible !== false);
+            visible.forEach(airline => {
                 const card = document.createElement('div');
                 card.className = 'airline-card';
                 card.style.backgroundColor = airline.cardBgColor || '#ffffff';
-                if (airline.cardWidth) card.style.width = airline.cardWidth + 'px';
                 if (airline.cardHeight) card.style.height = airline.cardHeight + 'px';
                 card.addEventListener('click', () => openPopup(airline));
                 const img = document.createElement('img');
                 img.src = airline.logoUrl || '';
                 img.alt = '';
                 img.style.maxWidth = (airline.logoWidth || 75) + '%';
-                img.onerror = () => { img.src =
-                        'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="60" viewBox="0 0 100 60"%3E%3Crect fill="%23eee" width="100" height="60" rx="6"/%3E%3Ctext x="50" y="35" text-anchor="middle" font-size="11" fill="%23999"%3ENo Logo%3C/text%3E%3C/svg%3E'; };
                 card.appendChild(img);
                 $psGrid.appendChild(card);
             });
-            if (visibleAirlines.length === 0) {
-                $psGrid.innerHTML =
-                    '<div style="text-align:center;color:#aaa;padding:40px;grid-column:1/-1;">No airlines available</div>';
-            }
+            if (visible.length === 0) $psGrid.innerHTML = '<div style="text-align:center;color:#aaa;padding:40px;">No airlines</div>';
         }
 
-        // ============ POPUP ============
         function openPopup(airline) {
             const pc = airline.popupContent || {};
             let html = '';
-            // Description
-            html += '<div class="popup-section"><h3>📝 Company Description</h3>';
-            html += pc.description ? `<p>${escapeHTML(pc.description)}</p>` :
-                '<p class="placeholder-text">No description available yet.</p>';
-            html += '</div>';
-            // Instructions
-            html += '<div class="popup-section"><h3>⚠️ Important Instructions</h3>';
-            html += pc.instructions ? `<p>${escapeHTML(pc.instructions)}</p>` :
-                '<p class="placeholder-text">No instructions available yet.</p>';
-            html += '</div>';
-            // PDFs
-            html += '<div class="popup-section"><h3>📄 PDF Files</h3>';
-            if (pc.pdfs && pc.pdfs.length > 0) {
-                html += '<ul>';
-                pc.pdfs.forEach(url => {
-                    html +=
-                        `<li><a href="${escapeHTML(url)}" target="_blank" class="download-btn">📥 Download PDF</a></li>`;
-                });
-                html += '</ul>';
-            } else { html += '<p class="placeholder-text">No PDF files yet.</p>'; }
-            html += '</div>';
-            // Images
-            html += '<div class="popup-section"><h3>🖼️ Images</h3>';
-            if (pc.images && pc.images.length > 0) {
-                pc.images.forEach(url => {
-                    html +=
-                        `<img src="${escapeHTML(url)}" alt="Image" style="max-width:100%;border-radius:8px;margin:4px 0;">`;
-                });
-            } else { html += '<p class="placeholder-text">No images yet.</p>'; }
-            html += '</div>';
-            // Videos
-            html += '<div class="popup-section"><h3>🎬 Videos</h3>';
-            if (pc.videos && pc.videos.length > 0) {
-                pc.videos.forEach(url => {
-                    html +=
-                        `<iframe src="${escapeHTML(url)}" width="100%" height="315" style="border-radius:8px;margin:4px 0;" frameborder="0" allowfullscreen></iframe>`;
-                });
-            } else { html += '<p class="placeholder-text">No videos yet.</p>'; }
-            html += '</div>';
-            // Downloads
-            html += '<div class="popup-section"><h3>⬇️ Downloads</h3>';
-            if (pc.downloadButtons && pc.downloadButtons.length > 0) {
-                pc.downloadButtons.forEach(btn => {
-                    html +=
-                        `<a href="${escapeHTML(btn.url)}" target="_blank" class="download-btn">${escapeHTML(btn.label)}</a>`;
-                });
-            } else { html += '<p class="placeholder-text">No download links yet.</p>'; }
-            html += '</div>';
-
+            html += `<div class="popup-section"><h3>📢 General Notice</h3>${pc.apology ? `<p>${pc.apology}</p>` : '<p class="placeholder-text">No notice</p>'}</div>`;
+            html += `<div class="popup-section"><h3>📝 Description</h3>${pc.description ? `<p>${pc.description}</p>` : '<p class="placeholder-text">No description</p>'}</div>`;
+            html += `<div class="popup-section"><h3>⚠️ Instructions</h3>${pc.instructions ? `<p>${pc.instructions}</p>` : '<p class="placeholder-text">No instructions</p>'}</div>`;
+            html += `<div class="popup-section"><h3>📱 QR Code 1</h3>${pc.qr1 ? `<img src="${pc.qr1}" style="max-width:200px;">` : '<p class="placeholder-text">No QR</p>'}</div>`;
+            html += `<div class="popup-section"><h3>📱 QR Code 2</h3>${pc.qr2 ? `<img src="${pc.qr2}" style="max-width:200px;">` : '<p class="placeholder-text">No QR</p>'}</div>`;
+            const pdfs = pc.pdfs || [];
+            html += `<div class="popup-section"><h3>📄 PDFs</h3>${pdfs.length ? pdfs.map(u => `<a href="${u}" target="_blank" class="download-btn">📥 Download PDF</a>`).join(' ') : '<p class="placeholder-text">No PDFs</p>'}</div>`;
+            const links = pc.links || [];
+            html += `<div class="popup-section"><h3>🔗 Links</h3>${links.length ? links.map(u => `<a href="${u}" target="_blank" class="download-btn">Open Link</a>`).join(' ') : '<p class="placeholder-text">No links</p>'}</div>`;
             $popupContent.innerHTML = html;
             $popupOverlay.classList.add('active');
         }
 
-        function escapeHTML(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
+        $popupClose.onclick = () => $popupOverlay.classList.remove('active');
+        $popupOverlay.onclick = (e) => { if (e.target === $popupOverlay) $popupOverlay.classList.remove('active'); };
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $popupOverlay.classList.remove('active'); });
 
-        $popupClose.addEventListener('click', () => {
-            $popupOverlay.classList.remove('active');
-        });
-        $popupOverlay.addEventListener('click', (e) => {
-            if (e.target === $popupOverlay) $popupOverlay.classList.remove('active');
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && $popupOverlay.classList.contains('active')) {
-                $popupOverlay.classList.remove('active');
-            }
-        });
-
-        // ============ ADMIN PANEL - POPULATE FIELDS ============
         function populateAdminFields() {
             const s = settings;
             document.getElementById('hdr-company-name').value = s.companyName || '';
             document.getElementById('hdr-arabic-title').value = s.arabicTitle || '';
             document.getElementById('hdr-english-title').value = s.englishTitle || '';
-            document.getElementById('hdr-bg-color').value = s.headerBgColor || 'rgba(0,51,102,0.95)';
+            document.getElementById('hdr-bg-color').value = s.headerBgColor || '#003366';
             document.getElementById('hdr-text-color').value = s.headerTextColor || '#ffffff';
             document.getElementById('hdr-footer-info').value = s.footerInfo || '';
             document.getElementById('hdr-logo-preview').src = s.headerLogo || '';
-            document.getElementById('layout-columns').value = s.columns || 4;
-            document.getElementById('layout-rows').value = s.rows || 3;
             document.getElementById('layout-card-spacing').value = s.cardSpacing || 16;
-            document.getElementById('layout-card-width').value = s.cardWidth || 200;
-            document.getElementById('layout-card-height').value = s.cardHeight || 100;
+            document.getElementById('layout-card-height').value = s.cardHeight || 120;
             document.getElementById('layout-border-radius').value = s.borderRadius || 12;
             document.getElementById('layout-shadow').value = s.shadow || 4;
             document.getElementById('layout-glass').value = s.glassEffect || 'none';
             document.getElementById('layout-anim-speed').value = s.animationSpeed || '0.3s';
+            document.getElementById('layout-overlay-opacity').value = s.overlayOpacity ?? 0.35;
+            document.getElementById('overlay-value').textContent = s.overlayOpacity ?? 0.35;
+            document.getElementById('layout-animation-style').value = s.animationStyle || 'none';
         }
 
         function refreshAdminPanel() {
             populateAdminFields();
             renderAirlineList();
-            populatePopupAirlineSelect();
+            populatePopupSelect();
         }
 
-        // ============ HEADER UPLOADS ============
-        document.getElementById('btn-upload-hdr-logo').addEventListener('click', async () => {
+        document.getElementById('btn-upload-hdr-logo').onclick = async () => {
             const file = document.getElementById('hdr-logo-upload').files[0];
-            if (!file) { showToast('Please select an image file.', 'error'); return; }
-            try {
-                const url = await uploadToCloudinary(file, 'eas-assets/header', 'image');
-                document.getElementById('hdr-logo-preview').src = url;
-                await db.collection('settings').doc('global').update({ headerLogo: url });
-                showToast('Logo uploaded!', 'success');
-            } catch (e) {
-                showToast('Upload failed: ' + e.message, 'error');
-            }
-        });
-
-        document.getElementById('btn-upload-bg').addEventListener('click', async () => {
+            if (!file) return showToast('Select image', 'error');
+            const url = await uploadToCloudinary(file, 'eas-assets/header');
+            document.getElementById('hdr-logo-preview').src = url;
+            await db.collection('settings').doc('global').update({ headerLogo: url });
+            showToast('Logo uploaded', 'success');
+        };
+        document.getElementById('btn-upload-bg').onclick = async () => {
             const file = document.getElementById('hdr-bg-upload').files[0];
-            if (!file) { showToast('Please select an image file.', 'error'); return; }
-            try {
-                const url = await uploadToCloudinary(file, 'eas-assets/backgrounds', 'image');
-                await db.collection('settings').doc('global').update({ backgroundImage: url });
-                showToast('Background uploaded!', 'success');
-            } catch (e) {
-                showToast('Upload failed: ' + e.message, 'error');
-            }
-        });
+            if (!file) return showToast('Select image', 'error');
+            const url = await uploadToCloudinary(file, 'eas-assets/backgrounds');
+            await db.collection('settings').doc('global').update({ backgroundImage: url });
+            showToast('Background uploaded', 'success');
+        };
 
-        // ============ SAVE ALL SETTINGS ============
-        document.getElementById('btn-save-all').addEventListener('click', async () => {
-            try {
-                const updates = {
-                    companyName: document.getElementById('hdr-company-name').value,
-                    arabicTitle: document.getElementById('hdr-arabic-title').value,
-                    englishTitle: document.getElementById('hdr-english-title').value,
-                    headerBgColor: document.getElementById('hdr-bg-color').value,
-                    headerTextColor: document.getElementById('hdr-text-color').value,
-                    footerInfo: document.getElementById('hdr-footer-info').value,
-                    columns: parseInt(document.getElementById('layout-columns').value) || 4,
-                    rows: parseInt(document.getElementById('layout-rows').value) || 3,
-                    cardSpacing: parseInt(document.getElementById('layout-card-spacing').value) || 16,
-                    cardWidth: parseInt(document.getElementById('layout-card-width').value) || 200,
-                    cardHeight: parseInt(document.getElementById('layout-card-height').value) || 100,
-                    borderRadius: parseInt(document.getElementById('layout-border-radius').value) || 12,
-                    shadow: parseInt(document.getElementById('layout-shadow').value) || 4,
-                    glassEffect: document.getElementById('layout-glass').value,
-                    animationSpeed: document.getElementById('layout-anim-speed').value,
-                };
-                await db.collection('settings').doc('global').update(updates);
-                showToast('All settings saved! ✅', 'success');
-            } catch (e) {
-                showToast('Save failed: ' + e.message, 'error');
-            }
-        });
+        document.getElementById('btn-save-all').onclick = async () => {
+            const updates = {
+                companyName: document.getElementById('hdr-company-name').value,
+                arabicTitle: document.getElementById('hdr-arabic-title').value,
+                englishTitle: document.getElementById('hdr-english-title').value,
+                headerBgColor: document.getElementById('hdr-bg-color').value,
+                headerTextColor: document.getElementById('hdr-text-color').value,
+                footerInfo: document.getElementById('hdr-footer-info').value,
+                cardSpacing: +document.getElementById('layout-card-spacing').value,
+                cardHeight: +document.getElementById('layout-card-height').value,
+                borderRadius: +document.getElementById('layout-border-radius').value,
+                shadow: +document.getElementById('layout-shadow').value,
+                glassEffect: document.getElementById('layout-glass').value,
+                animationSpeed: document.getElementById('layout-anim-speed').value,
+                overlayOpacity: +document.getElementById('layout-overlay-opacity').value,
+                animationStyle: document.getElementById('layout-animation-style').value
+            };
+            await db.collection('settings').doc('global').update(updates);
+            showToast('Saved!', 'success');
+        };
+        document.getElementById('btn-apply-layout').onclick = document.getElementById('btn-save-all').onclick;
+        document.getElementById('layout-overlay-opacity').oninput = function() {
+            document.getElementById('overlay-value').textContent = this.value;
+        };
 
-        document.getElementById('btn-apply-layout').addEventListener('click', async () => {
-            try {
-                const updates = {
-                    columns: parseInt(document.getElementById('layout-columns').value) || 4,
-                    rows: parseInt(document.getElementById('layout-rows').value) || 3,
-                    cardSpacing: parseInt(document.getElementById('layout-card-spacing').value) || 16,
-                    cardWidth: parseInt(document.getElementById('layout-card-width').value) || 200,
-                    cardHeight: parseInt(document.getElementById('layout-card-height').value) || 100,
-                    borderRadius: parseInt(document.getElementById('layout-border-radius').value) || 12,
-                    shadow: parseInt(document.getElementById('layout-shadow').value) || 4,
-                    glassEffect: document.getElementById('layout-glass').value,
-                    animationSpeed: document.getElementById('layout-anim-speed').value,
-                };
-                await db.collection('settings').doc('global').update(updates);
-                showToast('Layout applied!', 'success');
-            } catch (e) {
-                showToast('Failed: ' + e.message, 'error');
-            }
-        });
-
-        // ============ AIRLINE LIST RENDERING ============
+        // Airlines
         function renderAirlineList() {
             const list = document.getElementById('airline-list');
             list.innerHTML = '';
-            allAirlines.forEach((airline, index) => {
-                const item = document.createElement('div');
-                item.className = 'airline-list-item';
-                item.draggable = true;
-                item.dataset.airlineId = airline.id;
-                item.dataset.index = index;
-                item.innerHTML = `
-                    <span class="drag-handle">☰</span>
-                    <div class="item-info">
-                        <strong>${escapeHTML(airline.name || 'Unnamed Airline')}</strong>
-                        <span>${escapeHTML(airline.country || '')} | Order: ${airline.order ?? index}</span>
-                        <span class="status-badge ${airline.visible !== false ? 'badge-visible' : 'badge-hidden'}">${airline.visible !== false ? 'Visible' : 'Hidden'}</span>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn-primary btn-sm btn-edit-airline" data-id="${airline.id}">✏️ Edit</button>
-                    </div>
-                `;
-                // Drag events
-                item.addEventListener('dragstart', handleDragStart);
-                item.addEventListener('dragover', handleDragOver);
-                item.addEventListener('dragleave', handleDragLeave);
-                item.addEventListener('drop', handleDrop);
-                item.addEventListener('dragend', handleDragEnd);
-                list.appendChild(item);
+            allAirlines.forEach((a, i) => {
+                const div = document.createElement('div');
+                div.className = 'airline-list-item';
+                div.draggable = true;
+                div.dataset.id = a.id;
+                div.dataset.index = i;
+                div.innerHTML = `<span class="drag-handle">☰</span><div class="item-info"><strong>${a.name||'Unnamed'}</strong><span>${a.country||''} | ${a.visible!==false?'Visible':'Hidden'}</span></div><button class="btn-primary btn-sm btn-edit-airline" data-id="${a.id}">✏️</button>`;
+                div.addEventListener('dragstart', handleDragStart);
+                div.addEventListener('dragover', handleDragOver);
+                div.addEventListener('drop', handleDrop);
+                div.addEventListener('dragend', handleDragEnd);
+                list.appendChild(div);
             });
-
-            // Edit buttons
-            list.querySelectorAll('.btn-edit-airline').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const id = btn.dataset.id;
-                    openAirlineEditor(id);
-                });
-            });
+            document.querySelectorAll('.btn-edit-airline').forEach(b => b.onclick = () => openAirlineEditor(b.dataset.id));
         }
-
-        // ============ DRAG & DROP ============
-        let draggedItem = null;
-        let draggedIndex = null;
-
-        function handleDragStart(e) {
-            draggedItem = this;
-            draggedIndex = parseInt(this.dataset.index);
-            this.style.opacity = '0.5';
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', this.dataset.airlineId);
-        }
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            this.classList.add('drag-over');
-        }
-
-        function handleDragLeave(e) {
-            this.classList.remove('drag-over');
-        }
-
+        let draggedItem = null, draggedIndex = null;
+        function handleDragStart(e) { draggedItem = this; draggedIndex = +this.dataset.index; this.style.opacity='0.5'; e.dataTransfer.setData('text', this.dataset.id); }
+        function handleDragOver(e) { e.preventDefault(); this.classList.add('drag-over'); }
         function handleDrop(e) {
             e.preventDefault();
             this.classList.remove('drag-over');
             if (draggedItem === this) return;
-            const targetIndex = parseInt(this.dataset.index);
-            reorderAirlines(draggedIndex, targetIndex);
+            reorder(draggedIndex, +this.dataset.index);
         }
-
-        function handleDragEnd(e) {
-            this.style.opacity = '1';
-            document.querySelectorAll('.airline-list-item').forEach(el => el.classList.remove('drag-over'));
-            draggedItem = null;
-            draggedIndex = null;
-        }
-
-        async function reorderAirlines(fromIndex, toIndex) {
-            const airlines = [...allAirlines];
-            const [moved] = airlines.splice(fromIndex, 1);
-            airlines.splice(toIndex, 0, moved);
+        function handleDragEnd() { this.style.opacity='1'; document.querySelectorAll('.airline-list-item').forEach(e=>e.classList.remove('drag-over')); }
+        async function reorder(from, to) {
+            const arr = [...allAirlines];
+            const [moved] = arr.splice(from,1);
+            arr.splice(to,0,moved);
             const batch = db.batch();
-            airlines.forEach((a, i) => {
-                batch.update(db.collection('airlines').doc(a.id), { order: i });
-            });
-            try {
-                await batch.commit();
-                showToast('Order updated!', 'success');
-            } catch (e) {
-                showToast('Reorder failed: ' + e.message, 'error');
-            }
+            arr.forEach((a,i) => batch.update(db.collection('airlines').doc(a.id), {order:i}));
+            await batch.commit();
+            showToast('Reordered','success');
         }
 
-        // ============ AIRLINE EDITOR ============
         function openAirlineEditor(id) {
-            const airline = allAirlines.find(a => a.id === id);
-            if (!airline) return;
+            const a = allAirlines.find(x => x.id === id);
+            if (!a) return;
             selectedAirlineId = id;
             document.getElementById('airline-edit-form').style.display = 'block';
-            document.getElementById('airline-edit-title').textContent = 'Edit: ' + (airline.name || 'Airline');
             document.getElementById('edit-airline-id').value = id;
-            document.getElementById('edit-airline-name').value = airline.name || '';
-            document.getElementById('edit-airline-country').value = airline.country || '';
-            document.getElementById('edit-airline-thirdlang').value = airline.thirdLanguage || '';
-            document.getElementById('edit-airline-card-bg').value = airline.cardBgColor || '#ffffff';
-            document.getElementById('edit-airline-logo-width').value = airline.logoWidth || 75;
-            document.getElementById('edit-airline-card-width').value = airline.cardWidth || '';
-            document.getElementById('edit-airline-card-height').value = airline.cardHeight || '';
-            document.getElementById('edit-airline-visible').checked = airline.visible !== false;
-            document.getElementById('edit-airline-logo-preview').src = airline.logoUrl || '';
-            document.getElementById('airline-edit-form').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('edit-airline-name').value = a.name || '';
+            document.getElementById('edit-airline-country').value = a.country || '';
+            document.getElementById('edit-airline-thirdlang').value = a.thirdLanguage || '';
+            document.getElementById('edit-airline-card-bg').value = a.cardBgColor || '#ffffff';
+            document.getElementById('edit-airline-logo-width').value = a.logoWidth || 75;
+            document.getElementById('edit-airline-card-height').value = a.cardHeight || '';
+            document.getElementById('edit-airline-visible').checked = a.visible !== false;
+            document.getElementById('edit-airline-logo-preview').src = a.logoUrl || '';
         }
-
-        document.getElementById('btn-cancel-airline-edit').addEventListener('click', () => {
-            document.getElementById('airline-edit-form').style.display = 'none';
-            selectedAirlineId = null;
-        });
-
-        document.getElementById('btn-add-airline').addEventListener('click', async () => {
-            const maxOrder = allAirlines.reduce((max, a) => Math.max(max, a.order ?? 0), -1);
-            const newAirline = {
-                name: 'New Airline',
-                country: '',
-                thirdLanguage: '',
-                logoUrl: '',
-                cardBgColor: '#ffffff',
-                logoWidth: 75,
-                cardWidth: null,
-                cardHeight: null,
-                visible: true,
-                order: maxOrder + 1,
-                popupContent: {
-                    description: '',
-                    instructions: '',
-                    pdfs: [],
-                    images: [],
-                    videos: [],
-                    downloadButtons: [],
-                },
-                documents: [],
-            };
-            try {
-                const docRef = await db.collection('airlines').add(newAirline);
-                showToast('Airline added!', 'success');
-                setTimeout(() => openAirlineEditor(docRef.id), 400);
-            } catch (e) {
-                showToast('Failed to add: ' + e.message, 'error');
-            }
-        });
-
-        document.getElementById('btn-save-airline-edit').addEventListener('click', async () => {
-            if (!selectedAirlineId) return;
-            try {
-                const updates = {
-                    name: document.getElementById('edit-airline-name').value,
-                    country: document.getElementById('edit-airline-country').value,
-                    thirdLanguage: document.getElementById('edit-airline-thirdlang').value,
-                    cardBgColor: document.getElementById('edit-airline-card-bg').value,
-                    logoWidth: parseInt(document.getElementById('edit-airline-logo-width').value) || 75,
-                    cardWidth: parseInt(document.getElementById('edit-airline-card-width').value) || null,
-                    cardHeight: parseInt(document.getElementById('edit-airline-card-height').value) || null,
-                    visible: document.getElementById('edit-airline-visible').checked,
-                };
-                if (!updates.cardWidth) updates.cardWidth = null;
-                if (!updates.cardHeight) updates.cardHeight = null;
-                await db.collection('airlines').doc(selectedAirlineId).update(updates);
-                showToast('Airline saved!', 'success');
-                document.getElementById('airline-edit-form').style.display = 'none';
-                selectedAirlineId = null;
-            } catch (e) {
-                showToast('Save failed: ' + e.message, 'error');
-            }
-        });
-
-        document.getElementById('btn-delete-airline').addEventListener('click', async () => {
-            if (!selectedAirlineId) return;
-            if (!confirm('Are you sure you want to delete this airline? This cannot be undone.')) return;
-            try {
-                await db.collection('airlines').doc(selectedAirlineId).delete();
-                showToast('Airline deleted.', 'success');
-                document.getElementById('airline-edit-form').style.display = 'none';
-                selectedAirlineId = null;
-            } catch (e) {
-                showToast('Delete failed: ' + e.message, 'error');
-            }
-        });
-
-        document.getElementById('btn-upload-airline-logo').addEventListener('click', async () => {
-            const file = document.getElementById('edit-airline-logo').files[0];
-            if (!file) { showToast('Please select an image.', 'error'); return; }
-            if (!selectedAirlineId) { showToast('Save the airline first.', 'error'); return; }
-            try {
-                const url = await uploadToCloudinary(file, 'eas-assets/airline-logos', 'image');
-                document.getElementById('edit-airline-logo-preview').src = url;
-                await db.collection('airlines').doc(selectedAirlineId).update({ logoUrl: url });
-                showToast('Logo uploaded!', 'success');
-            } catch (e) {
-                showToast('Upload failed: ' + e.message, 'error');
-            }
-        });
-
-        // ============ POPUP CONTENT EDITOR ============
-        function populatePopupAirlineSelect() {
-            const select = document.getElementById('popup-airline-select');
-            const currentVal = select.value;
-            select.innerHTML = '<option value="">-- Choose an airline --</option>';
-            allAirlines.forEach(a => {
-                select.innerHTML +=
-                    `<option value="${a.id}" ${a.id === currentVal ? 'selected' : ''}>${escapeHTML(a.name || 'Unnamed')}</option>`;
+        document.getElementById('btn-cancel-airline-edit').onclick = () => { document.getElementById('airline-edit-form').style.display='none'; selectedAirlineId=null; };
+        document.getElementById('btn-add-airline').onclick = async () => {
+            const order = Math.max(...allAirlines.map(a=>a.order||0), -1) + 1;
+            const ref = await db.collection('airlines').add({
+                name:'New Airline', country:'', thirdLanguage:'', logoUrl:'', cardBgColor:'#ffffff', logoWidth:75, cardHeight:null, visible:true, order,
+                popupContent:{apology:'',description:'',instructions:'',qr1:'',qr2:'',pdfs:[],links:[]}
             });
-        }
+            showToast('Added','success');
+            setTimeout(()=>openAirlineEditor(ref.id),400);
+        };
+        document.getElementById('btn-save-airline-edit').onclick = async () => {
+            if (!selectedAirlineId) return;
+            await db.collection('airlines').doc(selectedAirlineId).update({
+                name: document.getElementById('edit-airline-name').value,
+                country: document.getElementById('edit-airline-country').value,
+                thirdLanguage: document.getElementById('edit-airline-thirdlang').value,
+                cardBgColor: document.getElementById('edit-airline-card-bg').value,
+                logoWidth: +document.getElementById('edit-airline-logo-width').value || 75,
+                cardHeight: +document.getElementById('edit-airline-card-height').value || null,
+                visible: document.getElementById('edit-airline-visible').checked
+            });
+            document.getElementById('airline-edit-form').style.display='none';
+            selectedAirlineId=null;
+            showToast('Saved','success');
+        };
+        document.getElementById('btn-delete-airline').onclick = async () => {
+            if (!selectedAirlineId || !confirm('Delete?')) return;
+            await db.collection('airlines').doc(selectedAirlineId).delete();
+            document.getElementById('airline-edit-form').style.display='none';
+            selectedAirlineId=null;
+            showToast('Deleted','success');
+        };
+        document.getElementById('btn-upload-airline-logo').onclick = async () => {
+            const file = document.getElementById('edit-airline-logo').files[0];
+            if (!file || !selectedAirlineId) return;
+            const url = await uploadToCloudinary(file, 'eas-assets/airline-logos');
+            document.getElementById('edit-airline-logo-preview').src = url;
+            await db.collection('airlines').doc(selectedAirlineId).update({logoUrl:url});
+            showToast('Logo uploaded','success');
+        };
 
-        document.getElementById('popup-airline-select').addEventListener('change', function() {
+        // Popup Editor
+        function populatePopupSelect() {
+            const sel = document.getElementById('popup-airline-select');
+            const val = sel.value;
+            sel.innerHTML = '<option value="">-- Choose --</option>';
+            allAirlines.forEach(a => sel.innerHTML += `<option value="${a.id}" ${a.id===val?'selected':''}>${a.name||'Unnamed'}</option>`);
+        }
+        document.getElementById('popup-airline-select').onchange = function() {
             const id = this.value;
             const editor = document.getElementById('popup-editor');
-            if (!id) { editor.style.display = 'none'; return; }
-            editor.style.display = 'block';
-            const airline = allAirlines.find(a => a.id === id);
-            if (!airline) return;
-            const pc = airline.popupContent || {};
+            if (!id) { editor.style.display='none'; return; }
+            editor.style.display='block';
+            const a = allAirlines.find(x=>x.id===id);
+            if (!a) return;
+            const pc = a.popupContent || {};
+            document.getElementById('popup-apology').value = pc.apology || '';
             document.getElementById('popup-desc').value = pc.description || '';
             document.getElementById('popup-instructions').value = pc.instructions || '';
-            document.getElementById('popup-pdfs').value = (pc.pdfs || []).join('\n');
-            document.getElementById('popup-images').value = (pc.images || []).join('\n');
-            document.getElementById('popup-videos').value = (pc.videos || []).join('\n');
-            document.getElementById('popup-downloads').value = (pc.downloadButtons || []).map(b => b.label + ' | ' + b
-                .url).join('\n');
-            document.getElementById('popup-doc-url').textContent = '';
-        });
+            document.getElementById('popup-qr1').value = pc.qr1 || '';
+            document.getElementById('popup-qr2').value = pc.qr2 || '';
+            document.getElementById('popup-pdfs').value = (pc.pdfs||[]).join('\n');
+            document.getElementById('popup-links').value = (pc.links||[]).join('\n');
+            document.getElementById('popup-qr1-preview').src = pc.qr1 || '';
+            document.getElementById('popup-qr2-preview').src = pc.qr2 || '';
+        };
 
-        document.getElementById('btn-save-popup').addEventListener('click', async () => {
+        document.getElementById('btn-upload-qr1').onclick = async () => {
+            const file = document.getElementById('popup-qr1-upload').files[0];
+            if (!file) return;
+            const url = await uploadToCloudinary(file, 'eas-assets/qrcodes');
+            document.getElementById('popup-qr1').value = url;
+            document.getElementById('popup-qr1-preview').src = url;
+        };
+        document.getElementById('btn-upload-qr2').onclick = async () => {
+            const file = document.getElementById('popup-qr2-upload').files[0];
+            if (!file) return;
+            const url = await uploadToCloudinary(file, 'eas-assets/qrcodes');
+            document.getElementById('popup-qr2').value = url;
+            document.getElementById('popup-qr2-preview').src = url;
+        };
+        document.getElementById('btn-upload-pdf').onclick = async () => {
+            const file = document.getElementById('popup-pdf-upload').files[0];
+            if (!file) return;
+            const url = await uploadToCloudinary(file, 'eas-assets/pdfs', 'raw');
+            const textarea = document.getElementById('popup-pdfs');
+            textarea.value = textarea.value.trim() ? textarea.value + '\n' + url : url;
+            showToast('PDF uploaded, link added','success');
+        };
+
+        document.getElementById('btn-save-popup').onclick = async () => {
             const id = document.getElementById('popup-airline-select').value;
-            if (!id) { showToast('Please select an airline.', 'error'); return; }
-            try {
-                const popupContent = {
-                    description: document.getElementById('popup-desc').value,
-                    instructions: document.getElementById('popup-instructions').value,
-                    pdfs: document.getElementById('popup-pdfs').value.split('\n').map(s => s.trim()).filter(Boolean),
-                    images: document.getElementById('popup-images').value.split('\n').map(s => s.trim()).filter(
-                        Boolean),
-                    videos: document.getElementById('popup-videos').value.split('\n').map(s => s.trim()).filter(
-                        Boolean),
-                    downloadButtons: document.getElementById('popup-downloads').value.split('\n').map(s => s.trim())
-                        .filter(Boolean).map(line => {
-                            const parts = line.split('|');
-                            return { label: (parts[0] || 'Download').trim(), url: (parts[1] || '').trim() };
-                        }).filter(b => b.url),
-                };
-                await db.collection('airlines').doc(id).update({ popupContent });
-                showToast('Popup content saved!', 'success');
-            } catch (e) {
-                showToast('Save failed: ' + e.message, 'error');
-            }
-        });
+            if (!id) return showToast('Select airline','error');
+            const popupContent = {
+                apology: document.getElementById('popup-apology').value,
+                description: document.getElementById('popup-desc').value,
+                instructions: document.getElementById('popup-instructions').value,
+                qr1: document.getElementById('popup-qr1').value,
+                qr2: document.getElementById('popup-qr2').value,
+                pdfs: document.getElementById('popup-pdfs').value.split('\n').map(s=>s.trim()).filter(Boolean),
+                links: document.getElementById('popup-links').value.split('\n').map(s=>s.trim()).filter(Boolean)
+            };
+            await db.collection('airlines').doc(id).update({popupContent});
+            showToast('Popup saved','success');
+        };
 
-        document.getElementById('btn-upload-popup-doc').addEventListener('click', async () => {
-            const file = document.getElementById('popup-doc-upload').files[0];
-            if (!file) { showToast('Please select a file.', 'error'); return; }
-            try {
-                const url = await uploadToCloudinary(file, 'eas-assets/documents', 'raw');
-                document.getElementById('popup-doc-url').textContent = 'Uploaded: ' + url;
-                showToast('Document uploaded! Copy the URL to the appropriate field above.', 'success');
-            } catch (e) {
-                showToast('Upload failed: ' + e.message, 'error');
-            }
-        });
-
-        // ============ ADMIN SIDEBAR NAVIGATION ============
         document.querySelectorAll('#admin-sidebar .nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('#admin-sidebar .nav-item').forEach(n => n.classList
-                    .remove('active'));
-                this.classList.add('active');
-                const sectionId = this.dataset.section;
-                document.querySelectorAll('#admin-content .section').forEach(s => s.classList
-                    .remove('active'));
-                const section = document.getElementById(sectionId);
-                if (section) section.classList.add('active');
-                if (sectionId === 'sec-popups') populatePopupAirlineSelect();
-                if (sectionId === 'sec-airlines') renderAirlineList();
-            });
+            item.onclick = () => {
+                document.querySelectorAll('#admin-sidebar .nav-item').forEach(n=>n.classList.remove('active'));
+                item.classList.add('active');
+                const sec = document.getElementById(item.dataset.section);
+                document.querySelectorAll('#admin-content .section').forEach(s=>s.classList.remove('active'));
+                if (sec) sec.classList.add('active');
+                if (item.dataset.section === 'sec-popups') populatePopupSelect();
+            };
         });
 
-        // ============ INITIAL SETUP ============
-        async function ensureSettingsDoc() {
-            try {
-                const doc = await db.collection('settings').doc('global').get();
-                if (!doc.exists) {
-                    await db.collection('settings').doc('global').set(getDefaultSettings());
-                    console.log('Default settings created.');
-                }
-            } catch (e) {
-                console.error('Settings init error:', e);
-            }
-        }
-        ensureSettingsDoc();
-
-        // Apply defaults immediately for passenger screen
-        settings = getDefaultSettings();
-        applySettingsToPassengerScreen();
-        renderPassengerGrid();
-
-        console.log('✅ EAS Admin Panel Ready');
-        console.log('🔑 Press Ctrl+Shift+A or tap EAS logo 7 times to toggle Admin Panel');
-        console.log('📋 Passenger screen is always visible');
-        console.log('☁️ Cloudinary:', CLOUD_NAME);
-        console.log('🔥 Firebase:', firebaseConfig.projectId);
+        // Init
+        (async () => {
+            const doc = await db.collection('settings').doc('global').get();
+            if (!doc.exists) await db.collection('settings').doc('global').set(getDefaultSettings());
+            settings = doc.exists ? doc.data() : getDefaultSettings();
+            applySettings();
+            renderGrid();
+        })();
     </script>
 </body>
 </html>
