@@ -42,6 +42,7 @@
             background: #1a1a2e;
         }
 
+        /* ============ PASSENGER SCREEN ============ */
         #passenger-screen {
             position: fixed;
             inset: 0;
@@ -327,143 +328,274 @@
             border-radius: 20px;
         }
 
+        /* ============ ADMIN PANEL REDESIGN ============ */
         #admin-panel {
             position: fixed;
             inset: 0;
             z-index: 200;
-            background: #f4f5f7;
+            background: #0f172a;
             display: none;
             flex-direction: column;
             overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
         }
         #admin-panel.active { display: flex; }
+
         #admin-header-bar {
-            background: #1a1a2e;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
             color: #fff;
-            padding: 10px 20px;
+            padding: 14px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-shrink: 0;
-            gap: 12px;
+            gap: 16px;
         }
-        #admin-header-bar h2 { font-size: 1.1rem; letter-spacing: 1px; }
+        #admin-header-bar h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
         #admin-header-bar button {
-            padding: 7px 16px;
+            padding: 8px 16px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             font-size: 0.85rem;
             transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-        .btn-close { background: #e74c3c; color: #fff; }
-        .btn-close:hover { background: #c0392b; }
-        .btn-save { background: #27ae60; color: #fff; }
-        .btn-save:hover { background: #219a52; }
-        .btn-logout { background: #555; color: #fff; }
-        .btn-logout:hover { background: #333; }
+        .btn-close { background: rgba(239, 68, 68, 0.9); color: #fff; }
+        .btn-close:hover { background: #dc2626; }
+        .btn-save { background: rgba(34, 197, 94, 0.9); color: #fff; }
+        .btn-save:hover { background: #16a34a; }
+        .btn-logout { background: rgba(100, 116, 139, 0.9); color: #fff; }
+        .btn-logout:hover { background: #64748b; }
 
         #admin-body { display: flex; flex: 1; overflow: hidden; }
+
         #admin-sidebar {
-            width: 220px;
-            background: #2c2c3e;
-            color: #ccc;
+            width: 240px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            border-right: 1px solid rgba(255,255,255,0.06);
+            color: #cbd5e1;
             flex-shrink: 0;
             overflow-y: auto;
-            padding: 10px 0;
+            padding: 16px 0;
         }
         #admin-sidebar .nav-item {
-            padding: 12px 18px;
+            padding: 12px 20px;
+            margin: 2px 8px;
             cursor: pointer;
             font-size: 0.9rem;
-            border-left: 3px solid transparent;
+            border-radius: 8px;
             transition: all 0.2s;
-            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.3px;
         }
-        #admin-sidebar .nav-item:hover, #admin-sidebar .nav-item.active {
-            background: #3a3a52;
+        #admin-sidebar .nav-item:hover {
+            background: rgba(255,255,255,0.08);
             color: #fff;
-            border-left-color: #3498db;
         }
-        #admin-content { flex: 1; overflow-y: auto; padding: 20px 24px; background: #f9fafb; }
+        #admin-sidebar .nav-item.active {
+            background: rgba(59, 130, 246, 0.25);
+            color: #fff;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(59,130,246,0.3);
+        }
+
+        #admin-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            background: #f8fafc;
+        }
         #admin-content .section { display: none; }
         #admin-content .section.active { display: block; }
         #admin-content h3 {
-            margin-bottom: 16px;
-            color: #1a1a2e;
-            font-size: 1.2rem;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 8px;
+            margin-bottom: 20px;
+            color: #0f172a;
+            font-size: 1.25rem;
+            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
         }
-        #admin-content label { display: block; font-weight: 600; margin: 10px 0 4px; color: #333; font-size: 0.85rem; }
-        #admin-content input[type="text"], #admin-content input[type="number"], #admin-content input[type="url"],
-        #admin-content input[type="color"], #admin-content textarea, #admin-content select {
+        #admin-content label {
+            display: block;
+            font-weight: 600;
+            margin: 14px 0 6px;
+            color: #334155;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+        }
+        #admin-content input[type="text"],
+        #admin-content input[type="number"],
+        #admin-content input[type="url"],
+        #admin-content input[type="color"],
+        #admin-content textarea,
+        #admin-content select {
             width: 100%;
-            padding: 9px 12px;
-            border: 1px solid #d0d0d0;
-            border-radius: 7px;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
             font-size: 0.9rem;
-            transition: border 0.2s;
+            transition: all 0.2s;
             background: #fff;
+            color: #0f172a;
         }
-        #admin-content input:focus, #admin-content textarea:focus, #admin-content select:focus {
+        #admin-content input:focus,
+        #admin-content textarea:focus,
+        #admin-content select:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
         }
-        #admin-content textarea { min-height: 80px; resize: vertical; }
+        #admin-content textarea { min-height: 90px; resize: vertical; }
+        #admin-content input[type="file"] { padding: 8px; font-size: 0.85rem; }
         #admin-content button {
-            padding: 8px 18px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 7px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             font-size: 0.85rem;
             transition: all 0.2s;
-            margin: 4px 2px;
+            margin: 6px 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.3px;
         }
-        .btn-primary { background: #3498db; color: #fff; }
-        .btn-primary:hover { background: #2980b9; }
-        .btn-danger { background: #e74c3c; color: #fff; }
-        .btn-sm { padding: 5px 10px; font-size: 0.75rem; }
-        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .btn-primary { background: #3b82f6; color: #fff; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-danger { background: #ef4444; color: #fff; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 26px;
+        }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .toggle-slider {
-            position: absolute; cursor: pointer; inset: 0; background: #ccc; border-radius: 24px; transition: 0.3s;
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: #cbd5e1;
+            border-radius: 34px;
+            transition: 0.3s;
         }
         .toggle-slider::before {
-            content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px;
-            background: #fff; border-radius: 50%; transition: 0.3s;
+            content: '';
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background: #fff;
+            border-radius: 50%;
+            transition: 0.3s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
-        .toggle-switch input:checked+.toggle-slider { background: #27ae60; }
+        .toggle-switch input:checked+.toggle-slider { background: #10b981; }
         .toggle-switch input:checked+.toggle-slider::before { transform: translateX(20px); }
-        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
-        .badge-visible { background: #d4edda; color: #155724; }
-        .badge-hidden { background: #f8d7da; color: #721c24; }
+
+        .airline-list-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #fff;
+            border-radius: 10px;
+            margin: 6px 0;
+            border: 1px solid #e2e8f0;
+            cursor: grab;
+            transition: all 0.2s;
+            user-select: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .airline-list-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .airline-list-item:active { cursor: grabbing; }
+        .airline-list-item .drag-handle { color: #94a3b8; font-size: 1.2rem; cursor: grab; }
+        .airline-list-item .item-info { flex: 1; }
+        .airline-list-item .item-info strong { display: block; font-size: 0.95rem; color: #0f172a; }
+        .airline-list-item .item-info span { font-size: 0.75rem; color: #64748b; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .badge-visible { background: #d1fae5; color: #065f46; }
+        .badge-hidden { background: #fee2e2; color: #991b1b; }
 
         #admin-login {
-            position: fixed; inset: 0; z-index: 250; background: #1a1a2e;
-            display: flex; align-items: center; justify-content: center;
+            position: fixed;
+            inset: 0;
+            z-index: 250;
+            background: rgba(15,23,42,0.95);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         #admin-login.hidden { display: none; }
         #login-box {
-            background: #fff; border-radius: 14px; padding: 30px; width: 380px; max-width: 90%;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 36px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.4);
         }
-        #login-box h2 { text-align: center; margin-bottom: 20px; color: #1a1a2e; }
-        #login-box input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #d0d0d0; border-radius: 7px; }
-        #login-box button { width: 100%; padding: 10px; margin: 6px 0; border: none; border-radius: 7px; cursor: pointer; font-weight: 600; }
-        #login-error { color: #e74c3c; font-size: 0.8rem; text-align: center; min-height: 20px; }
+        #login-box h2 { text-align: center; margin-bottom: 24px; color: #0f172a; font-weight: 700; }
+        #login-box input {
+            width: 100%; padding: 12px; margin: 10px 0;
+            border: 1px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;
+            background: #fff;
+        }
+        #login-box button {
+            width: 100%; padding: 12px; margin: 8px 0;
+            border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-size: 0.95rem; transition: all 0.2s;
+        }
+        #login-error { color: #ef4444; font-size: 0.85rem; text-align: center; min-height: 22px; }
 
         #toast {
-            position: fixed; bottom: 30px; right: 30px; z-index: 999; background: #333; color: #fff;
-            padding: 12px 22px; border-radius: 8px; font-size: 0.85rem; opacity: 0; pointer-events: none;
-            transition: opacity 0.35s; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 999;
+            background: #1e293b;
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         #toast.show { opacity: 1; }
-        #toast.success { background: #27ae60; }
-        #toast.error { background: #e74c3c; }
+        #toast.success { background: #10b981; }
+        #toast.error { background: #ef4444; }
     </style>
 </head>
 <body>
@@ -472,21 +604,20 @@
         <div id="animated-bg"></div>
         <div id="ps-header">
             <div class="logo-area" id="secret-gesture-zone">
-                <img id="ps-header-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect fill='%23fff' width='48' height='48' rx='8'/%3E%3Ctext x='24' y='32' text-anchor='middle' font-size='22' font-weight='bold' fill='%23003'%3EEAS%3C/text%3E%3C/svg%3E" alt="Logo">
-                <span class="company-name" id="ps-company-name">EAS Company</span>
+                <img id="ps-header-logo" src="" alt="Logo" style="display:none;">
+                <span class="company-name" id="ps-company-name"></span>
             </div>
             <div class="titles">
-                <div class="arabic-title" id="ps-arabic-title">شركة إياس للنقل الجوي</div>
-                <div class="english-title" id="ps-english-title">EAS Air Transport Company</div>
+                <div class="arabic-title" id="ps-arabic-title"></div>
+                <div class="english-title" id="ps-english-title"></div>
             </div>
         </div>
         <div id="ps-grid-container">
             <div id="ps-grid"></div>
         </div>
-        <div id="ps-footer">© 2025 EAS. All rights reserved.</div>
+        <div id="ps-footer"></div>
     </div>
 
-    <!-- Full‑screen popup -->
     <div id="popup-overlay">
         <div id="popup-fullpage">
             <button id="popup-close">&times;</button>
@@ -506,14 +637,14 @@
             <input type="password" id="login-password" placeholder="Password">
             <p id="login-error"></p>
             <button class="btn-primary" id="btn-login">Sign In</button>
-            <button style="background:#888;color:#fff;" id="btn-signup">Create Admin Account</button>
+            <button style="background:#64748b;color:#fff;" id="btn-signup">Create Admin Account</button>
         </div>
     </div>
 
     <div id="admin-panel">
         <div id="admin-header-bar">
             <h2>⚙️ Administrator Panel</h2>
-            <div>
+            <div style="display:flex;gap:8px;">
                 <button class="btn-save" id="btn-save-all">💾 Save All</button>
                 <button class="btn-logout" id="btn-admin-logout">🚪 Logout</button>
                 <button class="btn-close" id="btn-close-admin">✕ Close</button>
@@ -535,53 +666,55 @@
                     <img id="hdr-logo-preview" src="" style="max-height:50px;display:block;margin:6px 0;">
                     <button class="btn-primary btn-sm" id="btn-upload-hdr-logo">Upload Logo</button>
                     <label>Company Name</label>
-                    <input type="text" id="hdr-company-name">
+                    <input type="text" id="hdr-company-name" placeholder="Enter company name">
                     <label>Arabic Title</label>
-                    <input type="text" id="hdr-arabic-title" dir="rtl">
+                    <input type="text" id="hdr-arabic-title" dir="rtl" placeholder="العنوان العربي">
                     <label>English Title</label>
-                    <input type="text" id="hdr-english-title">
+                    <input type="text" id="hdr-english-title" placeholder="English title">
                     <label>Airport Background Image</label>
                     <input type="file" id="hdr-bg-upload" accept="image/*">
                     <button class="btn-primary btn-sm" id="btn-upload-bg">Upload Background</button>
                     <label>Header Colors</label>
-                    <div style="display:flex;gap:10px;">
-                        <input type="color" id="hdr-bg-color" value="#003366">
-                        <input type="color" id="hdr-text-color" value="#ffffff">
+                    <div style="display:flex;gap:12px;align-items:center;">
+                        <input type="color" id="hdr-bg-color" value="#003366" style="width:60px;height:36px;">
+                        <span>Background</span>
+                        <input type="color" id="hdr-text-color" value="#ffffff" style="width:60px;height:36px;">
+                        <span>Text</span>
                     </div>
                     <label>Footer Text</label>
-                    <textarea id="hdr-footer-info"></textarea>
+                    <textarea id="hdr-footer-info" placeholder="© 2025 ..."></textarea>
                 </div>
                 <div class="section" id="sec-airlines">
                     <h3>Airline Management</h3>
                     <button class="btn-primary" id="btn-add-airline">➕ Add New Airline</button>
-                    <p style="font-size:0.75rem;color:#888;">Drag & drop to reorder.</p>
+                    <p style="font-size:0.8rem;color:#64748b;margin-top:6px;">Drag & drop to reorder.</p>
                     <div id="airline-list"></div>
-                    <div id="airline-edit-form" style="display:none;background:#fff;padding:16px;border-radius:10px;margin-top:12px;border:2px solid #3498db;">
-                        <h4>Edit Airline</h4>
+                    <div id="airline-edit-form" style="display:none;background:#fff;padding:20px;border-radius:12px;margin-top:16px;border:1px solid #e2e8f0;box-shadow:0 4px 16px rgba(0,0,0,0.05);">
+                        <h4 style="margin-bottom:14px;color:#0f172a;">Edit Airline</h4>
                         <input type="hidden" id="edit-airline-id">
-                        <label>Airline Name (internal)</label>
-                        <input type="text" id="edit-airline-name">
+                        <label>Airline Name (internal reference)</label>
+                        <input type="text" id="edit-airline-name" placeholder="e.g., EgyptAir">
                         <label>Country</label>
-                        <input type="text" id="edit-airline-country">
+                        <input type="text" id="edit-airline-country" placeholder="Egypt">
                         <label>Logo</label>
                         <input type="file" id="edit-airline-logo" accept="image/*">
-                        <img id="edit-airline-logo-preview" src="" style="max-height:50px;display:block;margin:4px 0;">
+                        <img id="edit-airline-logo-preview" src="" style="max-height:50px;display:block;margin:8px 0;">
                         <button class="btn-primary btn-sm" id="btn-upload-airline-logo">Upload Logo</button>
                         <label>Card Background Color</label>
-                        <input type="color" id="edit-airline-card-bg" value="#ffffff">
-                        <label>Logo Width (%)</label>
+                        <input type="color" id="edit-airline-card-bg" value="#ffffff" style="width:80px;">
+                        <label>Logo Width (%) inside card</label>
                         <input type="number" id="edit-airline-logo-width" value="75" min="20" max="98">
-                        <label>Card Height (px) [leave empty for auto]</label>
+                        <label>Card Height (px) [leave empty for default]</label>
                         <input type="number" id="edit-airline-card-height" min="60" max="400" placeholder="Auto">
-                        <label>Visible</label>
+                        <label>Visible on screen</label>
                         <label class="toggle-switch">
                             <input type="checkbox" id="edit-airline-visible" checked>
                             <span class="toggle-slider"></span>
                         </label>
-                        <div style="margin-top:10px;display:flex;gap:8px;">
+                        <div style="margin-top:16px;display:flex;gap:10px;">
                             <button class="btn-primary" id="btn-save-airline-edit">Save Airline</button>
                             <button class="btn-danger" id="btn-delete-airline">Delete</button>
-                            <button style="background:#888;color:#fff;" id="btn-cancel-airline-edit">Cancel</button>
+                            <button style="background:#94a3b8;color:#fff;" id="btn-cancel-airline-edit">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -593,7 +726,7 @@
                     <input type="number" id="layout-card-height" value="120" min="80" max="400">
                     <label>Border Radius (px)</label>
                     <input type="number" id="layout-border-radius" value="12" min="0" max="40">
-                    <label>Shadow Intensity</label>
+                    <label>Shadow Intensity (0-10)</label>
                     <input type="number" id="layout-shadow" value="4" min="0" max="10">
                     <label>Glass Effect</label>
                     <select id="layout-glass">
@@ -610,34 +743,34 @@
                     </select>
                     <label>Background Overlay Opacity</label>
                     <input type="range" id="layout-overlay-opacity" min="0" max="1" step="0.05" value="0.35">
-                    <span id="overlay-value">0.35</span>
+                    <span id="overlay-value" style="font-weight:600;margin-left:8px;">0.35</span>
                     <label>Background Animation</label>
                     <select id="layout-animation-style">
                         <option value="none">None</option>
                         <option value="shapes">Floating Shapes</option>
                     </select>
-                    <button class="btn-primary" id="btn-apply-layout">Apply Layout</button>
+                    <button class="btn-primary" id="btn-apply-layout" style="margin-top:12px;">Apply Layout</button>
                 </div>
                 <div class="section" id="sec-popups">
                     <h3>Popup Content (per airline)</h3>
                     <label>Select Airline</label>
                     <select id="popup-airline-select"><option value="">-- Choose --</option></select>
-                    <div id="popup-editor" style="display:none;margin-top:12px;">
+                    <div id="popup-editor" style="display:none;margin-top:16px;">
                         <label>Text Content</label>
-                        <textarea id="popup-text-content" placeholder="Write text..."></textarea>
+                        <textarea id="popup-text-content" placeholder="Write text to display..."></textarea>
                         <label>Font Size (px)</label>
                         <input type="number" id="popup-font-size" value="16" min="10" max="50">
                         <label>QR Code 1 Image</label>
                         <input type="file" id="popup-qr1-upload" accept="image/*">
                         <button class="btn-primary btn-sm" id="btn-upload-qr1">Upload</button>
-                        <img id="popup-qr1-preview" src="" style="max-width:120px;display:block;margin:6px 0;">
+                        <img id="popup-qr1-preview" src="" style="max-width:120px;display:block;margin:8px 0;">
                         <input type="hidden" id="popup-qr1">
                         <label>Caption above QR1</label>
                         <input type="text" id="popup-qr1-caption" placeholder="Scan for...">
                         <label>QR Code 2 Image</label>
                         <input type="file" id="popup-qr2-upload" accept="image/*">
                         <button class="btn-primary btn-sm" id="btn-upload-qr2">Upload</button>
-                        <img id="popup-qr2-preview" src="" style="max-width:120px;display:block;margin:6px 0;">
+                        <img id="popup-qr2-preview" src="" style="max-width:120px;display:block;margin:8px 0;">
                         <input type="hidden" id="popup-qr2">
                         <label>Caption above QR2</label>
                         <input type="text" id="popup-qr2-caption" placeholder="Scan for...">
@@ -647,16 +780,16 @@
                         <input type="text" id="popup-callcenter" placeholder="Phone number">
                         <label>Free Format Text</label>
                         <textarea id="popup-free-text" placeholder="Any additional text..."></textarea>
-                        <button class="btn-primary" id="btn-save-popup">Save Popup Content</button>
+                        <button class="btn-primary" id="btn-save-popup" style="margin-top:12px;">Save Popup Content</button>
                     </div>
                 </div>
                 <div class="section" id="sec-footer">
                     <h3>Global Footer (shown on all popups)</h3>
                     <label>Hotline</label>
-                    <input type="text" id="global-hotline" placeholder="e.g. 19991">
+                    <input type="text" id="global-hotline" placeholder="e.g., 19991">
                     <label>Phone Numbers (one per line)</label>
                     <textarea id="global-phones" placeholder="+20 100 123 4567&#10;+20 100 765 4321"></textarea>
-                    <button class="btn-primary" id="btn-save-footer">Save Footer</button>
+                    <button class="btn-primary" id="btn-save-footer" style="margin-top:8px;">Save Footer</button>
                 </div>
             </div>
         </div>
@@ -791,21 +924,31 @@
 
         function getDefaultSettings() {
             return {
-                headerLogo: '', companyName: 'EAS Company', arabicTitle: 'شركة إياس للنقل الجوي',
-                englishTitle: 'EAS Air Transport Company', backgroundImage: '',
-                headerBgColor: 'rgba(0,51,102,0.95)', headerTextColor: '#ffffff',
-                footerInfo: '© 2025 EAS. All rights reserved.',
-                cardSpacing: 16, cardHeight: 120, borderRadius: 12, shadow: 4,
-                glassEffect: 'none', animationSpeed: '0.3s', overlayOpacity: 0.35,
+                headerLogo: '',
+                companyName: '',
+                arabicTitle: '',
+                englishTitle: '',
+                backgroundImage: '',
+                headerBgColor: '#003366',
+                headerTextColor: '#ffffff',
+                footerInfo: '',
+                cardSpacing: 16,
+                cardHeight: 120,
+                borderRadius: 12,
+                shadow: 4,
+                glassEffect: 'none',
+                animationSpeed: '0.3s',
+                overlayOpacity: 0.35,
                 animationStyle: 'none',
-                globalHotline: '', globalPhoneNumbers: ''
+                globalHotline: '',
+                globalPhoneNumbers: ''
             };
         }
 
         function applySettings() {
             const s = settings;
             const root = document.documentElement.style;
-            root.setProperty('--header-bg', s.headerBgColor || 'rgba(0,51,102,0.95)');
+            root.setProperty('--header-bg', s.headerBgColor || '#003366');
             root.setProperty('--header-text', s.headerTextColor || '#ffffff');
             root.setProperty('--card-spacing', (s.cardSpacing || 16) + 'px');
             root.setProperty('--card-min-height', (s.cardHeight || 120) + 'px');
@@ -816,7 +959,13 @@
             root.setProperty('--anim-speed', s.animationSpeed || '0.3s');
             root.setProperty('--overlay-opacity', s.overlayOpacity ?? 0.35);
 
-            $('ps-header-logo').src = s.headerLogo || '';
+            const logoImg = $('ps-header-logo');
+            if (s.headerLogo) {
+                logoImg.src = s.headerLogo;
+                logoImg.style.display = '';
+            } else {
+                logoImg.style.display = 'none';
+            }
             $('ps-company-name').textContent = s.companyName || '';
             $('ps-arabic-title').textContent = s.arabicTitle || '';
             $('ps-english-title').textContent = s.englishTitle || '';
@@ -854,7 +1003,7 @@
                 card.appendChild(img);
                 $psGrid.appendChild(card);
             });
-            if (!vis.length) $psGrid.innerHTML = '<div style="text-align:center;color:#aaa;padding:40px;">No airlines</div>';
+            if (!vis.length) $psGrid.innerHTML = '<div style="text-align:center;color:#aaa;padding:40px;grid-column:1/-1;">No airlines available</div>';
         }
 
         function openPopup(airline) {
@@ -887,7 +1036,6 @@
             }
             $popupBody.innerHTML = body;
 
-            // Footer
             let footer = '';
             const hotline = settings.globalHotline || '';
             const phones = (settings.globalPhoneNumbers || '').split('\n').filter(Boolean);
@@ -964,7 +1112,6 @@
         };
         $('btn-apply-layout').onclick = $('btn-save-all').onclick;
         $('layout-overlay-opacity').oninput = function() { $('overlay-value').textContent = this.value; };
-
         $('btn-save-footer').onclick = async () => {
             await db.collection('settings').doc('global').update({
                 globalHotline: $('global-hotline').value,
@@ -973,7 +1120,6 @@
             showToast('Footer saved','success');
         };
 
-        // Airlines list & drag
         function renderAirlineList() {
             const list = $('airline-list');
             list.innerHTML = '';
@@ -983,7 +1129,7 @@
                 div.draggable = true;
                 div.dataset.id = a.id;
                 div.dataset.index = i;
-                div.innerHTML = `<span class="drag-handle">☰</span><div class="item-info"><strong>${a.name||'Unnamed'}</strong><span>${a.country||''} | ${a.visible!==false?'Visible':'Hidden'}</span></div><button class="btn-primary btn-sm btn-edit-airline" data-id="${a.id}">✏️</button>`;
+                div.innerHTML = `<span class="drag-handle">☰</span><div class="item-info"><strong>${a.name||'Unnamed'}</strong><span>${a.country||''} | <span class="status-badge ${a.visible!==false?'badge-visible':'badge-hidden'}">${a.visible!==false?'Visible':'Hidden'}</span></span></div><button class="btn-primary btn-sm btn-edit-airline" data-id="${a.id}">✏️</button>`;
                 div.addEventListener('dragstart', ds);
                 div.addEventListener('dragover', dv);
                 div.addEventListener('drop', dd);
@@ -995,12 +1141,7 @@
         let draggedItem, draggedIndex;
         function ds(e) { draggedItem=this; draggedIndex=+this.dataset.index; this.style.opacity='0.5'; e.dataTransfer.setData('text', this.dataset.id); }
         function dv(e) { e.preventDefault(); this.classList.add('drag-over'); }
-        function dd(e) {
-            e.preventDefault();
-            this.classList.remove('drag-over');
-            if (draggedItem === this) return;
-            reorderAirlines(draggedIndex, +this.dataset.index);
-        }
+        function dd(e) { e.preventDefault(); this.classList.remove('drag-over'); if (draggedItem === this) return; reorderAirlines(draggedIndex, +this.dataset.index); }
         function de() { this.style.opacity='1'; document.querySelectorAll('.airline-list-item').forEach(e=>e.classList.remove('drag-over')); }
         async function reorderAirlines(from, to) {
             const arr = [...allAirlines];
@@ -1030,7 +1171,7 @@
         $('btn-add-airline').onclick = async () => {
             const order = Math.max(...allAirlines.map(a=>a.order||0), -1) + 1;
             const ref = await db.collection('airlines').add({
-                name:'New Airline', country:'', logoUrl:'', cardBgColor:'#fff', logoWidth:75,
+                name:'New Airline', country:'', logoUrl:'', cardBgColor:'#ffffff', logoWidth:75,
                 cardHeight:null, visible:true, order,
                 popupContent: { textContent:'', fontSize:16, qr1:'', qr1Caption:'', qr2:'', qr2Caption:'', link:'', callCenter:'', freeText:'' }
             });
@@ -1067,7 +1208,6 @@
             showToast('Logo uploaded','success');
         };
 
-        // Popup editor
         function populatePopupSelect() {
             const sel = $('popup-airline-select');
             const cur = sel.value;
@@ -1131,7 +1271,10 @@
                 document.querySelectorAll('#admin-content .section').forEach(s => s.classList.remove('active'));
                 if (sec) sec.classList.add('active');
                 if (item.dataset.section === 'sec-popups') populatePopupSelect();
-                if (item.dataset.section === 'sec-footer') { $('global-hotline').value = settings.globalHotline || ''; $('global-phones').value = settings.globalPhoneNumbers || ''; }
+                if (item.dataset.section === 'sec-footer') {
+                    $('global-hotline').value = settings.globalHotline || '';
+                    $('global-phones').value = settings.globalPhoneNumbers || '';
+                }
             };
         });
 
