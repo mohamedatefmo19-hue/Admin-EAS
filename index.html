@@ -21,8 +21,8 @@
             --card-border-radius: 12px;
             --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             --card-glass: none;
-            --card-spacing: 16px;
-            --card-min-height: 120px;
+            --card-spacing: 12px;
+            --card-min-height: 100px;
             --anim-speed: 0.3s;
             --header-bg: rgba(0, 51, 102, 0.95);
             --header-text: #ffffff;
@@ -152,10 +152,11 @@
         }
         #ps-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            /* تغيير الأعمدة لتصبح مرنة وتسمح ببطاقات أصغر */
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: var(--card-spacing);
             width: 100%;
-            max-width: 900px;
+            max-width: 1300px;
             margin: 0 auto;
         }
         .airline-card {
@@ -185,6 +186,9 @@
             pointer-events: none;
             user-select: none;
         }
+        .airline-card.hidden-card {
+            display: none;
+        }
 
         #ps-footer {
             position: relative;
@@ -198,7 +202,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* Full‑screen popup overlay */
+        /* ============ POPUP OVERLAY (Full‑screen) ============ */
         #popup-overlay {
             position: fixed;
             inset: 0;
@@ -328,117 +332,77 @@
             border-radius: 20px;
         }
 
-        /* ============ ADMIN PANEL REDESIGN ============ */
+        /* ============ ADMIN PANEL (مخفية) ============ */
         #admin-panel {
             position: fixed;
             inset: 0;
             z-index: 200;
-            background: #0f172a;
+            background: #f4f5f7;
             display: none;
             flex-direction: column;
             overflow: hidden;
-            font-family: 'Segoe UI', sans-serif;
         }
         #admin-panel.active { display: flex; }
-
         #admin-header-bar {
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            background: #1a1a2e;
             color: #fff;
-            padding: 14px 24px;
+            padding: 10px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-shrink: 0;
-            gap: 16px;
+            gap: 12px;
         }
-        #admin-header-bar h2 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        #admin-header-bar h2 { font-size: 1.1rem; letter-spacing: 1px; }
         #admin-header-bar button {
-            padding: 8px 16px;
+            padding: 7px 16px;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
             font-size: 0.85rem;
             transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
         }
-        .btn-close { background: rgba(239, 68, 68, 0.9); color: #fff; }
-        .btn-close:hover { background: #dc2626; }
-        .btn-save { background: rgba(34, 197, 94, 0.9); color: #fff; }
-        .btn-save:hover { background: #16a34a; }
-        .btn-logout { background: rgba(100, 116, 139, 0.9); color: #fff; }
-        .btn-logout:hover { background: #64748b; }
+        .btn-close { background: #e74c3c; color: #fff; }
+        .btn-close:hover { background: #c0392b; }
+        .btn-save { background: #27ae60; color: #fff; }
+        .btn-save:hover { background: #219a52; }
+        .btn-logout { background: #555; color: #fff; }
+        .btn-logout:hover { background: #333; }
 
         #admin-body { display: flex; flex: 1; overflow: hidden; }
-
         #admin-sidebar {
-            width: 240px;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(8px);
-            border-right: 1px solid rgba(255,255,255,0.06);
-            color: #cbd5e1;
+            width: 220px;
+            background: #2c2c3e;
+            color: #ccc;
             flex-shrink: 0;
             overflow-y: auto;
-            padding: 16px 0;
+            padding: 10px 0;
         }
         #admin-sidebar .nav-item {
-            padding: 12px 20px;
-            margin: 2px 8px;
+            padding: 12px 18px;
             cursor: pointer;
             font-size: 0.9rem;
-            border-radius: 8px;
+            border-left: 3px solid transparent;
             transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            letter-spacing: 0.3px;
         }
-        #admin-sidebar .nav-item:hover {
-            background: rgba(255,255,255,0.08);
-            color: #fff;
-        }
+        #admin-sidebar .nav-item:hover,
         #admin-sidebar .nav-item.active {
-            background: rgba(59, 130, 246, 0.25);
+            background: #3a3a52;
             color: #fff;
-            font-weight: 500;
-            box-shadow: 0 2px 8px rgba(59,130,246,0.3);
+            border-left-color: #3498db;
         }
-
-        #admin-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-            background: #f8fafc;
-        }
+        #admin-content { flex: 1; overflow-y: auto; padding: 20px 24px; background: #f9fafb; }
         #admin-content .section { display: none; }
         #admin-content .section.active { display: block; }
         #admin-content h3 {
-            margin-bottom: 20px;
-            color: #0f172a;
-            font-size: 1.25rem;
-            font-weight: 600;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 16px;
+            color: #1a1a2e;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 8px;
         }
-        #admin-content label {
-            display: block;
-            font-weight: 600;
-            margin: 14px 0 6px;
-            color: #334155;
-            font-size: 0.85rem;
-            letter-spacing: 0.3px;
-        }
+        #admin-content label { display: block; font-weight: 600; margin: 10px 0 4px; color: #333; font-size: 0.85rem; }
         #admin-content input[type="text"],
         #admin-content input[type="number"],
         #admin-content input[type="url"],
@@ -446,156 +410,72 @@
         #admin-content textarea,
         #admin-content select {
             width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
+            padding: 9px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 7px;
             font-size: 0.9rem;
-            transition: all 0.2s;
+            transition: border 0.2s;
             background: #fff;
-            color: #0f172a;
         }
         #admin-content input:focus,
         #admin-content textarea:focus,
         #admin-content select:focus {
             outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
         }
-        #admin-content textarea { min-height: 90px; resize: vertical; }
-        #admin-content input[type="file"] { padding: 8px; font-size: 0.85rem; }
+        #admin-content textarea { min-height: 80px; resize: vertical; }
         #admin-content button {
-            padding: 10px 20px;
+            padding: 8px 18px;
             border: none;
-            border-radius: 8px;
+            border-radius: 7px;
             cursor: pointer;
             font-weight: 600;
             font-size: 0.85rem;
             transition: all 0.2s;
-            margin: 6px 4px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            letter-spacing: 0.3px;
+            margin: 4px 2px;
         }
-        .btn-primary { background: #3b82f6; color: #fff; }
-        .btn-primary:hover { background: #2563eb; }
-        .btn-danger { background: #ef4444; color: #fff; }
-        .btn-danger:hover { background: #dc2626; }
-        .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 46px;
-            height: 26px;
-        }
+        .btn-primary { background: #3498db; color: #fff; }
+        .btn-primary:hover { background: #2980b9; }
+        .btn-danger { background: #e74c3c; color: #fff; }
+        .btn-sm { padding: 5px 10px; font-size: 0.75rem; }
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            inset: 0;
-            background: #cbd5e1;
-            border-radius: 34px;
-            transition: 0.3s;
+            position: absolute; cursor: pointer; inset: 0; background: #ccc; border-radius: 24px; transition: 0.3s;
         }
         .toggle-slider::before {
-            content: '';
-            position: absolute;
-            height: 20px;
-            width: 20px;
-            left: 3px;
-            bottom: 3px;
-            background: #fff;
-            border-radius: 50%;
-            transition: 0.3s;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background: #fff; border-radius: 50%; transition: 0.3s;
         }
-        .toggle-switch input:checked+.toggle-slider { background: #10b981; }
+        .toggle-switch input:checked+.toggle-slider { background: #27ae60; }
         .toggle-switch input:checked+.toggle-slider::before { transform: translateX(20px); }
-
-        .airline-list-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            background: #fff;
-            border-radius: 10px;
-            margin: 6px 0;
-            border: 1px solid #e2e8f0;
-            cursor: grab;
-            transition: all 0.2s;
-            user-select: none;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-        }
-        .airline-list-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .airline-list-item:active { cursor: grabbing; }
-        .airline-list-item .drag-handle { color: #94a3b8; font-size: 1.2rem; cursor: grab; }
-        .airline-list-item .item-info { flex: 1; }
-        .airline-list-item .item-info strong { display: block; font-size: 0.95rem; color: #0f172a; }
-        .airline-list-item .item-info span { font-size: 0.75rem; color: #64748b; }
-
-        .status-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-        .badge-visible { background: #d1fae5; color: #065f46; }
-        .badge-hidden { background: #fee2e2; color: #991b1b; }
+        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
+        .badge-visible { background: #d4edda; color: #155724; }
+        .badge-hidden { background: #f8d7da; color: #721c24; }
 
         #admin-login {
-            position: fixed;
-            inset: 0;
-            z-index: 250;
-            background: rgba(15,23,42,0.95);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: fixed; inset: 0; z-index: 250; background: #1a1a2e;
+            display: flex; align-items: center; justify-content: center;
         }
         #admin-login.hidden { display: none; }
         #login-box {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            padding: 36px;
-            width: 400px;
-            max-width: 90%;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+            background: #fff; border-radius: 14px; padding: 30px; width: 380px; max-width: 90%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        #login-box h2 { text-align: center; margin-bottom: 24px; color: #0f172a; font-weight: 700; }
-        #login-box input {
-            width: 100%; padding: 12px; margin: 10px 0;
-            border: 1px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;
-            background: #fff;
-        }
-        #login-box button {
-            width: 100%; padding: 12px; margin: 8px 0;
-            border: none; border-radius: 10px; cursor: pointer;
-            font-weight: 600; font-size: 0.95rem; transition: all 0.2s;
-        }
-        #login-error { color: #ef4444; font-size: 0.85rem; text-align: center; min-height: 22px; }
+        #login-box h2 { text-align: center; margin-bottom: 20px; color: #1a1a2e; }
+        #login-box input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #d0d0d0; border-radius: 7px; }
+        #login-box button { width: 100%; padding: 10px; margin: 6px 0; border: none; border-radius: 7px; cursor: pointer; font-weight: 600; }
+        #login-error { color: #e74c3c; font-size: 0.8rem; text-align: center; min-height: 20px; }
 
         #toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 999;
-            background: #1e293b;
-            color: #fff;
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: fixed; bottom: 30px; right: 30px; z-index: 999; background: #333; color: #fff;
+            padding: 12px 22px; border-radius: 8px; font-size: 0.85rem; opacity: 0; pointer-events: none;
+            transition: opacity 0.35s; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
         #toast.show { opacity: 1; }
-        #toast.success { background: #10b981; }
-        #toast.error { background: #ef4444; }
+        #toast.success { background: #27ae60; }
+        #toast.error { background: #e74c3c; }
     </style>
 </head>
 <body>
@@ -637,14 +517,14 @@
             <input type="password" id="login-password" placeholder="Password">
             <p id="login-error"></p>
             <button class="btn-primary" id="btn-login">Sign In</button>
-            <button style="background:#64748b;color:#fff;" id="btn-signup">Create Admin Account</button>
+            <button style="background:#888;color:#fff;" id="btn-signup">Create Admin Account</button>
         </div>
     </div>
 
     <div id="admin-panel">
         <div id="admin-header-bar">
             <h2>⚙️ Administrator Panel</h2>
-            <div style="display:flex;gap:8px;">
+            <div>
                 <button class="btn-save" id="btn-save-all">💾 Save All</button>
                 <button class="btn-logout" id="btn-admin-logout">🚪 Logout</button>
                 <button class="btn-close" id="btn-close-admin">✕ Close</button>
@@ -675,58 +555,56 @@
                     <input type="file" id="hdr-bg-upload" accept="image/*">
                     <button class="btn-primary btn-sm" id="btn-upload-bg">Upload Background</button>
                     <label>Header Colors</label>
-                    <div style="display:flex;gap:12px;align-items:center;">
-                        <input type="color" id="hdr-bg-color" value="#003366" style="width:60px;height:36px;">
-                        <span>Background</span>
-                        <input type="color" id="hdr-text-color" value="#ffffff" style="width:60px;height:36px;">
-                        <span>Text</span>
+                    <div style="display:flex;gap:12px;">
+                        <input type="color" id="hdr-bg-color" value="#003366">
+                        <input type="color" id="hdr-text-color" value="#ffffff">
                     </div>
                     <label>Footer Text</label>
-                    <textarea id="hdr-footer-info" placeholder="© 2025 ..."></textarea>
+                    <textarea id="hdr-footer-info"></textarea>
                 </div>
                 <div class="section" id="sec-airlines">
                     <h3>Airline Management</h3>
                     <button class="btn-primary" id="btn-add-airline">➕ Add New Airline</button>
-                    <p style="font-size:0.8rem;color:#64748b;margin-top:6px;">Drag & drop to reorder.</p>
+                    <p style="font-size:0.75rem;color:#888;">Drag & drop to reorder.</p>
                     <div id="airline-list"></div>
-                    <div id="airline-edit-form" style="display:none;background:#fff;padding:20px;border-radius:12px;margin-top:16px;border:1px solid #e2e8f0;box-shadow:0 4px 16px rgba(0,0,0,0.05);">
-                        <h4 style="margin-bottom:14px;color:#0f172a;">Edit Airline</h4>
+                    <div id="airline-edit-form" style="display:none;background:#fff;padding:16px;border-radius:10px;margin-top:12px;border:2px solid #3498db;">
+                        <h4>Edit Airline</h4>
                         <input type="hidden" id="edit-airline-id">
-                        <label>Airline Name (internal reference)</label>
-                        <input type="text" id="edit-airline-name" placeholder="e.g., EgyptAir">
+                        <label>Airline Name (internal)</label>
+                        <input type="text" id="edit-airline-name">
                         <label>Country</label>
-                        <input type="text" id="edit-airline-country" placeholder="Egypt">
+                        <input type="text" id="edit-airline-country">
                         <label>Logo</label>
                         <input type="file" id="edit-airline-logo" accept="image/*">
-                        <img id="edit-airline-logo-preview" src="" style="max-height:50px;display:block;margin:8px 0;">
+                        <img id="edit-airline-logo-preview" src="" style="max-height:50px;display:block;margin:4px 0;">
                         <button class="btn-primary btn-sm" id="btn-upload-airline-logo">Upload Logo</button>
                         <label>Card Background Color</label>
-                        <input type="color" id="edit-airline-card-bg" value="#ffffff" style="width:80px;">
-                        <label>Logo Width (%) inside card</label>
-                        <input type="number" id="edit-airline-logo-width" value="75" min="20" max="98">
-                        <label>Card Height (px) [leave empty for default]</label>
+                        <input type="color" id="edit-airline-card-bg" value="#ffffff">
+                        <label>Logo Width (%)</label>
+                        <input type="number" id="edit-airline-logo-width" value="65" min="20" max="98">
+                        <label>Card Height (px) [leave empty for auto]</label>
                         <input type="number" id="edit-airline-card-height" min="60" max="400" placeholder="Auto">
-                        <label>Visible on screen</label>
+                        <label>Visible</label>
                         <label class="toggle-switch">
                             <input type="checkbox" id="edit-airline-visible" checked>
                             <span class="toggle-slider"></span>
                         </label>
-                        <div style="margin-top:16px;display:flex;gap:10px;">
+                        <div style="margin-top:10px;display:flex;gap:8px;">
                             <button class="btn-primary" id="btn-save-airline-edit">Save Airline</button>
                             <button class="btn-danger" id="btn-delete-airline">Delete</button>
-                            <button style="background:#94a3b8;color:#fff;" id="btn-cancel-airline-edit">Cancel</button>
+                            <button style="background:#888;color:#fff;" id="btn-cancel-airline-edit">Cancel</button>
                         </div>
                     </div>
                 </div>
                 <div class="section" id="sec-layout">
                     <h3>Layout & Background</h3>
                     <label>Card Spacing (px)</label>
-                    <input type="number" id="layout-card-spacing" value="16" min="4" max="60">
+                    <input type="number" id="layout-card-spacing" value="12" min="4" max="60">
                     <label>Default Card Height (px)</label>
-                    <input type="number" id="layout-card-height" value="120" min="80" max="400">
+                    <input type="number" id="layout-card-height" value="100" min="60" max="400">
                     <label>Border Radius (px)</label>
                     <input type="number" id="layout-border-radius" value="12" min="0" max="40">
-                    <label>Shadow Intensity (0-10)</label>
+                    <label>Shadow Intensity</label>
                     <input type="number" id="layout-shadow" value="4" min="0" max="10">
                     <label>Glass Effect</label>
                     <select id="layout-glass">
@@ -743,34 +621,34 @@
                     </select>
                     <label>Background Overlay Opacity</label>
                     <input type="range" id="layout-overlay-opacity" min="0" max="1" step="0.05" value="0.35">
-                    <span id="overlay-value" style="font-weight:600;margin-left:8px;">0.35</span>
+                    <span id="overlay-value">0.35</span>
                     <label>Background Animation</label>
                     <select id="layout-animation-style">
                         <option value="none">None</option>
                         <option value="shapes">Floating Shapes</option>
                     </select>
-                    <button class="btn-primary" id="btn-apply-layout" style="margin-top:12px;">Apply Layout</button>
+                    <button class="btn-primary" id="btn-apply-layout">Apply Layout</button>
                 </div>
                 <div class="section" id="sec-popups">
                     <h3>Popup Content (per airline)</h3>
                     <label>Select Airline</label>
                     <select id="popup-airline-select"><option value="">-- Choose --</option></select>
-                    <div id="popup-editor" style="display:none;margin-top:16px;">
+                    <div id="popup-editor" style="display:none;margin-top:12px;">
                         <label>Text Content</label>
-                        <textarea id="popup-text-content" placeholder="Write text to display..."></textarea>
+                        <textarea id="popup-text-content" placeholder="Write text..."></textarea>
                         <label>Font Size (px)</label>
                         <input type="number" id="popup-font-size" value="16" min="10" max="50">
-                        <label>QR Code 1 Image</label>
+                        <label>QR Code 1</label>
                         <input type="file" id="popup-qr1-upload" accept="image/*">
                         <button class="btn-primary btn-sm" id="btn-upload-qr1">Upload</button>
-                        <img id="popup-qr1-preview" src="" style="max-width:120px;display:block;margin:8px 0;">
+                        <img id="popup-qr1-preview" src="" style="max-width:120px;display:block;margin:6px 0;">
                         <input type="hidden" id="popup-qr1">
                         <label>Caption above QR1</label>
                         <input type="text" id="popup-qr1-caption" placeholder="Scan for...">
-                        <label>QR Code 2 Image</label>
+                        <label>QR Code 2</label>
                         <input type="file" id="popup-qr2-upload" accept="image/*">
                         <button class="btn-primary btn-sm" id="btn-upload-qr2">Upload</button>
-                        <img id="popup-qr2-preview" src="" style="max-width:120px;display:block;margin:8px 0;">
+                        <img id="popup-qr2-preview" src="" style="max-width:120px;display:block;margin:6px 0;">
                         <input type="hidden" id="popup-qr2">
                         <label>Caption above QR2</label>
                         <input type="text" id="popup-qr2-caption" placeholder="Scan for...">
@@ -780,7 +658,7 @@
                         <input type="text" id="popup-callcenter" placeholder="Phone number">
                         <label>Free Format Text</label>
                         <textarea id="popup-free-text" placeholder="Any additional text..."></textarea>
-                        <button class="btn-primary" id="btn-save-popup" style="margin-top:12px;">Save Popup Content</button>
+                        <button class="btn-primary" id="btn-save-popup">Save Popup Content</button>
                     </div>
                 </div>
                 <div class="section" id="sec-footer">
@@ -789,7 +667,7 @@
                     <input type="text" id="global-hotline" placeholder="e.g., 19991">
                     <label>Phone Numbers (one per line)</label>
                     <textarea id="global-phones" placeholder="+20 100 123 4567&#10;+20 100 765 4321"></textarea>
-                    <button class="btn-primary" id="btn-save-footer" style="margin-top:8px;">Save Footer</button>
+                    <button class="btn-primary" id="btn-save-footer">Save Footer</button>
                 </div>
             </div>
         </div>
@@ -847,87 +725,47 @@
             toastTimer = setTimeout(() => $toast.className = '', 3000);
         }
 
-        // ============ AUTHENTICATION FLOW ============
+        // المصادقة التلقائية كزائر مجهول لتحميل البيانات للركاب
         auth.onAuthStateChanged(user => {
             currentUser = user;
             if (user) {
-                // سواء كان مستخدم حقيقي أو مجهول، نبدأ بتحميل البيانات
                 initListeners();
-                // نخفي شاشة الدخول فقط إذا كان المستخدم غير مجهول (مسجل دخول فعلي)
-                if (!user.isAnonymous) {
-                    $adminLogin.classList.add('hidden');
-                } else {
-                    // المستخدم مجهول: نحافظ على إخفاء شاشة الدخول (لأنها لا تظهر إلا عند الطلب)
-                    $adminLogin.classList.add('hidden');
-                }
             } else {
-                // لا يوجد مستخدم إطلاقاً (نادر بعد التسجيل التلقائي)
                 $adminPanel.classList.remove('active');
                 $passengerScreen.classList.remove('blurred');
                 if (unsubSettings) unsubSettings();
                 if (unsubAirlines) unsubAirlines();
+                // تسجيل دخول مجهول تلقائيًا إذا لم يكن هناك مستخدم
+                auth.signInAnonymously().catch(() => {});
             }
         });
 
-        // تسجيل الدخول التلقائي كزائر مجهول عند عدم وجود مستخدم
-        async function ensureAnonymousAuth() {
-            if (!auth.currentUser) {
-                try {
-                    await auth.signInAnonymously();
-                    console.log('✅ Signed in anonymously for public access');
-                } catch (e) {
-                    console.warn('Anonymous auth failed, data might not load:', e.message);
-                }
-            }
-        }
-
-        // استدعاء الدالة فوراً عند تحميل الصفحة
-        ensureAnonymousAuth();
-
-        // معالجة تسجيل الدخول الحقيقي
         $('btn-login').onclick = async () => {
             const email = $('login-email').value.trim(), pass = $('login-password').value;
             $('login-error').textContent = '';
             if (!email || !pass) { $('login-error').textContent = 'Fill all fields'; return; }
             try {
-                // إذا كان المستخدم الحالي مجهول، يجب تسجيل الخروج أولاً
-                if (auth.currentUser && auth.currentUser.isAnonymous) {
-                    await auth.signOut();
-                }
+                if (auth.currentUser && auth.currentUser.isAnonymous) await auth.signOut();
                 await auth.signInWithEmailAndPassword(email, pass);
                 $adminLogin.classList.add('hidden');
                 $adminPanel.classList.add('active');
                 $passengerScreen.classList.add('blurred');
                 refreshAdmin();
                 showToast('Welcome!', 'success');
-            } catch (e) {
-                $('login-error').textContent = 'Incorrect email or password';
-            }
+            } catch (e) { $('login-error').textContent = 'Incorrect email or password'; }
         };
-
         $('btn-signup').onclick = async () => {
             const email = $('login-email').value.trim(), pass = $('login-password').value;
             if (!email || !pass) return;
             if (pass.length < 6) { $('login-error').textContent = 'Password too short'; return; }
             try {
-                if (auth.currentUser && auth.currentUser.isAnonymous) {
-                    await auth.signOut();
-                }
+                if (auth.currentUser && auth.currentUser.isAnonymous) await auth.signOut();
                 await auth.createUserWithEmailAndPassword(email, pass);
                 showToast('Account created', 'success');
             } catch (e) { $('login-error').textContent = e.message; }
         };
-
-        $('btn-admin-logout').onclick = () => {
-            $adminPanel.classList.remove('active');
-            $passengerScreen.classList.remove('blurred');
-            auth.signOut().then(() => ensureAnonymousAuth());
-        };
-        $('btn-close-admin').onclick = () => {
-            $adminPanel.classList.remove('active');
-            $passengerScreen.classList.remove('blurred');
-            auth.signOut().then(() => ensureAnonymousAuth());
-        };
+        $('btn-admin-logout').onclick = () => { $adminPanel.classList.remove('active'); $passengerScreen.classList.remove('blurred'); auth.signOut(); };
+        $('btn-close-admin').onclick = () => { $adminPanel.classList.remove('active'); $passengerScreen.classList.remove('blurred'); auth.signOut(); };
 
         document.addEventListener('keydown', e => {
             if (e.ctrlKey && e.shiftKey && e.key === 'A') {
@@ -979,8 +817,8 @@
                 headerBgColor: '#003366',
                 headerTextColor: '#ffffff',
                 footerInfo: '',
-                cardSpacing: 16,
-                cardHeight: 120,
+                cardSpacing: 12,
+                cardHeight: 100,
                 borderRadius: 12,
                 shadow: 4,
                 glassEffect: 'none',
@@ -997,8 +835,8 @@
             const root = document.documentElement.style;
             root.setProperty('--header-bg', s.headerBgColor || '#003366');
             root.setProperty('--header-text', s.headerTextColor || '#ffffff');
-            root.setProperty('--card-spacing', (s.cardSpacing || 16) + 'px');
-            root.setProperty('--card-min-height', (s.cardHeight || 120) + 'px');
+            root.setProperty('--card-spacing', (s.cardSpacing || 12) + 'px');
+            root.setProperty('--card-min-height', (s.cardHeight || 100) + 'px');
             root.setProperty('--card-border-radius', (s.borderRadius || 12) + 'px');
             const sh = s.shadow || 4;
             root.setProperty('--card-shadow', `0 ${sh}px ${sh*5}px rgba(0,0,0,${0.05+sh*0.025})`);
@@ -1046,54 +884,32 @@
                 const img = document.createElement('img');
                 img.src = a.logoUrl || '';
                 img.alt = '';
-                img.style.maxWidth = (a.logoWidth || 75) + '%';
+                img.style.maxWidth = (a.logoWidth || 65) + '%';
                 card.appendChild(img);
                 $psGrid.appendChild(card);
             });
-            if (!vis.length) $psGrid.innerHTML = '<div style="text-align:center;color:#aaa;padding:40px;grid-column:1/-1;">No airlines available</div>';
+            if (!vis.length) $psGrid.innerHTML = '<div style="text-align:center;color:#aaa;padding:40px;">No airlines available</div>';
         }
 
         function openPopup(airline) {
             const pc = airline.popupContent || {};
             $popupEasLogo.src = settings.headerLogo || '';
             $popupAirlineLogo.src = airline.logoUrl || '';
-
             let body = '';
-            if (pc.textContent) {
-                body += `<div class="section"><div style="font-size:${pc.fontSize||16}px; white-space:pre-wrap;">${pc.textContent}</div></div>`;
-            }
-            if (pc.qr1) {
-                body += `<div class="section"><div class="qr-block">`;
-                if (pc.qr1Caption) body += `<div class="qr-caption">${pc.qr1Caption}</div>`;
-                body += `<img src="${pc.qr1}" alt="QR1"></div></div>`;
-            }
-            if (pc.qr2) {
-                body += `<div class="section"><div class="qr-block">`;
-                if (pc.qr2Caption) body += `<div class="qr-caption">${pc.qr2Caption}</div>`;
-                body += `<img src="${pc.qr2}" alt="QR2"></div></div>`;
-            }
-            if (pc.link) {
-                body += `<div class="section"><a href="${pc.link}" target="_blank" class="ext-link">🔗 Open Link</a></div>`;
-            }
-            if (pc.callCenter) {
-                body += `<div class="section"><h3>📞 Call Center</h3><div class="phone-item">${pc.callCenter}</div></div>`;
-            }
-            if (pc.freeText) {
-                body += `<div class="section"><div style="white-space:pre-wrap;">${pc.freeText}</div></div>`;
-            }
+            if (pc.textContent) body += `<div class="section"><div style="font-size:${pc.fontSize||16}px;white-space:pre-wrap;">${pc.textContent}</div></div>`;
+            if (pc.qr1) { body += `<div class="section"><div class="qr-block">${pc.qr1Caption?`<div class="qr-caption">${pc.qr1Caption}</div>`:''}<img src="${pc.qr1}" alt="QR1"></div></div>`; }
+            if (pc.qr2) { body += `<div class="section"><div class="qr-block">${pc.qr2Caption?`<div class="qr-caption">${pc.qr2Caption}</div>`:''}<img src="${pc.qr2}" alt="QR2"></div></div>`; }
+            if (pc.link) body += `<div class="section"><a href="${pc.link}" target="_blank" class="ext-link">🔗 Open Link</a></div>`;
+            if (pc.callCenter) body += `<div class="section"><h3>📞 Call Center</h3><div class="phone-item">${pc.callCenter}</div></div>`;
+            if (pc.freeText) body += `<div class="section"><div style="white-space:pre-wrap;">${pc.freeText}</div></div>`;
             $popupBody.innerHTML = body;
 
             let footer = '';
             const hotline = settings.globalHotline || '';
             const phones = (settings.globalPhoneNumbers || '').split('\n').filter(Boolean);
             if (hotline) footer += `<div class="hotline">📞 Hotline: ${hotline}</div>`;
-            if (phones.length) {
-                footer += `<div class="phones">`;
-                phones.forEach(p => footer += `<span>${p}</span>`);
-                footer += `</div>`;
-            }
+            if (phones.length) { footer += `<div class="phones">${phones.map(p => `<span>${p}</span>`).join('')}</div>`; }
             $popupFooter.innerHTML = footer || '';
-
             $popupOverlay.classList.add('active');
         }
 
@@ -1110,8 +926,8 @@
             $('hdr-text-color').value = s.headerTextColor || '#ffffff';
             $('hdr-footer-info').value = s.footerInfo || '';
             $('hdr-logo-preview').src = s.headerLogo || '';
-            $('layout-card-spacing').value = s.cardSpacing || 16;
-            $('layout-card-height').value = s.cardHeight || 120;
+            $('layout-card-spacing').value = s.cardSpacing || 12;
+            $('layout-card-height').value = s.cardHeight || 100;
             $('layout-border-radius').value = s.borderRadius || 12;
             $('layout-shadow').value = s.shadow || 4;
             $('layout-glass').value = s.glassEffect || 'none';
@@ -1176,7 +992,7 @@
                 div.draggable = true;
                 div.dataset.id = a.id;
                 div.dataset.index = i;
-                div.innerHTML = `<span class="drag-handle">☰</span><div class="item-info"><strong>${a.name||'Unnamed'}</strong><span>${a.country||''} | <span class="status-badge ${a.visible!==false?'badge-visible':'badge-hidden'}">${a.visible!==false?'Visible':'Hidden'}</span></span></div><button class="btn-primary btn-sm btn-edit-airline" data-id="${a.id}">✏️</button>`;
+                div.innerHTML = `<span class="drag-handle">☰</span><div class="item-info"><strong>${a.name||'Unnamed'}</strong><span>${a.country||''} | ${a.visible!==false?'Visible':'Hidden'}</span></div><button class="btn-primary btn-sm btn-edit-airline" data-id="${a.id}">✏️</button>`;
                 div.addEventListener('dragstart', ds);
                 div.addEventListener('dragover', dv);
                 div.addEventListener('drop', dd);
@@ -1209,7 +1025,7 @@
             $('edit-airline-name').value = a.name || '';
             $('edit-airline-country').value = a.country || '';
             $('edit-airline-card-bg').value = a.cardBgColor || '#ffffff';
-            $('edit-airline-logo-width').value = a.logoWidth || 75;
+            $('edit-airline-logo-width').value = a.logoWidth || 65;
             $('edit-airline-card-height').value = a.cardHeight || '';
             $('edit-airline-visible').checked = a.visible !== false;
             $('edit-airline-logo-preview').src = a.logoUrl || '';
@@ -1218,7 +1034,7 @@
         $('btn-add-airline').onclick = async () => {
             const order = Math.max(...allAirlines.map(a=>a.order||0), -1) + 1;
             const ref = await db.collection('airlines').add({
-                name:'New Airline', country:'', logoUrl:'', cardBgColor:'#ffffff', logoWidth:75,
+                name:'New Airline', country:'', logoUrl:'', cardBgColor:'#ffffff', logoWidth:65,
                 cardHeight:null, visible:true, order,
                 popupContent: { textContent:'', fontSize:16, qr1:'', qr1Caption:'', qr2:'', qr2Caption:'', link:'', callCenter:'', freeText:'' }
             });
@@ -1231,7 +1047,7 @@
                 name: $('edit-airline-name').value,
                 country: $('edit-airline-country').value,
                 cardBgColor: $('edit-airline-card-bg').value,
-                logoWidth: +$('edit-airline-logo-width').value || 75,
+                logoWidth: +$('edit-airline-logo-width').value || 65,
                 cardHeight: +$('edit-airline-card-height').value || null,
                 visible: $('edit-airline-visible').checked
             });
@@ -1271,26 +1087,16 @@
             const pc = a.popupContent || {};
             $('popup-text-content').value = pc.textContent || '';
             $('popup-font-size').value = pc.fontSize || 16;
-            $('popup-qr1').value = pc.qr1 || '';
-            $('popup-qr1-caption').value = pc.qr1Caption || '';
-            $('popup-qr2').value = pc.qr2 || '';
-            $('popup-qr2-caption').value = pc.qr2Caption || '';
+            $('popup-qr1').value = pc.qr1 || ''; $('popup-qr1-caption').value = pc.qr1Caption || '';
+            $('popup-qr2').value = pc.qr2 || ''; $('popup-qr2-caption').value = pc.qr2Caption || '';
             $('popup-link').value = pc.link || '';
             $('popup-callcenter').value = pc.callCenter || '';
             $('popup-free-text').value = pc.freeText || '';
             $('popup-qr1-preview').src = pc.qr1 || '';
             $('popup-qr2-preview').src = pc.qr2 || '';
         };
-        $('btn-upload-qr1').onclick = async () => {
-            const f = $('popup-qr1-upload').files[0]; if (!f) return;
-            const url = await uploadToCloudinary(f, 'eas-assets/qrcodes');
-            $('popup-qr1').value = url; $('popup-qr1-preview').src = url;
-        };
-        $('btn-upload-qr2').onclick = async () => {
-            const f = $('popup-qr2-upload').files[0]; if (!f) return;
-            const url = await uploadToCloudinary(f, 'eas-assets/qrcodes');
-            $('popup-qr2').value = url; $('popup-qr2-preview').src = url;
-        };
+        $('btn-upload-qr1').onclick = async () => { const f=$('popup-qr1-upload').files[0]; if(f){ const url=await uploadToCloudinary(f,'eas-assets/qrcodes'); $('popup-qr1').value=url; $('popup-qr1-preview').src=url; } };
+        $('btn-upload-qr2').onclick = async () => { const f=$('popup-qr2-upload').files[0]; if(f){ const url=await uploadToCloudinary(f,'eas-assets/qrcodes'); $('popup-qr2').value=url; $('popup-qr2-preview').src=url; } };
         $('btn-save-popup').onclick = async () => {
             const id = $('popup-airline-select').value;
             if (!id) return showToast('Select airline','error');
@@ -1298,10 +1104,8 @@
                 popupContent: {
                     textContent: $('popup-text-content').value,
                     fontSize: +$('popup-font-size').value || 16,
-                    qr1: $('popup-qr1').value,
-                    qr1Caption: $('popup-qr1-caption').value,
-                    qr2: $('popup-qr2').value,
-                    qr2Caption: $('popup-qr2-caption').value,
+                    qr1: $('popup-qr1').value, qr1Caption: $('popup-qr1-caption').value,
+                    qr2: $('popup-qr2').value, qr2Caption: $('popup-qr2-caption').value,
                     link: $('popup-link').value,
                     callCenter: $('popup-callcenter').value,
                     freeText: $('popup-free-text').value
