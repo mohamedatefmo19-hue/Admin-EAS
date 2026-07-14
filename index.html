@@ -847,11 +847,21 @@
             toastTimer = setTimeout(() => $toast.className = '', 3000);
         }
 
+        // ============ AUTHENTICATION FLOW ============
         auth.onAuthStateChanged(user => {
             currentUser = user;
             if (user) {
+                // سواء كان مستخدم حقيقي أو مجهول، نبدأ بتحميل البيانات
                 initListeners();
+                // نخفي شاشة الدخول فقط إذا كان المستخدم غير مجهول (مسجل دخول فعلي)
+                if (!user.isAnonymous) {
+                    $adminLogin.classList.add('hidden');
+                } else {
+                    // المستخدم مجهول: نحافظ على إخفاء شاشة الدخول (لأنها لا تظهر إلا عند الطلب)
+                    $adminLogin.classList.add('hidden');
+                }
             } else {
+                // لا يوجد مستخدم إطلاقاً (نادر بعد التسجيل التلقائي)
                 $adminPanel.classList.remove('active');
                 $passengerScreen.classList.remove('blurred');
                 if (unsubSettings) unsubSettings();
@@ -859,28 +869,65 @@
             }
         });
 
+        // تسجيل الدخول التلقائي كزائر مجهول عند عدم وجود مستخدم
+        async function ensureAnonymousAuth() {
+            if (!auth.currentUser) {
+                try {
+                    await auth.signInAnonymously();
+                    console.log('✅ Signed in anonymously for public access');
+                } catch (e) {
+                    console.warn('Anonymous auth failed, data might not load:', e.message);
+                }
+            }
+        }
+
+        // استدعاء الدالة فوراً عند تحميل الصفحة
+        ensureAnonymousAuth();
+
+        // معالجة تسجيل الدخول الحقيقي
         $('btn-login').onclick = async () => {
             const email = $('login-email').value.trim(), pass = $('login-password').value;
             $('login-error').textContent = '';
             if (!email || !pass) { $('login-error').textContent = 'Fill all fields'; return; }
             try {
+                // إذا كان المستخدم الحالي مجهول، يجب تسجيل الخروج أولاً
+                if (auth.currentUser && auth.currentUser.isAnonymous) {
+                    await auth.signOut();
+                }
                 await auth.signInWithEmailAndPassword(email, pass);
                 $adminLogin.classList.add('hidden');
                 $adminPanel.classList.add('active');
                 $passengerScreen.classList.add('blurred');
                 refreshAdmin();
                 showToast('Welcome!', 'success');
-            } catch (e) { $('login-error').textContent = 'Incorrect email or password'; }
+            } catch (e) {
+                $('login-error').textContent = 'Incorrect email or password';
+            }
         };
+
         $('btn-signup').onclick = async () => {
             const email = $('login-email').value.trim(), pass = $('login-password').value;
             if (!email || !pass) return;
             if (pass.length < 6) { $('login-error').textContent = 'Password too short'; return; }
-            try { await auth.createUserWithEmailAndPassword(email, pass); showToast('Account created', 'success'); }
-            catch (e) { $('login-error').textContent = e.message; }
+            try {
+                if (auth.currentUser && auth.currentUser.isAnonymous) {
+                    await auth.signOut();
+                }
+                await auth.createUserWithEmailAndPassword(email, pass);
+                showToast('Account created', 'success');
+            } catch (e) { $('login-error').textContent = e.message; }
         };
-        $('btn-admin-logout').onclick = () => { $adminPanel.classList.remove('active'); $passengerScreen.classList.remove('blurred'); auth.signOut(); };
-        $('btn-close-admin').onclick = () => { $adminPanel.classList.remove('active'); $passengerScreen.classList.remove('blurred'); auth.signOut(); };
+
+        $('btn-admin-logout').onclick = () => {
+            $adminPanel.classList.remove('active');
+            $passengerScreen.classList.remove('blurred');
+            auth.signOut().then(() => ensureAnonymousAuth());
+        };
+        $('btn-close-admin').onclick = () => {
+            $adminPanel.classList.remove('active');
+            $passengerScreen.classList.remove('blurred');
+            auth.signOut().then(() => ensureAnonymousAuth());
+        };
 
         document.addEventListener('keydown', e => {
             if (e.ctrlKey && e.shiftKey && e.key === 'A') {
